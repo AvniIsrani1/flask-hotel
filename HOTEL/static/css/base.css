@@ -1,0 +1,166 @@
+* {
+    padding:0;
+    margin:0;
+    box-sizing:border-box;
+}
+
+a {
+    text-decoration:none;
+}
+
+hr {
+    display:none;
+}
+
+header {
+    background-color:#67001A;
+    color:#F1DF75;
+    display:flex;
+    flex-direction:row;
+    align-items:center;
+    justify-content:space-between;
+    padding-inline:18vw;
+    padding-block:1rem;
+    transition: padding 1s ease-in-out;
+    white-space:nowrap;
+}
+
+header a {
+    color: #F1DF75;
+    padding-inline: 2vw;
+    padding-block:1vh;
+    margin:1px;
+    border-radius:15px;
+}
+
+header a:hover {
+    background-color:#60001A;
+}
+
+.logo {
+    display:flex;
+    flex-direction:row;
+    align-items:center;
+    gap:10px;
+    padding-right:20px;
+    border-right-style:solid;
+    border-right-width:1px;
+}
+
+.logo:hover, .logo-format:hover {
+    cursor:pointer;
+}
+
+.logo p {
+    font-size:2rem;
+    font-family:"Lusitana",sans-serif;
+}
+
+nav, a {
+    display:flex;
+    flex-direction:row;
+    align-items:center;
+    justify-content:center;
+    font-family:"Noto Sans Khmer",sans-serif;
+}
+
+a p{
+    margin-left:10px;
+}
+
+.main-content {
+    min-height:100vh;
+}
+
+footer {
+    background-color:#67001A;
+    color:#F1DF75;
+    display:flex;
+    flex-direction:row;
+    justify-content:space-between;
+    padding-block:1rem;
+    padding-inline:18vw;
+}
+
+footer a {
+    color:#F1DF75;
+}
+
+.logo-format {
+    font-size:2rem;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+}
+
+.ocean {
+    font-family:"Dancing Script";
+    font-size:4rem;
+    line-height:0.8;
+}
+.vista {
+    margin-top:10px;
+    font-family:"Mrs Sheppards";
+}
+
+.quick-links, .contact-info {
+    font-family:"Khula";
+    font-size:1.2rem;
+    display:flex;
+    flex-direction:column;
+    align-items:flex-start;
+}
+.quick-links a, .contact-info a {
+    font-family:"Noto Sans Khmer";
+    font-size:0.8rem;
+    padding:5px;
+}
+
+.quick-links a:hover, .contact-info a:hover {
+    text-decoration:underline;
+}
+
+.indent {
+    padding-left:28px !important;
+}
+
+@media only screen and (max-width:1500px){
+    header, footer {
+        padding-inline:15vw;
+    }
+}
+
+@media only screen and (max-width:1300px){
+    header, footer {
+        padding-inline:10vw;
+    }
+}
+
+@media only screen and (max-width:1000px){
+    header, footer{
+        padding-inline:5vw;
+    } 
+
+    nav a p {
+        display:none;
+    }
+}
+
+@media only screen and (max-width:700px){
+    header, footer {
+        padding-inline:1vw;
+    }
+
+    footer {
+        flex-direction:column;
+        text-align:center;
+        align-items:center;
+    }
+
+    hr{ 
+        width:95%;
+        display:block;
+        margin:10px;
+        border:1px solid #F1DF75;
+    }
+}
