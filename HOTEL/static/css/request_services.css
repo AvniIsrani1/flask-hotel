@@ -1,0 +1,167 @@
+.content {
+    display:flex;
+    flex-direction:row;
+    margin-block:50px;
+    justify-content:center;
+}
+
+.images {
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+}
+
+.second {
+    display:none;
+}
+
+.images img {
+    max-width:500px;
+    max-height:470px;
+    margin:10px;
+    border-radius:15px;
+}
+
+
+form {
+    display:flex;
+    flex-direction:column;
+    max-width:700px;
+    background-color:#FFF9ED; 
+    border-style:solid;
+    border-radius:15px;
+    border-width:1px;
+    border-color:#000000;
+    margin:10px;
+    padding:20px 40px;
+    gap:8px;
+}
+
+form input {
+    font-size:1rem;
+    font-family:'Noto Sans Khmer';
+    padding-left:5px;
+}
+
+.title {
+    font-size:2rem;
+    font-family:'Playfair Display';
+    margin-bottom:0.5rem;
+    text-align: center;
+}
+
+.items {
+    display:flex;
+    flex-wrap:wrap;
+    justify-content:center;
+    align-items:center;
+    gap:20px;
+}
+
+.item {
+    width:200px;
+}
+
+.item input {
+    width:60px;
+    margin-right:5px;
+    border-radius:15px;
+    padding:5px 10px;
+}
+
+.timings{
+    width:200px;
+    display:flex;
+    flex-direction:row;
+    gap:10px;
+}
+
+#housetime, #calltime {
+    border-radius:10px;
+}
+
+.open {
+    border-radius:15px;
+    padding:3px 10px;
+    font-family:'Noto Sans Khmer';
+    font-size:1rem;
+}
+
+.subtitle {
+    font-size:1.1rem;
+}
+
+
+.ptop {
+    padding-top:0.5rem;
+}
+.pbot {
+    padding-bottom:0.5rem;
+}
+
+
+select {
+    color:#757575;
+}
+
+
+.sub {
+    background-color:#67001A;
+    color:#F1DF75;
+    font-family:'Playfair Display';
+    font-size:1.5rem;
+    border-radius:15px;
+}
+
+.sub:hover{
+    cursor:pointer;
+    background-color:#60001A;
+}
+
+@media only screen and (max-width:1200px){
+    .content {
+        align-items:center;
+        flex-direction:column;
+
+    }
+
+    .first {
+        display:none;
+    }
+
+    .second {
+        display:flex;
+        flex-direction:column;
+        justify-content:center;
+        align-items:center;
+        margin-top:10px;
+    }
+
+
+}
+
+@media only screen and (max-width:700px){
+    .content {
+        align-items:center;
+    }
+    .item {
+        width:160px;
+    }
+
+    .timings {
+        width:170px;
+    }
+
+    .first {
+        display:none;
+    }
+
+    .content {
+        flex-direction:column;
+    }
+    .second {
+        width:95%;
+        margin-top:10px;
+    }
+
+}

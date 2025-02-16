@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+
+{% block title %} Request Services {% endblock %}
+
+{% block styles %} 
+<link rel="stylesheet" href="../static/css/request_services.css" />
+{% endblock %}
+
+{% block content %}
+
+<div class="content">
+    <div class="images first">
+        <img src="../static/images/aerial.jpg" alt="" width="100%" height="100%">
+        <img src="../static/images/inside.jpeg" alt="" width="100%" height="100%">
+    </div>
+    <form method="post" id="rservices">
+        <p class="title">Request for Service</p>
+        <p class="subtitle">Please send additional...</p>
+        <div class="items pbot">
+            <span class="item">
+                <input type="number" id="robes" name="robes" min="0" max="10">
+                <label for="robes">Robes</label>
+            </span>
+            <span class="item">
+                <input type="number" id="btowels" name="btowels" min="0" max="10">
+                <label for="btowels">Bath Towels</label>
+            </span>
+            <span class="item">
+                <input type="number" id="htowels" name="htowels" min="0" max="10">
+                <label for="htowels">Hand Towels</label>
+            </span>
+            <span class="item">
+                <input type="number" id="soap" name="soap" min="0" max="10">
+                <label for="soap">Hand Soap</label>
+            </span>
+            <span class="item">
+                <input type="number" id="shampoo" name="shampoo" min="0" max="10">
+                <label for="shampoo">Shampoo</label>
+            </span>
+            <span class="item">
+                <input type="number" id="conditioner" name="conditioner" min="0" max="10">
+                <label for="conditioner">Conditioner</label>
+            </span>
+            <span class="item">
+                <input type="number" id="wash" name="wash" min="0" max="10">
+                <label for="wash">Body wash</label>
+            </span>
+            <span class="item">
+                <input type="number" id="lotion" name="lotion" min="0" max="10">
+                <label for="lotion">Lotion</label>
+            </span>
+            <span class="item">
+                <input type="number" id="hdryer" name="hdryer" min="0" max="1">
+                <label for="hdryer">Hair Dryer</label>
+            </span>
+            <span class="item">
+                <input type="number" id="pillows" name="pillows" min="0" max="5">
+                <label for="pillows">Pillows</label>
+            </span>
+            <span class="item">
+                <input type="number" id="blankets" name="blankets" min="0" max="5">
+                <label for="blankets">Blankets</label>
+            </span>
+            <span class="item">
+                <input type="number" id="sheets" name="sheets" min="0" max="5">
+                <label for="sheets">Sheets</label>
+            </span>
+        </div>
+        <p class="ptop subtitle">Housekeeping</p>
+        <div class="items pbot">
+            <span class="timings">
+                <input type="time" id="housetime" name="housetime">
+                <label for="housetime">Room Cleanup</label>
+            </span>
+            <span class="timings">
+                <input type="checkbox" id="trash" name="trash">
+                <label for="trash">Trash Pickup (Outside of Room)</label>
+            </span>
+        </div>
+        <p class="ptop subtitle">Schedule a Wake-Up Call</p>
+        <div class="items pbot">
+            <span class="timings">
+                <input type="time" id="calltime" name="calltime">
+                <label for="calltime">Time of Call</label>
+            </span>
+            <span class="timings">
+                <input type="checkbox" id="recurrent" name="recurrent">
+                <label for="recurrent">Recurrent? (Until End of Stay)</label>
+            </span>
+        </div>
+    
+        <p class="ptop subtitle">Make a Dining Reservation</p>
+        <input type="text" id="restaurant" name="restaurant" class="open" placeholder="Name of Restaurant">
+        <p class="ptop subtitle">Assistance by Dedicated Staff</p>
+        <select name="assistance" id="assistance" class="open">
+            <option value="recommendations">Local recommendations</option>
+            <option value="transportation">Booking transportation</option>
+            <option value="maintenance">Room maintenance</option>
+            <option value="accessibility">Accessibility needs</option>
+        </select>
+        <p class="ptop subtitle">Other</p>
+        <textarea id="other" name="other" class="open" placeholder="Briefly describe your service request."></textarea>
+        <p class="ptop pbot">A phone call will be made to you shortly if additional clarification is needed for your request. Thank you!</p>
+        <input type="submit" class="sub" value="Submit">
+
+
+        
+    </form>
+    <div class="images second">
+        <img src="../static/images/aerial.jpg" alt="" width="100%" height="100%">
+        <img src="../static/images/inside.jpeg" alt="" width="100%" height="100%">
+    </div>
+
+</div>
+{% endblock %}
