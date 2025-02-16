@@ -3,13 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %} - Ocean Vista</title>
+    <title>{% block title %}{% endblock %} | Ocean Vista</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400..700&family=Khula:wght@300;400;600;700;800&family=Lusitana:wght@400;700&family=Mrs+Sheppards&family=Noto+Sans+Khmer:wght@100..900&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Tiro+Tamil:ital@0;1&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../static/css/base.css" />
 
+    {% block styles %} {% endblock %}
 </head>
 <body>
     <header>
@@ -22,12 +23,12 @@
             <a href=""><i class="fa-solid fa-bell-concierge"></i><p>Amenities</p></a>
             <a href=""><i class="fa-regular fa-calendar-days"></i><p>Events</p></a>
             <a href=""><i class="fa-solid fa-utensils"></i><p>Dining</p></a>
-            <a href=""><i class="fa-solid fa-user"></i><p>Sign-In</p></a>
+            <a href="{{url_for('log_in')}}"><i class="fa-solid fa-user"></i><p>Sign-In</p></a>
         </nav>
     </header>
 
     <section class="main-content">
-
+        {% block content %}{% endblock %}
     </section>
 
     <footer>
@@ -39,7 +40,7 @@
         <hr>
         <div class="quick-links">
             <p>QUICK LINKS</p>
-            <a href="" class="indent">Home</a>
+            <a href="{{url_for('home')}}" class="indent">Home</a>
             <a href="" class="indent">About Us</a>
             <a href="" class="indent">Reserve</a>
             <a href="" class="indent">Amenties</a>
