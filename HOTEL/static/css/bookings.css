@@ -1,0 +1,108 @@
+.content {
+    display:flex;
+    flex-direction:column;
+    margin-block:50px;
+    justify-content:center;
+    align-items:center;
+}
+
+
+
+.title {
+    display:flex;
+    flex-direction:column;
+    width:65%;
+    background-color:#FFF9ED; 
+    border-style:solid;
+    border-radius:15px;
+    border-width:1px;
+    border-color:#000000;
+    margin:10px;
+    padding:20px 40px;
+    font-size:2rem;
+    font-family:'Playfair Display';
+    margin-bottom:0.5rem;
+    text-align: center;
+}
+
+.subtitle{
+    font-size:1.7rem;
+    margin-block:10px;
+}
+
+.section1 {
+    display:flex;
+    flex-direction:column;
+    width:65%;
+}
+
+.placards {
+    display:flex;
+    flex-wrap:wrap;
+    gap:20px;
+    margin-inline:40px;
+}
+
+.placard {
+    width:330px;
+}
+
+.information {
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+    height:180px;
+}
+
+.ptop {
+    padding-top:0.5rem;
+}
+.pbot {
+    padding-bottom:0.5rem;
+}
+
+.placard {
+    border-style:solid;
+    border-width:1px;
+}
+
+.details, .links {
+    display:flex;
+    flex-direction:column;
+    align-items:start;
+    margin:10px;
+}
+
+.links2 {
+    display:flex;
+    flex-direction:row; 
+    justify-content:space-between;
+    margin:10px;
+}
+
+.details p {
+    font-size:1.5rem;
+}
+
+.links a, .links2 a {
+    font-size:0.7rem;
+}
+
+.links a:hover, .links2 a:hover {
+    text-decoration:underline;
+}
+
+@media only screen and (max-width:1200px){
+    .content {
+        align-items:center;
+        flex-direction:column;
+    }
+
+
+}
+
+@media only screen and (max-width:700px){
+    .title, .section1 {
+        width:90%;
+    }
+}

@@ -14,6 +14,10 @@ def sign_up():
 def log_in():
     return render_template('login.html')
 
+@app.route("/my-bookings")
+def my_bookings():
+    return render_template('bookings.html')
+
 @app.route("/request-services")
 def request_services():
     return render_template('request_services.html')

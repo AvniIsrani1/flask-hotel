@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% block title %} My Bookings {% endblock %}
+
+{% block styles %} 
+<link rel="stylesheet" href="../static/css/bookings.css" />
+{% endblock %}
+
+{% block content %}
+<div class="content">
+    <p class="title">Welcome, [Name]</p>
+    <br>
+
+    <div class="section1">
+        <p class="subtitle">My Current Stay</p>
+        <div class="placards">
+            <div class="placard">
+                <img src="../static/images/inside.jpeg" width="330" height="200">
+                <div class="information">
+                    <div class="details pbot">
+                        <p>[Date of Booking]</p>
+                        <p>[Location of Hotel]</p>
+                    </div>
+                    <div class="links ptop">
+                        <a href="{{url_for('request_services')}}">Request Services</a>
+                        <a href="">View our Dining Menu</a>
+                        <a href="">Speak to a representative</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br>
+    <br>
+    <div class="section1">
+        <p class="subtitle">My Upcoming Bookings</p>
+        <div class="placards">
+            <div class="placard">
+                <img src="../static/images/inside.jpeg" width="330" height="200">
+                <div class="information">
+                    <div class="details pbot">
+                        <p>[Date of Booking]</p>
+                        <p>[Location of Hotel]</p>
+                    </div>
+                    <div class="links2 ptop">
+                        <a href="">View more details</button>
+                        <a href="">Modify Booking</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+
+</div>
+
+{% endblock %}

@@ -164,3 +164,9 @@ footer a {
         border:1px solid #F1DF75;
     }
 }
+
+@media only screen and (max-width:400px){
+    .logo p {
+        font-size:1.3rem;
+    }
+}
