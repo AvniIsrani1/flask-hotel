@@ -10,9 +10,62 @@
 <div class="content">
     <p class="title">Welcome, [Name]</p>
     <br>
+    <br>
 
+    <div class="view-options">
+        <button class="view" id="current">Current</button>
+        <button class="view" id="history">History</button>
+        <button class="view" id="saved">Saved Bookings</button>
+    </div>
+
+    <div class="current">
+        <div class="section1">
+            <br>
+            <p class="subtitle">My Current Stay</p>
+            <div class="placards">
+                <div class="placard">
+                    <img src="../static/images/inside.jpeg" width="330" height="200">
+                    <div class="information">
+                        <div class="details pbot">
+                            <p>[Date of Booking]</p>
+                            <p>[Location of Hotel]</p>
+                        </div>
+                        <div class="links ptop">
+                            <a href="{{url_for('request_services')}}">Request Services</a>
+                            <a href="">View our Dining Menu</a>
+                            <a href="">Speak to a representative</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br>
+        <br>
+        <div class="section1">
+            <p class="subtitle">My Upcoming Bookings</p>
+            <div class="placards">
+                <div class="placard">
+                    <img src="../static/images/inside.jpeg" width="330" height="200">
+                    <div class="information">
+                        <div class="details pbot">
+                            <p>[Date of Booking]</p>
+                            <p>[Location of Hotel]</p>
+                        </div>
+                        <div class="links2 ptop">
+                            <a href="">View more details</button>
+                            <a href="">Modify Booking</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+        
+<!-- -------------------------------------- -->
+<div class="history">
     <div class="section1">
-        <p class="subtitle">My Current Stay</p>
+        <br>
+        <p class="subtitle">Past Bookings</p>
         <div class="placards">
             <div class="placard">
                 <img src="../static/images/inside.jpeg" width="330" height="200">
@@ -22,9 +75,8 @@
                         <p>[Location of Hotel]</p>
                     </div>
                     <div class="links ptop">
-                        <a href="{{url_for('request_services')}}">Request Services</a>
-                        <a href="">View our Dining Menu</a>
-                        <a href="">Speak to a representative</a>
+                        <a href="">Leave a review</a>
+                        <a href="">View more details</a>
                     </div>
                 </div>
             </div>
@@ -33,7 +85,7 @@
     <br>
     <br>
     <div class="section1">
-        <p class="subtitle">My Upcoming Bookings</p>
+        <p class="subtitle">Canceled Bookings</p>
         <div class="placards">
             <div class="placard">
                 <img src="../static/images/inside.jpeg" width="330" height="200">
@@ -42,16 +94,67 @@
                         <p>[Date of Booking]</p>
                         <p>[Location of Hotel]</p>
                     </div>
-                    <div class="links2 ptop">
-                        <a href="">View more details</button>
-                        <a href="">Modify Booking</a>
+                    <div class="links ptop">
+                        <p>[Cancel Date]</p>
+                        <p>[Refund Type: Full]</p>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    
+</div>
+<!-- -------------------------------------- -->
+    <div class="saved">
+        <div class="section1">
+            <br>
+            <p class="subtitle">Favorites</p>
+            <div class="placards">
+                <div class="placard">
+                    <img src="../static/images/inside.jpeg" width="330" height="200">
+                    <div class="information">
+                        <div class="details pbot">
+                            <p>[Date of Booking]</p>
+                            <p>[Location of Hotel]</p>
+                        </div>
+                        <div class="links ptop">
+                            <a href="">View more details</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
 
 </div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function(){
+        const items = document.querySelectorAll('.view');
+        document.querySelectorAll('#current').forEach(i=>{i.style.borderColor='#000000';});
+        items.forEach(item =>{
+            item.addEventListener("click", function(){
+                document.querySelectorAll('.view').forEach(i=>{i.style.borderColor='#c0bfbf';});
+                if(this.id==='current'){
+                    document.querySelectorAll('.current').forEach(i=>{i.style.display='flex';});
+                    document.querySelectorAll('.history').forEach(i=>{i.style.display='none';});
+                    document.querySelectorAll('.saved').forEach(i=>{i.style.display='none';});
+                    this.style.borderColor = '#000000';
+                } else if(this.id==='history'){
+                    document.querySelectorAll('.current').forEach(i=>{i.style.display='none';});
+                    document.querySelectorAll('.history').forEach(i=>{i.style.display='flex';});
+                    document.querySelectorAll('.saved').forEach(i=>{i.style.display='none';});
+                    this.style.borderColor = '#000000';
+                } else if(this.id==='saved'){
+                    document.querySelectorAll('.current').forEach(i=>{i.style.display='none';});
+                    document.querySelectorAll('.history').forEach(i=>{i.style.display='none';});
+                    document.querySelectorAll('.saved').forEach(i=>{i.style.display='flex';}); 
+                    this.style.borderColor = '#000000';  
+                }
+            })
+            
+        })
+    });
+</script>
 
 {% endblock %}

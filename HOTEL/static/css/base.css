@@ -114,6 +114,7 @@ footer a {
     font-family:"Noto Sans Khmer";
     font-size:0.8rem;
     padding:5px;
+    justify-content:flex-start;
 }
 
 .quick-links a:hover, .contact-info a:hover {
@@ -165,8 +166,33 @@ footer a {
     }
 }
 
-@media only screen and (max-width:400px){
+@media only screen and (max-width:450px){
     .logo p {
         font-size:1.3rem;
+    }
+
+    .quick-links, .contact-info {
+        align-items:center;
+        margin-block:10px;
+    }
+
+    .contact-info {
+        width:100%;
+    }
+    .contact-info a {
+        width:200px;
+    }
+    .inner {
+        display:flex;
+        flex-wrap:wrap;
+        justify-content:center;
+        margin-inline:10px;
+    }
+
+    .indent {
+        padding-left:10px !important;
+        width:100px;
+        text-align:left;
+        justify-content:flex-start;
     }
 }

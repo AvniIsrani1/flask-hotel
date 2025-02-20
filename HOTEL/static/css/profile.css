@@ -1,0 +1,175 @@
+.content {
+    display:flex;
+    flex-direction:column;
+    margin-block:50px;
+    justify-content:center;
+    align-items:center;
+}
+
+.options {
+    border-style:solid;
+    border-width:1px;
+    margin-inline:10px;
+    width:100%;
+    max-width:900px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+}
+
+.upper {
+    display:flex;
+    flex-direction:row;
+    justify-content:center;
+    gap:30px;
+    margin:10px;
+    font-size:3rem;
+    font-family:'Playfair Display';
+    border-width:0px;
+    border-radius:15px;
+    overflow:hidden;
+}
+.upper i {
+    font-size:8rem;
+    color:#CD7F32;
+}
+
+.expand {
+    display:flex;
+    flex-direction:row;
+    justify-content:space-between;
+    width:100%;
+    font-size:1.5rem;
+    font-family:'Playfair Display';
+    padding:10px 20px;
+    background-color:#FFF9ED;
+    color:#67001A;
+}
+
+form, .rewards, .deletion {
+    display:flex;
+    flex-direction:column;
+    width:100%;
+    max-width:800px;
+    margin:10px;
+    padding:20px 40px;
+    gap:10px;
+}
+
+form input {
+    border-radius:5px;
+    padding:5px;
+    font-size:1rem;
+    font-family:'Noto Sans Khmer'
+}
+
+.save {
+    margin-top:20px;
+    display:flex;
+    flex-direction:row;
+    justify-content:center;
+}
+
+.save input{
+    background-color:#67001A;
+    color:#F1DF75;
+    font-family:'Playfair Display';
+    font-size:1.2rem;
+    border-radius:15px;
+    min-width:300px;
+    padding-block:1px;
+    padding-inline:40px;
+}
+
+.save input:hover{
+    cursor:pointer;
+    background-color:#60001A;
+}
+
+.sub {
+    background-color:#67001A;
+    color:#F1DF75;
+    font-family:'Playfair Display';
+    font-size:1.2rem;
+    border-radius:15px;
+    padding-block:0px;
+    padding-inline:40px;
+}
+
+
+.ptop {
+    padding-top:0.5rem;
+}
+.pbot {
+    padding-bottom:0.5rem;
+}
+
+.description {
+    display:flex;
+    flex-direction:row;
+    justify-content:space-between;
+}
+
+.description p, .subtext {
+    font-size:1rem;
+    font-family:'Noto Sans Khmer'
+}
+
+.profile, .rewards, .notifications, .privacy, .deletion {
+    display:none;
+}
+
+@media only screen and (max-width:1200px){
+    .content {
+        align-items:center;
+        flex-direction:column;
+    }
+
+    .options {
+        width:70%;
+        max-width:900px;
+    }
+    form, .rewards {
+        width:95%;
+        max-width:850px;
+    }
+}
+
+@media only screen and (max-width:1000px){
+    .content {
+        align-items:center;
+        flex-direction:column;
+    }
+}
+
+@media only screen and (max-width:700px){
+
+    .options {
+        width:80%;
+        max-width:680px;
+    }
+    form, .rewards {
+        width:95%;
+        padding:20px 10px;
+    }
+
+}
+
+@media only screen and (max-width:450px){
+    .delete {
+        flex-direction:column;
+        gap:20px;
+    }
+    .upper {
+        flex-direction:column;
+    }
+
+    .options {
+        width:95%;
+    }
+    form, .rewards {
+        padding:20px 5px;
+        width:90%;
+    }
+
+}

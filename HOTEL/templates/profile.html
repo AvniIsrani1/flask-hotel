@@ -1,0 +1,153 @@
+{% extends 'base.html' %}
+
+{% block title %} Profile {% endblock %}
+
+{% block styles %} 
+<link rel="stylesheet" href="../static/css/profile.css" />
+{% endblock %}
+
+{% block content %}
+
+<div class="content">
+    <div class="options upper">
+        <i class="fa-solid fa-crown"></i>
+        <p class="ocean">My Profile</p>
+    </div>
+    <div class="options upper">
+        <img src="../static/images/ocean.jpg" width="100%" height="400px">
+    </div>
+    <br>
+    <div class="options">
+        <button class="expand" id="about">
+            <p>About Me</p>
+            <i class="fa-solid fa-caret-down"></i>
+        </button>
+        <form method="post" id="profile" class="profile">
+            <input type="text" id="name" name="name" placeholder="Name" required>
+            <input type="text" id="email" name="email" placeholder="Email" disabled>
+            <input type="number" id="phone" name="phone" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" placeholder="Phone Number" inputmode='numeric' required>
+            <input type="text" id="address" name="address" placeholder="Address Line 1" required>
+            <input type="text" id="address2" name="address2" placeholder="Address Line 2 (Optional)">
+            <input type="text" id="city" name="city" placeholder="City" required>
+            <input type="text" id="state" name="state" placeholder="State" required>
+            <input type="number" id="zipcode" name="zipcode" placeholder="Zipcode" required>
+            <div class="save">
+                <input type="submit" class="sub" value="Update Profile">
+            </div>
+        </form>
+        <button class="expand" id="loyalty">
+            <p>Loyalty Program</p>
+            <i class="fa-solid fa-caret-down"></i>
+        </button>  
+        <div class="rewards" id="rewards">
+            <div class="description">
+                <p>Membership Status</p>
+                <p>Bronze</p>
+            </div>
+            <div class="description">
+                <p>Member Since</p>
+                <p>[Date]</p>
+            </div>
+            <br>
+            <br>
+            <div class="description">
+                <p>Rewards Points</p>
+                <p>[Number]</p>
+            </div>
+            <div class="description">
+                <p class="">Next Milestone</p>
+                <p class="">[Rewards Milestone #]</p>
+            </div>
+            <div class="description">
+                <p></p>
+                <p>[Rewards Milestone]</p>
+            </div>
+        </div>
+        <button class="expand" id="notif">
+            <p>Notifications</p>
+            <i class="fa-solid fa-caret-down"></i>
+        </button>  
+        <form method="post" id="notifications" class="notifications">
+            <div class="ptop subtext">
+                <input type="checkbox" id="eremind" name="eremind">
+                <label for="eremind">I want to recieve email reminders of my upcoming bookings.</label>
+            </div>
+            <div class="pbot subtext">
+                <input type="checkbox" id="tremind" name="tremind">
+                <label for="tremind">I want to recieve text reminders of my upcoming bookings.</label>
+            </div>
+            <div class="save">
+                <input type="submit" class="sub" value="Save">
+            </div>
+        </form>    
+        <button class="expand" id="change-pass">
+            <p>Change Password</p>
+            <i class="fa-solid fa-caret-down"></i>
+        </button>
+        <form method="post" id="privacy" class="privacy">
+            <input type="password" id="old_pass" name="old_pass" placeholder="Old Password" required>
+            <input type="password" id="new_pass" name="new_pass" placeholder="New Password" required>
+            <div class="save">
+                <input type="submit" class="sub" value="Update Password">
+            </div>
+        </form>
+        <button class="expand" id="delete-account">
+            <p>Delete Account</p>
+            <i class="fa-solid fa-caret-down"></i>
+        </button>
+        <div class="deletion">
+            <div class="description delete">
+                <div class="">
+                    <p class="">Are you sure you want to delete your account?</p>
+                    <p class="">This action cannot be undone.</p>
+                </div>
+                <button class="sub">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function(){
+        const items = document.querySelectorAll('.expand');
+        items.forEach(item =>{
+            item.addEventListener("click", function(){
+                document.querySelectorAll('.view').forEach(i=>{i.style.borderColor='#c0bfbf';});
+                if(this.id==='about'){
+                    document.querySelectorAll('.profile').forEach(i=>{(i.style.display==='' || i.style.display==='none') ? i.style.display='flex' : i.style.display='none';});
+                    document.querySelectorAll('.rewards').forEach(i=>{i.style.display='none';});
+                    document.querySelectorAll('.notifications').forEach(i=>{i.style.display='none';});
+                    document.querySelectorAll('.privacy').forEach(i=>{i.style.display='none';});
+                    document.querySelectorAll('.deletion').forEach(i=>{i.style.display='none';});
+                } else if(this.id==='loyalty'){
+                    document.querySelectorAll('.profile').forEach(i=>{i.style.display='none';});
+                    document.querySelectorAll('.rewards').forEach(i=>{(i.style.display==='' || i.style.display==='none') ? i.style.display='flex' : i.style.display='none';});
+                    document.querySelectorAll('.notifications').forEach(i=>{i.style.display='none';});
+                    document.querySelectorAll('.privacy').forEach(i=>{i.style.display='none';});
+                    document.querySelectorAll('.deletion').forEach(i=>{i.style.display='none';});
+                } else if(this.id==='notif'){
+                    document.querySelectorAll('.profile').forEach(i=>{i.style.display='none';});
+                    document.querySelectorAll('.rewards').forEach(i=>{i.style.display='none';});
+                    document.querySelectorAll('.notifications').forEach(i=>{(i.style.display==='' || i.style.display==='none') ? i.style.display='flex' : i.style.display='none';});
+                    document.querySelectorAll('.privacy').forEach(i=>{i.style.display='none';});
+                    document.querySelectorAll('.deletion').forEach(i=>{i.style.display='none';});
+                } else if(this.id==='change-pass'){
+                    document.querySelectorAll('.profile').forEach(i=>{i.style.display='none';});
+                    document.querySelectorAll('.rewards').forEach(i=>{i.style.display='none';});
+                    document.querySelectorAll('.notifications').forEach(i=>{i.style.display='none';});
+                    document.querySelectorAll('.privacy').forEach(i=>{(i.style.display==='' || i.style.display==='none') ? i.style.display='flex' : i.style.display='none';});
+                    document.querySelectorAll('.deletion').forEach(i=>{i.style.display='none';});
+                } else if(this.id==='delete-account'){
+                    console.log('deletion');
+                    document.querySelectorAll('.profile').forEach(i=>{i.style.display='none';});
+                    document.querySelectorAll('.rewards').forEach(i=>{i.style.display='none';});
+                    document.querySelectorAll('.notifications').forEach(i=>{i.style.display='none';});
+                    document.querySelectorAll('.privacy').forEach(i=>{i.style.display='none';});
+                    document.querySelectorAll('.deletion').forEach(i=>{(i.style.display==='' || i.style.display==='none') ? i.style.display='flex' : i.style.display='none';});
+                }
+            })
+            
+        })
+    });
+</script>
+{% endblock %}
