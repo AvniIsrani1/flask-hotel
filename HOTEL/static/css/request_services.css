@@ -45,7 +45,7 @@ form input {
 
 .title {
     font-size:2rem;
-    font-family:'Playfair Display';
+    font-family:'Times New Roman', serif;
     margin-bottom:0.5rem;
     text-align: center;
 }
@@ -106,23 +106,26 @@ select {
 
 
 .sub {
-    background-color:#67001A;
+    background-color:#002B5A;
     color:#F1DF75;
-    font-family:'Playfair Display';
+    font-family:'Times New Roman', serif;
     font-size:1.5rem;
     border-radius:15px;
 }
 
 .sub:hover{
     cursor:pointer;
-    background-color:#60001A;
+    background-color:#002B5A;
 }
 
-@media only screen and (max-width:1200px){
+@media only screen and (max-width:1250px){
     .content {
         align-items:center;
         flex-direction:column;
+    }
 
+    .images img {
+        max-width:700px;
     }
 
     .first {

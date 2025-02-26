@@ -4,6 +4,13 @@
     box-sizing:border-box;
 }
 
+/* 
+body {
+    display:flex;
+    flex-direction:column;
+    min-height:100vh;
+} */
+
 a {
     text-decoration:none;
 }
@@ -13,7 +20,7 @@ hr {
 }
 
 header {
-    background-color:#67001A;
+    background-color:#002B5A;
     color:#F1DF75;
     display:flex;
     flex-direction:row;
@@ -23,6 +30,8 @@ header {
     padding-block:1rem;
     transition: padding 1s ease-in-out;
     white-space:nowrap;
+    position:sticky;
+    top:0;
 }
 
 header a {
@@ -34,7 +43,7 @@ header a {
 }
 
 header a:hover {
-    background-color:#60001A;
+    background-color:#001E40;
 }
 
 .logo {
@@ -69,17 +78,18 @@ a p{
 }
 
 /* .main-content {
-    min-height:90vh;
+    min-height:100vh;
 } */
 
 footer {
-    background-color:#67001A;
+    background-color:#002B5A;
     color:#F1DF75;
     display:flex;
     flex-direction:row;
     justify-content:space-between;
     padding-block:1rem;
     padding-inline:18vw;
+    /* flex:1; */
 }
 
 footer a {

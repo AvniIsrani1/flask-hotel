@@ -25,3 +25,7 @@ def my_bookings():
 @app.route("/request-services")
 def request_services():
     return render_template('request_services.html')
+
+@app.route("/search")
+def search():
+    return render_template('search.html')

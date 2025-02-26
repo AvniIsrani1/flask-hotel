@@ -63,4 +63,17 @@
         </div>
     </footer>
 </body>
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function(){
+        const items = document.querySelectorAll('.logo');
+        items.forEach(item =>{
+            item.addEventListener("click", function(){
+                window.location.replace("{{url_for('home')}}")
+            })
+            
+        })
+    });
+</script>
 </html>

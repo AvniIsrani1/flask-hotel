@@ -1,0 +1,107 @@
+{% extends 'base.html' %}
+
+{% block title %} Search {% endblock %}
+
+{% block styles %} 
+<link rel="stylesheet" href="../static/css/search.css" />
+{% endblock %}
+
+{% block content %}
+
+<div class="content">
+    
+
+    <div class="options">
+        <div class="filters">
+            <div class="button-area">
+                <button class="icon" id="icon" onclick="toggle_filters()">
+                    <i class="fa-solid fa-filter"></i>
+                    <p>Filters</p>
+                </button>
+            </div>
+            <form method="post" id="filter-selection">
+                <select name="room_type" id="room_type">
+                    <option value="" selected disabled>Room Type</option>
+                    <option value="standard">Standard</option>
+                    <option value="deluxe">Deluxe</option>
+                    <option value="suite">Suite</option>
+                </select> 
+                <select name="bed_type" id="bed_type">
+                    <option value="" selected disabled>Bed Type</option>
+                    <option value="one">1 Bed</option>
+                    <option value="two">2 Beds</option>
+                </select>   
+                <select name="smoking_preference" id="smoking_preference">
+                    <option value="" selected disabled>Smoking Preference</option>
+                    <option value="one">Smoking</option>
+                    <option value="two">Non-Smoking</option>
+                </select>  
+                <select name="accessibility" id="accessibility">
+                    <option value="" selected disabled>Accessibility Features</option>
+                    <option value="one">Wheelchair</option>
+                </select>  
+                <div class="pricing">
+                    <label for="price-range">Maximum Rate</label>
+                    <input type="range" id="price-range" min="10" max="700" step="1" value="700" oninput="price_update(this.value)">
+                    <p id="price-display">700</p>
+                </div>
+                <div class="buttons">
+                    <button class="sub-sm" type="button" onclick="close_filter()">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                    <input type="submit" class="sub-sm" value="Apply">
+                </div>
+    
+            </form>
+        </div>
+        <br>
+        <div class="search-info">
+            <p>1-40 of 200 hotels</p>
+            <select name="sort-by" id="sort-by">
+                <option value="" selected disabled>Sort By</option>
+                <option value="priceL">Price (Low to High)</option>
+                <option value="priceL">Price (High to Low)</option>
+            </select> 
+        </div>
+        <div class = "item">
+            <img src="../static/images/inside.jpeg">
+            <div class="description">
+                <div class="details">
+                    <p class="title pbot">[Room Overview]</p>
+                    <p class="subtitle ptop">[Room Description]</p>
+                </div>
+                <div class="pricing">
+                    <p>[100] USD / NIGHT</p>
+                    <button class="sub">Book</button>
+                </div>
+            </div>
+        </div>
+        
+    </div> 
+</div>
+
+<script>
+    function close_filter(){
+        document.getElementById("filter-selection").style.display="none";
+    }
+    function price_update(val){
+        document.getElementById("price-display").innerHTML = val;
+    }
+    function toggle_filters() {
+        (document.getElementById("filter-selection").style.display ==='none' || document.getElementById("filter-selection").style.display ==='') ? document.getElementById("filter-selection").style.display = 'flex' : document.getElementById("filter-selection").style.display = 'none';
+    }
+
+    // document.addEventListener("DOMContentLoaded", function(){
+    //     const items = document.querySelectorAll('.expand');
+    //     items.forEach(item =>{
+    //         item.addEventListener("click", function(){
+    //             document.querySelectorAll('.view').forEach(i=>{i.style.borderColor='#c0bfbf';});
+    //             if(this.id==='about'){
+    //                 document.querySelectorAll('.profile').forEach(i=>{(i.style.display==='' || i.style.display==='none') ? i.style.display='flex' : i.style.display='none';});
+    //                 document.querySelectorAll('.rewards').forEach(i=>{i.style.display='none';});
+    //                 document.querySelectorAll('.notifications').forEach(i=>{i.style.display='none';});
+    //                 document.querySelectorAll('.privacy').for
+</script>
+
+
+{% endblock %}
