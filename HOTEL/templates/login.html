@@ -4,8 +4,82 @@
 
 {% block styles %} 
 
+<link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
+    crossorigin="anonymous"
+    referrerpolicy="no-referrer"
+    />
+<link
+    href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400..700&family=Khula:wght@300;400;600;700;800&family=Lusitana:wght@400;700&family=Mrs+Sheppards&family=Noto+Sans+Khmer:wght@100..900&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Tiro+Tamil:ital@0;1&display=swap"
+    rel="stylesheet"
+    />
+<link rel="stylesheet" href="../static/css/login_styles.css"/>
+
 {% endblock %}
 
 {% block content %}
+<div class="container">
+    <!-- Login Box -->
+    <div class="login-box">
+      <h2>Login</h2>
+      <div class="form-container">
+        <!-- Username Field -->
+        <input 
+          type="text" 
+          class="input-field" 
+          placeholder="Username" 
+          required
+        />
+        <!-- -------------------------------------- -->
+        <!-- Password Field with Show/Hide Icon -->
+        <div class="password-container">
+          <input 
+            type="password" 
+            class="input-field" 
+            placeholder="Password" 
+            id="loginPassword"
+            required
+          >
+          <img 
+            src="../static/images/eye-slash.png" 
+            alt="Show/Hide" 
+            class="toggle-password-icon" 
+            data-target="loginPassword"
+          >
+        </div>
 
+        <button class="login-button">Login</button>
+        <a href="#" class="forgot-password">Forgot Password?</a>
+        <a href="../templates/signup.html" class="signup-link">Don't have an account? Sign up</a>
+      </div>
+    </div>
+    <!-- -------------------------------------- -->
+    <!-- Image Section -->
+    <div class="image-container">
+      <img src="../static/images/login_image.jpg" alt="Luxury Hotel View">
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+      const icons = document.querySelectorAll(".toggle-password-icon");
+      
+      icons.forEach(icon => {
+        icon.addEventListener("click", function() {
+          const targetId = this.getAttribute("data-target");
+          const passwordField = document.getElementById(targetId);
+
+          if (passwordField.type === "password") {
+            passwordField.type = "text";
+            this.src = "../static/images/eye.png"; // Switch icon to "slash"
+          } else {
+            passwordField.type = "password";
+            this.src = "../static/images/eye-slash.png";      // Switch icon back to "eye"
+          }
+        });
+      });
+    });
+</script>
 {% endblock %}
