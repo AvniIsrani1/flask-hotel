@@ -20,6 +20,10 @@
 {% endblock %}
 
 {% block content %}
+<div class="background"></div>
+  <div class="background-image">
+    <img src="../static/images/bgimage.jpg" alt="Logo" width="50" height="50" />
+  </div>
 <div class="container">
     <!-- Login Box -->
     <div class="login-box">
@@ -52,7 +56,7 @@
 
         <button class="login-button">Login</button>
         <a href="#" class="forgot-password">Forgot Password?</a>
-        <a href="../templates/signup.html" class="signup-link">Don't have an account? Sign up</a>
+        <a href="{{url_for('sign_up')}}" class="signup-link">Don't have an account? Sign up</a>
       </div>
     </div>
     <!-- -------------------------------------- -->

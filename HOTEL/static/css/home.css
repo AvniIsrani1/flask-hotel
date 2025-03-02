@@ -1,0 +1,589 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap");
+
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+a {
+  text-decoration: none;
+}
+
+hr {
+  display: none;
+}
+.background{
+  background-color: #ffffee;
+
+}
+
+/* Background & Main Content */
+.background-wrapper {
+  background: url("../images/bg.jpg") no-repeat center 500px;
+  background-size: 195%;
+  background-position: center top;
+  min-height: 200vh;
+}
+
+.main-content {
+  min-height: 100vh;
+  padding: 1rem;
+}
+
+/* Box1: Date Pickers, Room Selector, and Price Calculator */
+.box1{
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 1.5rem;
+  width: 90%;
+  max-width: 1200px;
+  margin: 40px auto 30px;
+  background-color: #002c5a74;
+  border-radius: 50px;
+  font-family: "Noto Sans Khmer", sans-serif;
+}
+
+/* Date Picker Inputs */
+.date-input,
+.date-input-end {
+  padding: 10px;
+  font-family: "Noto Sans Khmer", sans-serif;
+  font-weight: 600;
+  text-align: center;
+  width: 220px;
+  font-size: 1rem;
+  border-radius: 50px;
+  border: 1px solid #eee;
+}
+
+/* Date Picker Containers */
+.datepick-container,
+.datepick-container-end {
+  position: relative;
+}
+
+/* Date Picker Pop-ups */
+.datepick,
+.datepick-end {
+  position: absolute;
+  top: 100%;
+  z-index: 100;
+  margin-top: 1rem;
+  background: white;
+  padding: 15px;
+  border-radius: 20px;
+  box-shadow: 10px 10px 10px rgba(0, 0, 0, 0.2);
+  border: 1px solid #000;
+}
+
+/* Common Date Picker Elements */
+.datepick-header,
+.datepick-header-end {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #000;
+}
+
+.datepick-header select,
+.datepick-header-end select,
+.datepick-header input,
+.datepick-header-end input {
+  font-size: 16px;
+  text-align: center;
+  border-radius: 9px;
+  border: 1px solid #000;
+}
+
+.datepick-header input,
+.datepick-header-end input {
+  max-width: 69px;
+}
+
+.datepick-header button,
+.datepick-header-end button {
+  color: slategray;
+  background: transparent;
+  border: none;
+  border-radius: 3px;
+  font-size: 14px;
+  font-weight: 500;
+  text-transform: uppercase;
+  transition: 0.3s;
+}
+
+.datepick-header button:hover,
+.datepick-header-end button:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #000;
+  border-radius: 15%;
+}
+
+.days,
+.days-end,
+.date,
+.date-end {
+  display: grid;
+  grid-template-columns: repeat(7, 32px);
+  gap: 10px;
+  margin: 15px 0;
+}
+
+.days span,
+.days-end span {
+  font-family: "Noto Sans Khmer", sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: uppercase;
+  text-align: center;
+}
+
+.date button,
+.date-end button {
+  color: slategray;
+  margin-bottom: 10px;
+  aspect-ratio: 1;
+  border-radius: 5px;
+  border: 0;
+}
+
+.date button:disabled,
+.date-end button:disabled {
+  opacity: 0.5;
+  pointer-events: none;
+  user-select: none;
+}
+
+.date button:hover,
+.date-end button:hover {
+  background-color: rgba(119, 136, 153, 0.1);
+  color: #000;
+  border-radius: 15%;
+}
+
+.date button.today,
+.date-end button.today {
+  background: #002c5a2c;
+  color: #002b5a;
+  border: 1px solid #002b5a;
+}
+
+.date button.selected,
+.date-end button.selected {
+  background: #002b5a;
+  color: #fff;
+}
+
+.datepick-footer,
+.datepick-footer-end {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  padding-top: 10px;
+  border-top: 1px solid #000;
+}
+
+.datepick-footer button,
+.datepick-footer-end button {
+  padding: 5px 10px;
+  font-size: 14px;
+  border-radius: 15px;
+  background: #002c5a2c;
+  color: #000;
+}
+
+.datepick-footer button.apply,
+.datepick-footer-end button.apply-end {
+  background: #002b5a;
+  color: #fff;
+}
+
+/* Room Selector */
+.room-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5px;
+  font-family: "Noto Sans Khmer", sans-serif;
+  font-weight: 100;
+  text-align: center;
+  width: 200px;
+  border-radius: 50px;
+  gap: 6px;
+  margin: 19px;
+  background-color: #fff;
+  border: 1px solid #fff;
+  box-shadow: 10px 10px 10px rgba(0, 0, 0, 0.2);
+}
+
+.room-container select {
+  padding: 5px;
+  border-radius: 50px;
+  border: 1px solid #fff;
+  font-size: 16px;
+  font-family: "Noto Sans Khmer", sans-serif;
+  font-weight: 600;
+  text-align: center;
+  color: #002b5a;
+}
+
+/* Price Calculator */
+.price-calc {
+  display: flex;
+  padding: 9px;
+  font-family: "Noto Sans Khmer", sans-serif;
+  font-weight: 500;
+  text-align: center;
+  width: 300px;
+  border-radius: 50px;
+  gap: 6px;
+  margin-right: 20px;
+  align-items: center;
+  background-color: #fff;
+  border: 1px solid #eee;
+  box-shadow: 10px 10px 10px rgba(0, 0, 0, 0.2);
+}
+
+.price-calc p {
+  font-size: 16px;
+  margin-left: 1.5rem;
+  margin-top: 0px;
+  text-align: center;
+  color: lightslategray;
+}
+
+/* Hero Section */
+.hero-box {
+  position: relative;
+  width: 90%;
+  max-width: 1200px;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  background-color: #002b5a;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+.hero-text {
+  flex: 1;
+  padding: 40px;
+  z-index: 3;
+  min-width: 280px;
+}
+
+.hero-text h1 {
+  font-family: "Times New Roman", serif;
+  font-size: 5.2rem;
+  width: 600px;
+  max-height: 170px;
+  text-align: center;
+  margin: 0.2rem 0;
+  color: #add8e6;
+}
+
+.hero-text p {
+  font-size: 1.61rem;
+  margin: 2rem 0 1.5rem;
+  line-height: 1.5;
+  text-align: center;
+  color: lightgoldenrodyellow;
+}
+
+.hero-image {
+  position: relative;
+  flex: 1;
+  min-width: 280px;
+  overflow: hidden;
+}
+
+.hero-image img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.hero-fade {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  background: linear-gradient(to left, rgba(255, 255, 255, 0) 50%, #002b5a 100%);
+}
+
+/* Box2 Section */
+.box2 {
+  display: flex;
+  flex-wrap: wrap;
+  width: 90%;
+  max-width: 1200px;
+  margin: 0;
+  background-color: #002b5a;
+  border-radius: 20px;
+}
+
+.box2-image {
+  flex: 1;
+  min-width: 280px;
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.box2-image img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.box2-text {
+  flex: 1;
+  padding: 40px;
+  z-index: 3;
+  min-width: 280px;
+  color: lightgoldenrodyellow;
+}
+
+.box2-text p {
+  font-size: 1.61rem;
+  margin: 1.5rem 0 0;
+  line-height: 1.6;
+  text-align: center;
+}
+
+/* Box3 Section */
+.box3 {
+  display: flex;
+  flex-direction: column;
+  width: 90%;
+  max-width: 1200px;
+  margin: 0;
+  background-color: #002b5a;
+  border-radius: 20px;
+}
+
+.box3text {
+  flex: 1;
+  padding: 40px;
+  z-index: 3;
+  max-width: 1500px;
+  color: lightgoldenrodyellow;
+}
+
+.box3text h1 {
+  font-family: "Times New Roman", serif;
+  font-size: 4.8rem;
+  text-align: center;
+  margin: 0.2rem 0;
+  color: lightblue;
+}
+
+.box3text p {
+  font-size: 1.61rem;
+  margin: 1.5rem 0 0;
+  line-height: 1.6;
+  text-align: center;
+}
+
+/* Parent Container for Uniform Spacing */
+.boxes-container {
+  display: flex;
+  flex-direction: column;
+  gap: 80px;
+  align-items: center;
+  margin: 80px auto;
+}
+
+/* Box4: Image + Feature Cards */
+.box4 {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 2rem;
+  margin: 0 auto;
+}
+
+.box4-image img {
+  display: block;
+  max-width: 90%;
+  width: 305px;
+  border-radius: 35px;
+  height: 420px;
+}
+
+.feature-cards {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 63px;
+  margin: 0;
+}
+
+.feature-card {
+  background-color: #002b5a;
+  color: #ffffff;
+  border-radius: 35px;
+  padding: 70px;
+  max-width: 260px;
+  flex: 1 1 200px;
+  text-align: center;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.feature-card h3 {
+  margin: 0.1rem 0;
+  font-size: 1.3rem;
+  text-decoration: underline;
+  color: #add8e6;
+}
+
+.feature-card p {
+  font-size: 1.1rem;
+  line-height: 1.4;
+  color: lightgoldenrodyellow;
+}
+
+/* Box5 Section */
+.box5-box {
+  position: relative;
+  width: 90%;
+  max-width: 1200px;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  background-color: #002b5a;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+.box5-text {
+  flex: 1;
+  padding: 10px;
+  margin-top: 30px;
+  margin-right: 40px;
+  min-width: 280px;
+  text-align: center; /* Ensures the button is centered as well */
+}
+
+.box5-text h1 {
+  font-family: "Times New Roman", serif;
+  font-size: 5rem;
+  width: 580px;
+  max-height: 170px;
+  text-align: center;
+  margin: 0.2rem 0;
+  color: #add8e6;
+}
+
+.box5-text p {
+  font-size: 1.5rem;
+  margin-top: 8rem;
+  line-height: 1.5;
+  text-align: center;
+  color: lightgoldenrodyellow;
+}
+
+.box5-image {
+  position: relative;
+  flex: 1;
+  min-width: 280px;
+  overflow: hidden;
+}
+
+.box5-image img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.box5-fade {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  background: linear-gradient(to right, rgba(255, 255, 255, 0) 50%, #002b5a 100%);
+}
+
+/* NEW: Rooms Button Styling */
+.rooms-btn {
+  display: inline-block;
+  margin: 3%;
+  padding: 0.8rem 2rem;
+  background-color: #fff;
+  color: #002b5a;
+  border-radius: 30px;
+  text-decoration: none;
+  font-size: 1.3rem;
+  font-weight: 600;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  transition: background-color 0.3s ease, color 0.3s ease;
+  cursor: pointer;
+}
+
+.rooms-btn:hover {
+  background-color: #f1df75;
+  color: #002b5a;
+}
+
+/* --- Responsive Adjustments --- */
+@media only screen and (max-width: auto) {
+  header,
+  footer {
+    padding: 1rem 5vw;
+  }
+  nav a p {
+    display: none;
+  }
+}
+
+@media only screen and (max-width: auto) {
+  .box1,
+  .hero-box,
+  .box2 {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .hero-text,
+  .hero-image,
+  .box2-text,
+  .box2-image {
+    width: 100%;
+    padding: 20px;
+  }
+
+  .price-calc {
+    width: 90%;
+    margin: 0.5rem auto;
+  }
+}
+
+@media only screen and (max-width: auto) {
+  .hero-text h1 {
+    font-size: 2.8rem;
+  }
+
+  .hero-text p {
+    font-size: 1.2rem;
+  }
+
+  .price-calc p {
+    font-size: 16px;
+  }
+
+  .room-container {
+    width: 80%;
+  }
+}
