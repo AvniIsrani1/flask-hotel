@@ -126,6 +126,10 @@ def request_services():
         return redirect(url_for("log_in"))
     return render_template('request_services.html')
 
+@app.route("/bookings")
+def bookings():
+    return render_template('bookings.html')
+
 @app.route("/search")
 def search():
     return render_template('search.html')
