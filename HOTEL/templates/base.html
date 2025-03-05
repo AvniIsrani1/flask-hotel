@@ -20,7 +20,7 @@
       </a>
     </div>
     <nav>
-      <a href=""><i class="fa-solid fa-hotel"></i><p>Reserve</p></a>
+      <a href="{{url_for('search')}}"><i class="fa-solid fa-hotel"></i><p>Reserve</p></a>
       <a href=""><i class="fa-solid fa-bell-concierge"></i><p>Amenities</p></a>
       <a href=""><i class="fa-regular fa-calendar-days"></i><p>Events</p></a>
       <a href=""><i class="fa-solid fa-utensils"></i><p>Dining</p></a>
@@ -58,11 +58,11 @@
       <div class="inner">
         <a href="{{ url_for('home') }}" class="indent">Home</a>
         <a href="" class="indent">About Us</a>
-        <a href="" class="indent">Reserve</a>
+        <a href="{{url_for('search')}}" class="indent">Reserve</a>
         <a href="" class="indent">Amenities</a>
         <a href="" class="indent">Events</a>
         <a href="" class="indent">Dining</a>
-        <a href="" class="indent">FAQs</a>
+        <a href="{{url_for('faq')}}" class="indent">FAQs</a>
         <a href="" class="indent">Contact Us</a>
       </div>
     </div>
@@ -79,7 +79,7 @@
 
   <script>
     document.addEventListener("DOMContentLoaded", function(){
-      const items = document.querySelectorAll('.logo');
+      const items = document.querySelectorAll('.logo','.logo-format');
       items.forEach(item => {
         item.addEventListener("click", function(){
           window.location.replace("{{ url_for('home') }}")
