@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+
+{% block title %} FAQs {% endblock %}
+
+{% block styles %} 
+<link rel="stylesheet" href="../static/css/faq.css" />
+{% endblock %}
+
+{% block content %}
+
+<!-- this page will be dynamic -->
+
+<div class="content">
+    <div class="title upper" style="text-align:center;">
+        <p>Frequently Asked Questions (FAQs)</p>
+    </div>
+    <br>
+    <!-- <div class="title upper">
+        <img src="../static/images/ocean.jpg" alt="profile image" width="100%" height="400px">
+    </div> -->
+    <br>
+    <div class="title">  
+
+        <button class="expand" id="question_num"> 
+            <!-- change id of button to id in database for faq -->
+            <p>Question #1</p>
+            <i class="fa-solid fa-caret-down"></i>
+        </button>
+        <div class="answer_num">
+            <div class="description delete">
+                <div class="">
+                    <p style="overflow-wrap:break-word;">
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function(){
+        const items = document.querySelectorAll('.expand');
+        items.forEach(item =>{
+            item.addEventListener("click", function(){
+                document.querySelectorAll('.view').forEach(i=>{i.style.borderColor='#c0bfbf';});
+                if(this.id==='question_num'){
+                    document.querySelectorAll('.answer_num').forEach(i=>{(i.style.display==='' || i.style.display==='none') ? i.style.display='flex' : i.style.display='none';});
+                }
+            })
+            
+        })
+    });
+</script>
+{% endblock %}
