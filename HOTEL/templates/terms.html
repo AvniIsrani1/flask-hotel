@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+
+{% block title %} Terms & Conditions {% endblock %}
+
+{% block styles %} 
+<link rel="stylesheet" href="{{ url_for('static', filename='css/terms.css') }}"/>
+<link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
+    crossorigin="anonymous"
+    referrerpolicy="no-referrer"
+/>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+  href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400..700&family=Khula:wght@300;400;600;700;800&family=Lusitana:wght@400;700&family=Mrs+Sheppards&family=Noto+Sans+Khmer:wght@100..900&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Tiro+Tamil:ital@0;1&display=swap"
+  rel="stylesheet"
+/>
+{% endblock %}
+
+{% block content %}
+
+<div class="terms-container">
+    <h1>Terms and Conditions</h1>
+    
+    <div class="terms-section">
+        <h2>1. Introduction</h2>
+        <p>Welcome to Ocean Vista. These Terms and Conditions govern your use of our website and services, including the booking and reservation of hotel accommodations. By accessing or using our services, you agree to be bound by these Terms and Conditions.</p>
+    </div>
+    
+    <div class="terms-section">
+        <h2>2. Definitions</h2>
+        <p>"Hotel" refers to Ocean Vista, its owners, operators, and affiliates.</p>
+        <p>"Guest" or "User" refers to any individual who makes a reservation or uses our services.</p>
+        <p>"Booking" refers to the reservation of accommodations at our hotel.</p>
+    </div>
+    
+    <div class="terms-section">
+        <h2>3. Reservations and Bookings</h2>
+        <p>All reservations are subject to availability and confirmation by the Hotel.</p>
+        <p>To make a reservation, guests must provide accurate and complete information including valid contact details.</p>
+        <p>The Hotel reserves the right to refuse or cancel any reservation at its discretion.</p>
+    </div>
+    
+    <div class="terms-section">
+        <h2>4. Payment Terms</h2>
+        <p>Rates are quoted in USD and are subject to applicable taxes and fees.</p>
+        <p>Full or partial payment may be required at the time of booking, depending on the reservation type.</p>
+        <p>Accepted payment methods include major credit cards, debit cards, and other methods as specified by the Hotel.</p>
+    </div>
+    
+    <div class="terms-section">
+        <h2>5. Cancellation Policy</h2>
+        <p>Cancellation policies vary based on the type of reservation, season, and other factors.</p>
+        <p>For standard bookings, cancellations made at least 48 hours prior to the check-in date will receive a full refund.</p>
+        <p>Cancellations made less than 48 hours before check-in may be subject to a penalty equal to one night's stay.</p>
+        <p>No-shows will be charged the full amount of the reservation.</p>
+    </div>
+    
+    <div class="terms-section">
+        <h2>6. Check-in and Check-out</h2>
+        <p>Check-in time is 3:00 PM and check-out time is 11:00 AM.</p>
+        <p>Early check-in and late check-out are subject to availability and may incur additional charges.</p>
+        <p>Guests must present a valid government-issued ID and credit card at check-in.</p>
+    </div>
+    
+    <div class="terms-section">
+        <h2>7. Hotel Rules and Regulations</h2>
+        <p>Guests are expected to comply with all hotel rules and regulations during their stay.</p>
+        <p>The Hotel reserves the right to refuse service or evict guests who violate hotel policies or engage in disruptive behavior.</p>
+        <p>Smoking is prohibited in all indoor areas. Violation may result in additional cleaning fees.</p>
+    </div>
+    
+    <div class="terms-section">
+        <h2>8. Liability and Indemnification</h2>
+        <p>The Hotel is not liable for any loss, damage, or injury to guests or their property, except in cases of negligence by the Hotel.</p>
+        <p>Guests agree to indemnify and hold harmless the Hotel from any claims, damages, or expenses arising from their stay or violation of these terms.</p>
+    </div>
+    
+    <div class="terms-section">
+        <h2>9. Privacy Policy</h2>
+        <p>The Hotel collects and processes personal information in accordance with its Privacy Policy.</p>
+        <p>By using our services, guests consent to the collection and processing of their personal information as described in the Privacy Policy.</p>
+    </div>
+    
+    <div class="terms-section">
+        <h2>10. Modifications to Terms and Conditions</h2>
+        <p>The Hotel reserves the right to modify these Terms and Conditions at any time without prior notice.</p>
+        <p>The current version of these Terms and Conditions will be posted on our website.</p>
+    </div>
+    
+    <div class="terms-section">
+        <h2>11. Governing Law</h2>
+        <p>These Terms and Conditions shall be governed by and construed in accordance with the laws of the jurisdiction where the Hotel is located.</p>
+        <p>Any disputes arising from these Terms and Conditions shall be subject to the exclusive jurisdiction of the courts in that jurisdiction.</p>
+    </div>
+    
+    <div class="terms-section">
+        <h2>12. Contact Information</h2>
+        <p>For questions or concerns regarding these Terms and Conditions, please contact us at:</p>
+        <p>Ocean Vista<br>
+        Email: oceanvista@gmail.com<br>
+        Phone: 818-000-0000</p>
+    </div>
+    
+    <div class="terms-footer">
+        <p>Last Updated: March 04, 2025</p>
+    </div>
+</div>
+
+{% endblock %}

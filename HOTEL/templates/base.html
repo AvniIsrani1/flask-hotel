@@ -1,81 +1,87 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}{% endblock %} | Ocean Vista</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400..700&family=Khula:wght@300;400;600;700;800&family=Lusitana:wght@400;700&family=Mrs+Sheppards&family=Noto+Sans+Khmer:wght@100..900&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Tiro+Tamil:ital@0;1&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../static/css/base.css" />
-
-    {% block styles %} {% endblock %}
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}{% endblock %} | Ocean Vista</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+  {% block styles %}{% endblock %}
 </head>
 <body>
-    <header>
-        <div class="logo">
-            <a href="{{url_for('home')}}"><img src="../static/images/logo2.png" alt="" width="50" height="50"> 
-                <p>Ocean Vista</p>
-            </a>
-           
-        </div>   
-        <nav>
-            <a href=""><i class="fa-solid fa-hotel"></i><p>Reserve</p></a>
-            <a href=""><i class="fa-solid fa-bell-concierge"></i><p>Amenities</p></a>
-            <a href=""><i class="fa-regular fa-calendar-days"></i><p>Events</p></a>
-            <a href=""><i class="fa-solid fa-utensils"></i><p>Dining</p></a>
-            <a href="{{url_for('log_in')}}"><i class="fa-solid fa-user"></i><p>Sign-In</p></a>
-        </nav>
-    </header>
+  <header>
+    <div class="logo">
+      <a href="{{ url_for('home') }}">
+        <img src="{{ url_for('static', filename='images/logo2.png') }}" alt="Ocean Vista" width="50" height="50">
+        <p>Ocean Vista</p>
+      </a>
+    </div>
+    <nav>
+      <a href=""><i class="fa-solid fa-hotel"></i><p>Reserve</p></a>
+      <a href=""><i class="fa-solid fa-bell-concierge"></i><p>Amenities</p></a>
+      <a href=""><i class="fa-regular fa-calendar-days"></i><p>Events</p></a>
+      <a href=""><i class="fa-solid fa-utensils"></i><p>Dining</p></a>
+      {% if session.get('user_name') %}
+        <a href="{{ url_for('profile') }}">
+          <i class="fa-solid fa-user"></i>
+          <p>{{ session['user_name'] }}</p>
+        </a>
+        <a href="{{ url_for('logout') }}">
+          <i class="fa-solid fa-right-from-bracket"></i>
+          <p>Logout</p>
+        </a>
+      {% else %}
+        <a href="{{ url_for('log_in') }}">
+          <i class="fa-solid fa-user"></i>
+          <p>Sign-In</p>
+        </a>
+      {% endif %}
+    </nav>
+  </header>
 
-    <section class="main-content">
-        {% block content %}{% endblock %}
-    </section>
+  <section class="main-content">
+    {% block content %}{% endblock %}
+  </section>
 
-    <footer>
-        <div class="logo-format">
-            <img src="../static/images/logo2.png" alt="" width="80" height="80">
-            <p class="ocean">Ocean</p>
-            <p class="vista">— Vista —</p>
-        </div>
-        <hr>
-        <div class="quick-links">
-            <p>QUICK LINKS</p>
-            <div class="inner">
-                <a href="{{url_for('home')}}" class="indent">Home</a>
-                <a href="" class="indent">About Us</a>
-                <a href="" class="indent">Reserve</a>
-                <a href="" class="indent">Amenties</a>
-                <a href="" class="indent">Events</a>
-                <a href="" class="indent">Dining</a>
-                <a href="" class="indent">FAQs</a>
-                <a href="" class="indent">Contact Us</a>
-            </div>
-        </div>
-        <hr>
-        <div class="contact-info">
-            <p>CONTACT INFO</p>
-            <a href="mailto:oceanvista@gmail.com"><i class="fa-solid fa-envelope"></i><p>oceanvista@gmail.com</p></a>
-            <a href="tel:818-000-0000"><i class="fa-solid fa-phone"></i><p>Call 818-000-0000</p></a>
-            <br>
-            <a href="" class="indent">Terms & Conditions</a>
-            <a href="" class="indent">Privacy Policy</p></a>
+  <footer>
+    <div class="logo-format">
+      <img src="{{ url_for('static', filename='images/logo2.png') }}" alt="Ocean Vista" width="80" height="80">
+      <p class="ocean">Ocean</p>
+      <p class="vista">— Vista —</p>
+    </div>
+    <hr>
+    <div class="quick-links">
+      <p>QUICK LINKS</p>
+      <div class="inner">
+        <a href="{{ url_for('home') }}" class="indent">Home</a>
+        <a href="" class="indent">About Us</a>
+        <a href="" class="indent">Reserve</a>
+        <a href="" class="indent">Amenities</a>
+        <a href="" class="indent">Events</a>
+        <a href="" class="indent">Dining</a>
+        <a href="" class="indent">FAQs</a>
+        <a href="" class="indent">Contact Us</a>
+      </div>
+    </div>
+    <hr>
+    <div class="contact-info">
+      <p>CONTACT INFO</p>
+      <a href="mailto:oceanvista@gmail.com"><i class="fa-solid fa-envelope"></i><p>oceanvista@gmail.com</p></a>
+      <a href="tel:818-000-0000"><i class="fa-solid fa-phone"></i><p>Call 818-000-0000</p></a>
+      <br>
+      <a href="{{ url_for('terms') }}" class="indent">Terms & Conditions</a>
+      <a href="{{ url_for('terms') }}" class="indent">Privacy Policy</a>
+    </div>
+  </footer>
 
-        </div>
-    </footer>
-</body>
-
-
-<script>
+  <script>
     document.addEventListener("DOMContentLoaded", function(){
-        const items = document.querySelectorAll('.logo');
-        items.forEach(item =>{
-            item.addEventListener("click", function(){
-                window.location.replace("{{url_for('home')}}")
-            })
-            
+      const items = document.querySelectorAll('.logo');
+      items.forEach(item => {
+        item.addEventListener("click", function(){
+          window.location.replace("{{ url_for('home') }}")
         })
+      })
     });
-</script>
+  </script>
+</body>
 </html>

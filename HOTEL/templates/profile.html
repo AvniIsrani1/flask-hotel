@@ -3,18 +3,42 @@
 {% block title %} Profile {% endblock %}
 
 {% block styles %} 
-<link rel="stylesheet" href="../static/css/profile.css" />
+<link rel="stylesheet" href="{{ url_for('static', filename='css/profile.css') }}" />
+<link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
+    crossorigin="anonymous"
+    referrerpolicy="no-referrer"
+/>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+  href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400..700&family=Khula:wght@300;400;600;700;800&family=Lusitana:wght@400;700&family=Mrs+Sheppards&family=Noto+Sans+Khmer:wght@100..900&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Tiro+Tamil:ital@0;1&display=swap"
+  rel="stylesheet"
+/>
 {% endblock %}
 
 {% block content %}
 
+<!-- Flash Message Display -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    {% for category, message in messages %}
+      <div class="flash-message {{ category }}">
+        {{ message }}
+      </div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
+
 <div class="content">
     <div class="options upper">
         <i class="fa-solid fa-crown"></i>
-        <p class="ocean">My Profile</p>
+        <p class="ocean">{{ user.name }}'s Profile</p>
     </div>
     <div class="options upper">
-        <img src="../static/images/ocean.jpg" alt="profile image" width="100%" height="400px">
+        <img src="{{ url_for('static', filename='images/ocean.jpg') }}" alt="profile image" width="100%" height="400px">
     </div>
     <br>
     <div class="options">
@@ -22,9 +46,9 @@
             <p>About Me</p>
             <i class="fa-solid fa-caret-down"></i>
         </button>
-        <form method="post" id="profile" class="profile">
-            <input type="text" id="name" name="name" placeholder="Name" required>
-            <input type="text" id="email" name="email" placeholder="Email" disabled>
+        <form method="post" action="{{ url_for('profile') }}" id="profile" class="profile">
+            <input type="text" id="name" name="name" placeholder="Name" value="{{ user.name }}" required>
+            <input type="text" id="email" name="email" placeholder="Email" value="{{ user.email }}" disabled>
             <input type="number" id="phone" name="phone" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" placeholder="Phone Number" inputmode='numeric' required>
             <input type="text" id="address" name="address" placeholder="Address Line 1" required>
             <input type="text" id="address2" name="address2" placeholder="Address Line 2 (Optional)">
@@ -46,21 +70,21 @@
             </div>
             <div class="description">
                 <p>Member Since</p>
-                <p>[Date]</p>
+                <p>{{ user.id|string }}</p>
             </div>
             <br>
             <br>
             <div class="description">
                 <p>Rewards Points</p>
-                <p>[Number]</p>
+                <p>0</p>
             </div>
             <div class="description">
                 <p class="">Next Milestone</p>
-                <p class="">[Rewards Milestone #]</p>
+                <p class="">100 Points</p>
             </div>
             <div class="description">
                 <p></p>
-                <p>[Rewards Milestone]</p>
+                <p>Free Night Stay</p>
             </div>
         </div>
         <button class="expand" id="notif">
@@ -70,11 +94,11 @@
         <form method="post" id="notifications" class="notifications">
             <div class="ptop subtext">
                 <input type="checkbox" id="eremind" name="eremind">
-                <label for="eremind">I want to recieve email reminders of my upcoming bookings.</label>
+                <label for="eremind">I want to receive email reminders of my upcoming bookings.</label>
             </div>
             <div class="pbot subtext">
                 <input type="checkbox" id="tremind" name="tremind">
-                <label for="tremind">I want to recieve text reminders of my upcoming bookings.</label>
+                <label for="tremind">I want to receive text reminders of my upcoming bookings.</label>
             </div>
             <div class="save">
                 <input type="submit" class="sub" value="Save">
@@ -84,7 +108,8 @@
             <p>Change Password</p>
             <i class="fa-solid fa-caret-down"></i>
         </button>
-        <form method="post" id="privacy" class="privacy">
+        <form method="post" action="{{ url_for('profile') }}" id="privacy" class="privacy">
+            <input type="hidden" name="form_type" value="password_change">
             <input type="password" id="old_pass" name="old_pass" placeholder="Old Password" required>
             <input type="password" id="new_pass" name="new_pass" placeholder="New Password" required>
             <div class="save">
@@ -101,7 +126,10 @@
                     <p class="">Are you sure you want to delete your account?</p>
                     <p class="">This action cannot be undone.</p>
                 </div>
-                <button class="sub">Delete</button>
+                <form method="post" action="{{ url_for('profile') }}">
+                    <input type="hidden" name="form_type" value="account_deletion">
+                    <button type="submit" class="sub">Delete</button>
+                </form>
             </div>
         </div>
     </div>
@@ -146,8 +174,28 @@
                     document.querySelectorAll('.deletion').forEach(i=>{(i.style.display==='' || i.style.display==='none') ? i.style.display='flex' : i.style.display='none';});
                 }
             })
-            
         })
     });
 </script>
+
+<style>
+.flash-message {
+  padding: 10px;
+  margin: 10px auto;
+  border-radius: 5px;
+  text-align: center;
+  width: 80%;
+  max-width: 800px;
+}
+.success {
+  background-color: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+.error {
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+</style>
 {% endblock %}

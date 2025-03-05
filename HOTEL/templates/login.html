@@ -3,66 +3,80 @@
 {% block title %} Login {% endblock %}
 
 {% block styles %} 
-
 <link
     rel="stylesheet"
     href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
     integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
     crossorigin="anonymous"
     referrerpolicy="no-referrer"
-    />
+/>
 <link
     href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400..700&family=Khula:wght@300;400;600;700;800&family=Lusitana:wght@400;700&family=Mrs+Sheppards&family=Noto+Sans+Khmer:wght@100..900&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Tiro+Tamil:ital@0;1&display=swap"
     rel="stylesheet"
-    />
-<link rel="stylesheet" href="../static/css/login_styles.css"/>
-
+/>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/login_styles.css') }}"/>
 {% endblock %}
 
 {% block content %}
 <div class="background"></div>
-  <div class="background-image">
-    <img src="../static/images/bgimage.jpg" alt="Logo" width="50" height="50" />
-  </div>
+<div class="background-image">
+  <img src="{{ url_for('static', filename='images/bgimage.jpg') }}" alt="Logo" width="50" height="50" />
+</div>
+
+<!-- Flash Message Display -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    {% for category, message in messages %}
+      <div class="flash-message {{ category }}">
+        {{ message }}
+      </div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
+
 <div class="container">
     <!-- Login Box -->
     <div class="login-box">
       <h2>Login</h2>
       <div class="form-container">
-        <!-- Username Field -->
-        <input 
-          type="text" 
-          class="input-field" 
-          placeholder="Username" 
-          required
-        />
-        <!-- -------------------------------------- -->
-        <!-- Password Field with Show/Hide Icon -->
-        <div class="password-container">
+        <form method="POST" action="{{ url_for('log_in') }}">
+          <!-- Email Field -->
           <input 
-            type="password" 
+            type="email" 
             class="input-field" 
-            placeholder="Password" 
-            id="loginPassword"
+            name="email"
+            placeholder="Email" 
             required
-          >
-          <img 
-            src="../static/images/eye-slash.png" 
-            alt="Show/Hide" 
-            class="toggle-password-icon" 
-            data-target="loginPassword"
-          >
-        </div>
+          />
+          <!-- -------------------------------------- -->
+          <!-- Password Field with Show/Hide Icon -->
+          <div class="password-container">
+            <input 
+              type="password" 
+              class="input-field" 
+              name="password"
+              placeholder="Password" 
+              id="loginPassword"
+              required
+            >
+            <img 
+              src="{{ url_for('static', filename='images/eye-slash.png') }}" 
+              alt="Show/Hide" 
+              class="toggle-password-icon" 
+              data-target="loginPassword"
+            >
+          </div>
 
-        <button class="login-button">Login</button>
+          <button type="submit" class="login-button">Login</button>
+        </form>
         <a href="#" class="forgot-password">Forgot Password?</a>
-        <a href="{{url_for('sign_up')}}" class="signup-link">Don't have an account? Sign up</a>
+        <a href="{{ url_for('sign_up') }}" class="signup-link">Don't have an account? Sign up</a>
       </div>
     </div>
     <!-- -------------------------------------- -->
     <!-- Image Section -->
     <div class="image-container">
-      <img src="../static/images/login_image.jpg" alt="Luxury Hotel View">
+      <img src="{{ url_for('static', filename='images/login_image.jpg') }}" alt="Luxury Hotel View">
     </div>
 </div>
 
@@ -77,13 +91,34 @@
 
           if (passwordField.type === "password") {
             passwordField.type = "text";
-            this.src = "../static/images/eye.png"; // Switch icon to "slash"
+            this.src = "{{ url_for('static', filename='images/eye.png') }}"; // Switch icon to "slash"
           } else {
             passwordField.type = "password";
-            this.src = "../static/images/eye-slash.png";      // Switch icon back to "eye"
+            this.src = "{{ url_for('static', filename='images/eye-slash.png') }}";      // Switch icon back to "eye"
           }
         });
       });
     });
 </script>
+
+<style>
+.flash-message {
+  padding: 10px;
+  margin: 10px auto;
+  border-radius: 5px;
+  text-align: center;
+  width: 80%;
+  max-width: 800px;
+}
+.success {
+  background-color: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+.error {
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+</style>
 {% endblock %}

@@ -3,7 +3,7 @@
 {% block title %} Signup {% endblock %}
 
 {% block styles %} 
-<link rel="stylesheet" href="../static/css/signup_styles.css">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/signup_styles.css') }}">
 <link
     rel="stylesheet"
     href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
@@ -11,96 +11,115 @@
     crossorigin="anonymous"
     referrerpolicy="no-referrer"
 />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link
-    href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400..700&family=Khula:wght@300;400;600;700;800&family=Lusitana:wght@400;700&family=Mrs+Sheppards&family=Noto+Sans+Khmer:wght@100..900&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Tiro+Tamil:ital@0;1&display=swap"
-    rel="stylesheet"
+  href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400..700&family=Khula:wght@300;400;600;700;800&family=Lusitana:wght@400;700&family=Mrs+Sheppards&family=Noto+Sans+Khmer:wght@100..900&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Tiro+Tamil:ital@0;1&display=swap"
+  rel="stylesheet"
 />
 {% endblock %}
 
 {% block content %}
 <div class="background"></div>
-  <div class="background-image">
-    <img src="../static/images/bgimage.jpg" alt="Logo" width="50" height="50" />
-  </div>
+<div class="background-image">
+  <img src="{{ url_for('static', filename='images/bgimage.jpg') }}" alt="Logo" width="50" height="50" />
+</div>
+
+<!-- Flash Message Display -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    {% for category, message in messages %}
+      <div class="flash-message {{ category }}">
+        {{ message }}
+      </div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
 
 <div class="container">
-    
     <!-- Image Section (Left) -->
     <div class="image-container">
-      <img src="../static/images/hotel.png" alt="Luxury Hotel View">
+      <img src="{{ url_for('static', filename='images/hotel.png') }}" alt="Luxury Hotel View">
     </div>
 
     <!-- Sign-Up Box (Right) -->
     <div class="signup-box">
       <h2>Sign Up</h2>
       <div class="form-container">
-        
-        <input type="text" class="input-field" placeholder="Name" required>
-        <input type="email" class="input-field" placeholder="Email" required>
+        <form method="POST" action="{{ url_for('sign_up') }}" id="signup-form">
+          <input type="text" class="input-field" name="name" placeholder="Name" required>
+          <input type="email" class="input-field" name="email" placeholder="Email" required>
 
-        <!-- Password Field with Icon -->
-        <div class="password-container">
-          <input
-            type="password"
-            class="input-field"
-            placeholder="Password"
-            id="passwordField"
-            required
-          />
-          <!-- Eye Icon -->
-          <img
-            src="../static/images/eye-slash.png"
-            alt="Show/Hide"
-            class="toggle-password-icon"
-            data-target="passwordField"
-          />
-        </div>
+          <!-- Password Field with Icon -->
+          <div class="password-container">
+            <input
+              type="password"
+              class="input-field"
+              name="password"
+              placeholder="Password"
+              id="passwordField"
+              required
+            />
+            <img
+              src="{{ url_for('static', filename='images/eye-slash.png') }}"
+              alt="Show/Hide"
+              class="toggle-password-icon"
+              data-target="passwordField"
+            />
+          </div>
 
-        <!-- Confirm Password Field with Icon -->
-        <div class="password-container">
-          <input
-            type="password"
-            class="input-field"
-            placeholder="Confirm Password"
-            id="confirmPasswordField"
-            required
-          />
-          <!-- Eye Slash Icon (start with same icon or the same eye.png) -->
-          <img
-            src="../static/images/eye-slash.png"
-            alt="Show/Hide"
-            class="toggle-password-icon"
-            data-target="confirmPasswordField"
-          />
-        </div>
+          <!-- Confirm Password Field with Icon -->
+          <div class="password-container">
+            <input
+              type="password"
+              class="input-field"
+              name="confirm_password"
+              placeholder="Confirm Password"
+              id="confirmPasswordField"
+              required
+            />
+            <img
+              src="{{ url_for('static', filename='images/eye-slash.png') }}"
+              alt="Show/Hide"
+              class="toggle-password-icon"
+              data-target="confirmPasswordField"
+            />
+          </div>
 
-        <button class="signup-button">Sign Up</button>
-        <a href="{{url_for('log_in')}}" class="signin-link">Already have an account? Sign In</a>
+          <button type="submit" class="signup-button">Sign Up</button>
+        </form>
+        <a href="{{ url_for('log_in') }}" class="signin-link">Already have an account? Sign In</a>
       </div>
     </div>
-    
 </div>
+
 <script>
     document.addEventListener("DOMContentLoaded", function() {
-      // Grab all icon elements with .toggle-password-icon
       const icons = document.querySelectorAll(".toggle-password-icon");
-
       icons.forEach(icon => {
         icon.addEventListener("click", function() {
-          // Which input to toggle?
           const targetId = this.getAttribute("data-target");
           const field = document.getElementById(targetId);
-
-          // Toggle input type
           if (field.type === "password") {
             field.type = "text";
-            this.src = "../static/images/eye.png"; // Switch to slash icon
+            this.src = "{{ url_for('static', filename='images/eye.png') }}";
           } else {
             field.type = "password";
-            this.src = "../static/images/eye-slash.png"; // Switch back to eye icon
+            this.src = "{{ url_for('static', filename='images/eye-slash.png') }}";
           }
         });
       });
+      
+      // Password matching validation
+      document.getElementById("signup-form").addEventListener("submit", function(event) {
+        const password = document.getElementById("passwordField").value;
+        const confirmPassword = document.getElementById("confirmPasswordField").value;
+        
+        if (password !== confirmPassword) {
+          event.preventDefault();
+          alert("Passwords do not match. Please try again.");
+        }
+      });
     });
-  </script>
+</script>
 {% endblock %}

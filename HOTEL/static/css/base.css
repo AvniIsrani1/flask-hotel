@@ -31,6 +31,7 @@ header {
     transition: padding 1s ease-in-out;
     white-space:nowrap;
     position:sticky;
+    z-index: 1000;
     top:0;
 }
 
