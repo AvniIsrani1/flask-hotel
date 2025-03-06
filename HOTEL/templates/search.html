@@ -64,18 +64,27 @@
             </select> 
         </div>
         <div class = "item">
-            <img src="../static/images/inside.jpeg">
-            <div class="description">
-                <div class="details">
-                    <p class="title pbot">[Room Overview]</p>
-                    <p class="subtitle ptop">[Room Description]</p>
-                </div>
-                <div class="pricing">
-                    <p>[100] USD / NIGHT</p>
-                    <button class="sub">Book</button>
-                </div>
+            <script src="https://unpkg.com/focus-visible@5.0.2/dist/focus-visible.js" defer></script>
+            <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+            <img src="../static/images/inside.jpeg" id="thumbnail" onclick="openModal()">
+            <div id="modelModal" class="modal">
+                <span class="close" onclick="closeModal()">&times;</span>
+                <model-viewer src="/static/assets/highly_detailed_opti_0225234237_texture.glb"
+                    shadow-intensity="1"
+                    camera-controls
+                    auto-rotate
+                    ar>
+                </model-viewer>
             </div>
-        </div>
+        
+            <script>
+                function openModal() {
+                    document.getElementById("modelModal").style.display = "flex";
+                }
+                function closeModal() {
+                    document.getElementById("modelModal").style.display = "none";
+                }
+            </script>
         
     </div> 
 </div>
