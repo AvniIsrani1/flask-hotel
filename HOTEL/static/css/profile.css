@@ -19,6 +19,15 @@
     align-items:center;
 }
 
+.flash-message {
+    padding: 10px;
+    margin: 10px auto;
+    border-radius: 5px;
+    text-align: center;
+    width: 100%;
+    max-width:900px;
+}
+
 .upper {
     display:flex;
     flex-direction:row;
@@ -132,7 +141,7 @@ form input {
         flex-direction:column;
     }
 
-    .options {
+    .options, .flash-message {
         width:70%;
         max-width:900px;
     }
@@ -151,7 +160,7 @@ form input {
 
 @media only screen and (max-width:700px){
 
-    .options {
+    .options, .flash-message {
         width:80%;
         max-width:680px;
     }
@@ -171,7 +180,7 @@ form input {
         flex-direction:column;
     }
 
-    .options {
+    .options, .flash-message {
         width:95%;
     }
     form, .rewards {
