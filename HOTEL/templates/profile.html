@@ -47,6 +47,7 @@
             <i class="fa-solid fa-caret-down"></i>
         </button>
         <form method="post" action="{{ url_for('profile') }}" id="profile" class="profile">
+            <input type="hidden" name="ptype" value="profile">
             <input type="text" id="name" name="name" placeholder="Name" value="{{ user.name or '' }}" required>
             <input type="text" id="email" name="email" placeholder="Email" value="{{ user.email }}" disabled>
             <input type="number" id="phone" name="phone" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" placeholder="Phone Number" value="{{ user.phone or '' }}" inputmode='numeric' required>
@@ -92,12 +93,13 @@
             <i class="fa-solid fa-caret-down"></i>
         </button>  
         <form method="post" id="notifications" class="notifications">
+            <input type="hidden" name="ptype" value="notifications">
             <div class="ptop subtext">
-                <input type="checkbox" id="eremind" name="eremind">
+                <input type="checkbox" id="eremind" name="eremind"  {% if user.email_notifications == YesNo.Y%}checked{% endif %}>
                 <label for="eremind">I want to receive email reminders of my upcoming bookings.</label>
             </div>
             <div class="pbot subtext">
-                <input type="checkbox" id="tremind" name="tremind">
+                <input type="checkbox" id="tremind" name="tremind" {% if user.text_notifications == YesNo.Y%}checked{% endif %}>
                 <label for="tremind">I want to receive text reminders of my upcoming bookings.</label>
             </div>
             <div class="save">
@@ -109,8 +111,8 @@
             <i class="fa-solid fa-caret-down"></i>
         </button>
         <form method="post" action="{{ url_for('profile') }}" id="privacy" class="privacy">
-            <input type="hidden" name="form_type" value="password_change">
-            <input type="password" id="old_pass" name="old_pass" placeholder="Old Password" required>
+            <input type="hidden" name="ptype" value="password_change">
+            <input type="password" id="cur_pass" name="cur_pass" placeholder="Current Password" required>
             <input type="password" id="new_pass" name="new_pass" placeholder="New Password" required>
             <div class="save">
                 <input type="submit" class="sub" value="Update Password">
@@ -127,7 +129,7 @@
                     <p class="">This action cannot be undone.</p>
                 </div>
                 <form method="post" action="{{ url_for('profile') }}">
-                    <input type="hidden" name="form_type" value="account_deletion">
+                    <input type="hidden" name="ptype" value="account_deletion">
                     <button type="submit" class="sub">Delete</button>
                 </form>
             </div>
@@ -144,6 +146,7 @@
             console.log("I am here!!!");
             document.querySelectorAll('.profile').forEach(i=>i.style.display='flex');  
         }
+        text_notifications = "{{ user.text_notifications}}"
         items.forEach(item =>{
             item.addEventListener("click", function(){
                 document.querySelectorAll('.view').forEach(i=>{i.style.borderColor='#c0bfbf';});

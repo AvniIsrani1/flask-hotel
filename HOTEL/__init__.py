@@ -1,11 +1,13 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash, get_flashed_messages
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import DateTime
+from sqlalchemy import DateTime, distinct, Computed
 from datetime import datetime
-from sqlalchemy import Computed
 from werkzeug.security import generate_password_hash, check_password_hash
 from enum import Enum as PyEnum
 from urllib.parse import quote
+import boto3
+from botocore.exceptions import ClientError
+import json
 
 
 
@@ -13,9 +15,24 @@ app = Flask(__name__,
             static_folder='static',     # Define the static folder (default is 'static')
             template_folder='templates')
 app.secret_key = 'GITGOOD_12345'  # This key keeps your session data safe.
-pwd = 'UFxP|gQtX_Ft>(ru.z[rVW1kiHX>'
-pwd = quote(pwd)
-app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql+pymysql://hotel_user:{pwd}@hotel-db-instance.cvwasiw2g3h6.us-west-1.rds.amazonaws.com:3306/hotel_db'
+# pwd = 'UFxP|gQtX_Ft>(ru.z[rVW1kiHX>'
+# pwd = quote(pwd)
+
+secret_name = "rds!db-d319020b-bb3f-4784-807c-6271ab3293b0"
+client = boto3.client(service_name='secretsmanager', region_name='us-west-1')
+
+# Retrieve the secret from Secrets Manager
+try:
+    response = client.get_secret_value(SecretId=secret_name)
+except ClientError as e:
+    raise e
+secret = json.loads(response['SecretString'])
+username=secret.get("username")
+pwd = quote(secret.get("password"))
+
+
+
+app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql+pymysql://{username}:{pwd}@hotel-db-instance.cvwasiw2g3h6.us-west-1.rds.amazonaws.com:3306/hotel_db'
 # Create the SQLAlchemy db instance
 db = SQLAlchemy(app)
 
@@ -36,7 +53,6 @@ class Availability(PyEnum):
     M = 'maintenance'
 
 
-
 class User(db.Model):
     __tablename__ = 'user'  # Name of the table in the database
     id = db.Column(db.Integer, primary_key=True)  # Unique id for each user
@@ -52,7 +68,10 @@ class User(db.Model):
     rewards = db.Column(db.Integer,default=0)
     room_number = db.Column(db.String(15), default="")
     first_login = db.Column(db.Enum(YesNo), nullable=False, default=YesNo.Y) 
+    text_notifications = db.Column(db.Enum(YesNo), nullable=False, default=YesNo.N) 
+    email_notifications = db.Column(db.Enum(YesNo), nullable=False, default=YesNo.N) 
     bookings = db.relationship('Booking', backref='user', lazy=True) #user is keeping track of bookings
+
 
 class Hotel(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -106,7 +125,8 @@ with app.app_context():
 # Home page route
 @app.route("/")
 def home():
-    return render_template("home.html")
+    locations = db.session.query(distinct(Hotel.location)).all()
+    return render_template("home.html", locations=locations)
 
 # Sign Up route: Display form on GET, process form on POST
 @app.route("/signup", methods=["GET", "POST"])
@@ -192,18 +212,52 @@ def profile():
     user = User.query.get(session["user_id"])
     if user.first_login is YesNo.Y:
         flash("Please update your profile information!", "action")
+    message = ''
+    status = ''
     if request.method == "POST":
-        user.name = request.form.get("name")
-        user.phone = request.form.get("phone")
-        user.address_line1 = request.form.get("address")
-        user.address_line2 = request.form.get("address2")
-        user.city = request.form.get("city")
-        user.state = request.form.get("state")
-        user.zipcode = request.form.get("zipcode")
-        user.first_login = YesNo.N
+        ptype = request.form.get('ptype')
+        if ptype == 'profile':
+            user.name = request.form.get("name")
+            user.phone = request.form.get("phone")
+            user.address_line1 = request.form.get("address")
+            user.address_line2 = request.form.get("address2")
+            user.city = request.form.get("city")
+            user.state = request.form.get("state")
+            user.zipcode = request.form.get("zipcode")
+            user.first_login = YesNo.N
+            message = 'Profile has been updated!'
+            status = 'success'
+        elif ptype=='notifications':
+            tremind = request.form.get('tremind')
+            eremind = request.form.get('eremind')
+            if tremind:
+                user.text_notifications = YesNo.Y
+            else:
+                user.text_notifications = YesNo.N
+            if eremind:
+                user.email_notifications = YesNo.Y
+            else:
+                user.email_notifications = YesNo.N
+            print('update notfi')
+        elif ptype=='password_change':
+            print('change pass')
+            cur_password = request.form.get("cur_pass")
+            if check_password_hash(user.password, cur_password):
+                new_password = request.form.get("new_pass")
+                user.password = generate_password_hash(new_password)
+                message = 'Password has been changed.'
+                status = 'success'
+            else:
+                message = 'Unable to update password.'
+                status = 'error'
+        elif ptype=='account_deletion':
+            db.session.delete(user)
+            session.clear()
+            db.session.commit()
+            return render_template("home.html")
         try:
             db.session.commit()
-            flash("Profile information updated. Thank you!", "success")
+            flash(message, status)
         except Exception as e:
             # Roll back the session if there is an error
             db.session.rollback()
@@ -212,7 +266,7 @@ def profile():
             return redirect(url_for("profile"))
     # Retrieve the logged-in user's information from the database
     user = User.query.get(session["user_id"])
-    return render_template("profile.html", user=user)
+    return render_template("profile.html", user=user, YesNo = YesNo)
 
 @app.route("/my-bookings")
 def my_bookings():

@@ -24,6 +24,16 @@
   <div class="background-wrapper">
     <section class="main-content">
       <div class="box1">
+        <div class="location-container">
+          <select name="location-type">
+            <option disabled selected>Select Location</option>
+              {% if locations %}
+                {% for loc in locations %}
+                  <option value="{{loc[0]}}">{{ loc[0].value }}</option>
+                {% endfor %}
+              {% endif %}
+          </select>
+        </div>
         <div class="datepick-container">
           <input
             type="text"
@@ -112,18 +122,7 @@
             </div>
           </div>
         </div>
-        <div class="room-container">
-          <select name="room-type">
-            <option disabled selected>Select Room</option>
-            <option>Standard</option>
-            <option>Deluxe</option>
-            <option>Suite</option>
-          </select>
-        </div>
-        <div class="price-calc">
-          <p id="nights-display">Nights: 0</p>
-          <p id="total-price">Total Price: $0</p>
-        </div>
+        <button class="search">Search</button>
       </div>
       <div class="boxes-container">
         <div class="hero-box">
@@ -463,7 +462,7 @@
       datepick.hidden = true;
     });
 
-    const roomSelect = document.querySelector('select[name="room-type"]');
+    const roomSelect = document.querySelector('select[name="location-type"]');
     roomSelect.addEventListener('focus', () => {
       datepick.hidden = true;
       datepickEnd.hidden = true;

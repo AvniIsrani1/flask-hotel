@@ -203,7 +203,7 @@ hr {
 }
 
 /* Room Selector */
-.room-container {
+.location-container {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -220,7 +220,7 @@ hr {
   box-shadow: 10px 10px 10px rgba(0, 0, 0, 0.2);
 }
 
-.room-container select {
+.location-container select {
   padding: 5px;
   border-radius: 50px;
   border: 1px solid #fff;
@@ -583,7 +583,7 @@ hr {
     font-size: 16px;
   }
 
-  .room-container {
+  .location-container {
     width: 80%;
   }
 }
