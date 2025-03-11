@@ -47,7 +47,7 @@
                     <button class="sub-sm" type="button" onclick="close_filter()">
                         <i class="fa-solid fa-xmark"></i>
                     </button>
-                    <input type="submit" class="sub-sm" value="Apply">
+                    <input type="submit" class="sub-sm" value="Apply">                 
                 </div>
     
             </form>
@@ -91,8 +91,8 @@
                 </div>
                 <div class="pricing">
                     <p>[100] USD / NIGHT</p>
-                    <button class="sub">Book</button>
-                </div>
+                    <a href="{{ url_for('payment') }}" class="sub">Book</a>
+                </div>                
             </div>
         </div>
         <!--<div class="description">
