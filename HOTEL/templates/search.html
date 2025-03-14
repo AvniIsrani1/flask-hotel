@@ -3,13 +3,100 @@
 {% block title %} Search {% endblock %}
 
 {% block styles %} 
+<!-- Include Flatpickr CSS -->
+<!-- Include jQuery UI CSS -->
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+
+<!-- Include Flatpickr CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+
+<!-- Include Flatpickr JS -->
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+
+
 <link rel="stylesheet" href="../static/css/search.css" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
 {% endblock %}
 
 {% block content %}
 
 <div class="content">
+    <div class="main-title">
+        <p>Search For Rooms</p>
+        <br>
+    </div>
     <div class="options">
+        <form class="searchbar">
+            <div class="locations">
+                <div class="search-description">
+                    <i class="fa-solid fa-location-dot" ></i>
+                    <p>DESTINATION</p>
+                </div>
+                <select name="location-type" class="location-type">
+                    <option disabled selected>Select Location</option>
+                      {% if locations %}
+                        {% for loc in locations %}
+                          <option value="{{loc[0]}}">{{ loc[0].value }}</option>
+                        {% endfor %}
+                      {% endif %}
+                </select>
+            </div>
+            <div class="dates">
+                <div class="search-description">
+                    <i class="fa-solid fa-calendar-days"></i>
+                    <p class="nights" id="nights">PERIOD OF STAY</p>
+                </div>
+                <div class="date-selection">
+                    <input type="text" id="startdate" class="startdate" placeholder="Select Start Date">
+                    <input type="text" id="enddate" class="enddate" placeholder="Select End Date"> 
+                </div>
+            </div>
+            <div class="submit-area">
+                <button class="submit-button" type="submit">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <p><span>Find</span> Rooms</p>
+                </button>
+            </div>
+            
+            <script>
+                flatpickr("#startdate", {
+                    dateFormat: "F j, Y", 
+                    minDate: "today",  
+                    maxDate: new Date().fp_incr(365*2),
+                    prevArrow:'PREV',
+                    nextArrow:'NEXT', 
+                    onChange: function(dates, datestr, instance) {
+                        let startdate = dates[0]; 
+                        if (startdate) {
+                            document.querySelector("#enddate")._flatpickr.set('minDate', startdate);
+                        }
+                        calcNights();
+                    }
+                });
+                flatpickr("#enddate", {
+                    dateFormat: "F j, Y", 
+                    minDate: "today",  
+                    maxDate: new Date().fp_incr(365*2),
+                    prevArrow:'PREV',
+                    nextArrow:'NEXT',
+                    onChange: function(dates, datestr, instance) {
+                        calcNights();
+                    }
+                });
+
+                function calcNights() {
+                    const startdate = document.querySelector("#startdate")._flatpickr.selectedDates[0];
+                    const enddate = document.querySelector("#enddate")._flatpickr.selectedDates[0];
+                    if(startdate && enddate) {
+                        nights = (enddate-startdate)/(1000*60*60*24) + 1;
+                        document.getElementById('nights').innerText=`${nights} NIGHT${nights<=1?'': 'S'}`;
+                    }
+                };
+            </script>
+        </form>
+
         <div class="filters">
             <div class="button-area">
                 <button class="icon" id="icon" onclick="toggle_filters()">
@@ -49,7 +136,6 @@
                     </button>
                     <input type="submit" class="sub-sm" value="Apply">                 
                 </div>
-    
             </form>
         </div>
         <br>
@@ -86,7 +172,11 @@
             
             <div class="description">
                 <div class="details">
-                    <p class="title pbot">[Room Overview]</p>
+                    <div class="upper-details">
+                        <p class="title pbot">[Room Overview]</p>
+                        <i class="fa-regular fa-heart save"></i>
+                        <i class="fa-solid fa-heart unsave"></i>
+                    </div>
                     <p class="subtitle ptop">[Room Description]</p>
                 </div>
                 <div class="pricing">
@@ -120,16 +210,6 @@
         (document.getElementById("filter-selection").style.display ==='none' || document.getElementById("filter-selection").style.display ==='') ? document.getElementById("filter-selection").style.display = 'flex' : document.getElementById("filter-selection").style.display = 'none';
     }
 
-    // document.addEventListener("DOMContentLoaded", function(){
-    //     const items = document.querySelectorAll('.expand');
-    //     items.forEach(item =>{
-    //         item.addEventListener("click", function(){
-    //             document.querySelectorAll('.view').forEach(i=>{i.style.borderColor='#c0bfbf';});
-    //             if(this.id==='about'){
-    //                 document.querySelectorAll('.profile').forEach(i=>{(i.style.display==='' || i.style.display==='none') ? i.style.display='flex' : i.style.display='none';});
-    //                 document.querySelectorAll('.rewards').forEach(i=>{i.style.display='none';});
-    //                 document.querySelectorAll('.notifications').forEach(i=>{i.style.display='none';});
-    //                 document.querySelectorAll('.privacy').for
 </script>
 
 

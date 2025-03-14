@@ -268,8 +268,8 @@ def profile():
     user = User.query.get(session["user_id"])
     return render_template("profile.html", user=user, YesNo = YesNo)
 
-@app.route("/my-bookings")
-def my_bookings():
+@app.route("/bookings", methods=["GET", "POST"])
+def bookings():
     if "user_id" not in session:
         flash("Please log in first.", "error")
         return redirect(url_for("log_in"))
@@ -283,13 +283,10 @@ def request_services():
         return redirect(url_for("log_in"))
     return render_template('request_services.html')
 
-@app.route("/bookings")
-def bookings():
-    return render_template('bookings.html')
-
-@app.route("/search")
+@app.route("/search", methods=["GET", "POST"])
 def search():
-    return render_template('search.html')
+    locations = db.session.query(distinct(Hotel.location)).all()
+    return render_template('search.html',locations=locations)
 
 @app.route("/terms")
 def terms():

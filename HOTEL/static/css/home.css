@@ -37,7 +37,8 @@ hr {
   flex-wrap: wrap;
   justify-content: center;
   align-items: center;
-  gap: 1.5rem;
+  /* gap: 1.5rem; */
+  padding:20px;
   width: 90%;
   max-width: 1200px;
   margin: 40px auto 30px;
@@ -63,6 +64,8 @@ hr {
 .datepick-container,
 .datepick-container-end {
   position: relative;
+  /* margin-block: 19px; */
+
 }
 
 /* Date Picker Pop-ups */
@@ -207,23 +210,47 @@ hr {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 5px;
+  /* padding: 5px; */
   font-family: "Noto Sans Khmer", sans-serif;
   font-weight: 100;
   text-align: center;
-  width: 200px;
+  width: 220px;
   border-radius: 50px;
   gap: 6px;
-  margin: 19px;
+  /* margin-block: 19px; */
   background-color: #fff;
   border: 1px solid #fff;
   box-shadow: 10px 10px 10px rgba(0, 0, 0, 0.2);
 }
 
-.location-container select {
-  padding: 5px;
+.search {
+  /* justify-content: center; */
+  display:flex;
+  flex-direction:row;
+  align-items:center;
+  padding: 10px 20px;
+  width:220px;
+  font-family: "Noto Sans Khmer", sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+  text-align: center;
   border-radius: 50px;
-  border: 1px solid #fff;
+  gap: 8px;
+  background-color: #F1DF75;
+  border: 2px solid #F1DF75;
+  box-shadow: 10px 10px 10px rgba(0, 0, 0, 0.2);
+}
+
+.search:hover {
+  background-color:lightgoldenrodyellow;
+  border-color: lightgoldenrodyellow;
+}
+
+.location-container select {
+  padding: 10px;
+  border-radius: 50px;
+  border:none;
+  /* border: 1px solid #fff; */
   font-size: 16px;
   font-family: "Noto Sans Khmer", sans-serif;
   font-weight: 600;

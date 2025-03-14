@@ -23,8 +23,9 @@
 <div class="background">
   <div class="background-wrapper">
     <section class="main-content">
-      <div class="box1">
+        <form class = "box1" method="post" action="{{ url_for('search') }}" id="searchbox" class="searchbox">
         <div class="location-container">
+          <i class="fa-solid fa-location-dot"></i>
           <select name="location-type">
             <option disabled selected>Select Location</option>
               {% if locations %}
@@ -34,6 +35,7 @@
               {% endif %}
           </select>
         </div>
+
         <div class="datepick-container">
           <input
             type="text"
@@ -42,7 +44,7 @@
           />
           <div class="datepick" hidden>
             <div class="datepick-header">
-              <button class="prev">Prev</button>
+              <button type="button" class="prev">Prev</button>
               <div>
                 <select class="month-input">
                   <option>January</option>
@@ -60,7 +62,7 @@
                 </select>
                 <input type="number" class="year-input" />
               </div>
-              <button class="next">Next</button>
+              <button type="button" class="next">Next</button>
             </div>
             <div class="days">
               <span>Sun</span>
@@ -73,8 +75,8 @@
             </div>
             <div class="date"></div>
             <div class="datepick-footer">
-              <button class="cancel">Cancel</button>
-              <button class="apply">Apply</button>
+              <button type="button" class="cancel">Cancel</button>
+              <button type="button" class="apply">Apply</button>
             </div>
           </div>
         </div>
@@ -86,7 +88,7 @@
           />
           <div class="datepick-end" hidden>
             <div class="datepick-header-end">
-              <button class="prev-end">Prev</button>
+              <button type="button" class="prev-end">Prev</button>
               <div>
                 <select class="month-input-end">
                   <option>January</option>
@@ -104,7 +106,7 @@
                 </select>
                 <input type="number" class="year-input-end" />
               </div>
-              <button class="next-end">Next</button>
+              <button type="button" class="next-end">Next</button>
             </div>
             <div class="days-end">
               <span>Sun</span>
@@ -117,13 +119,14 @@
             </div>
             <div class="date-end"></div>
             <div class="datepick-footer-end">
-              <button class="cancel-end">Cancel</button>
-              <button class="apply-end">Apply</button>
+              <button type="button" class="cancel-end">Cancel</button>
+              <button type="button" class="apply-end">Apply</button>
             </div>
           </div>
         </div>
-        <button class="search">Search</button>
-      </div>
+        <button class="search">
+          <i class="fa-solid fa-magnifying-glass"></i><p>Search</p></button>
+      </form>
       <div class="boxes-container">
         <div class="hero-box">
           <div class="hero-text">
@@ -232,7 +235,8 @@
       datepick.hidden = true;
     });
 
-    applyBtn.addEventListener('click', () => {
+    applyBtn.addEventListener('click', (e) => {
+      e.preventDefault();
       dateinput.value = selectdate.toLocaleDateString('en-US', {
         year: 'numeric',
         month: '2-digit',
@@ -270,6 +274,7 @@
     };
 
     const handleDateClick = (e) => {
+      e.preventDefault();
       const button = e.target;
       const selectedDay = parseInt(button.textContent);
       const candidateDate = new Date(year, month, selectedDay);
@@ -353,7 +358,8 @@
       datepickEnd.hidden = true;
     });
 
-    applyBtnEnd.addEventListener('click', () => {
+    applyBtnEnd.addEventListener('click', (e) => {
+      e.preventDefault();
       dateinputEnd.value = selectdateEnd.toLocaleDateString('en-US', {
         year: 'numeric',
         month: '2-digit',
@@ -391,6 +397,7 @@
     };
 
     const handleDateClickEnd = (e) => {
+      e.preventDefault();
       const button = e.target;
       const selectedDay = parseInt(button.textContent);
       const candidateDate = new Date(yearEnd, monthEnd, selectedDay);
@@ -407,6 +414,7 @@
       selected && selected.classList.remove('selected');
       button.classList.add('selected');
       selectdateEnd = candidateDate;
+
     };
 
     const displayDateEnd = () => {
