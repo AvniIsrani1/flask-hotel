@@ -47,8 +47,10 @@
     align-items:center;
     gap:5px;
     padding:2px 20px;
+    font-family:"Noto Sans Khmer", sans-serif;
     font-size:12px;
     color:#ffffff;
+    margin-bottom:2px;
 }
 
 .search-description i{
@@ -62,6 +64,8 @@
 }
 .location-type {
     border-radius:50px;
+    padding-inline:20px 30px !important;
+    appearance:none;
 }
 
 .date-selection{
@@ -100,68 +104,7 @@
     background-color:lightgoldenrodyellow;
 }
 
-.flatpickr-calendar {
-    box-sizing:border-box;
-    padding:20px 10px;
-    width:auto;
-    font-family: "Noto Sans Khmer", sans-serif !important;
-    font-size: 16px; 
-    z-index: 5; 
-    background-color: #fff; 
-    border-style:solid;
-    border-width:1px;
-    border-color:#002B5A;
-    border-radius:5px;
-}
-.flatpickr-calendar .flatpickr-month {
-    border-bottom: 1px solid #000000; 
-    padding-bottom:50px;
-}
 
-.flatpickr-months .flatpickr-prev-month, .flatpickr-months .flatpickr-next-month{
-    color:#708090;
-}
-
-.flatpickr-months .flatpickr-prev-month:hover, .flatpickr-months .flatpickr-next-month:hover{
-    color:#000000;
-}
-.flatpickr-calendar .flatpickr-month select, .flatpickr-calendar .flatpickr-month input {
-    border-radius:15px !important;
-    text-align:center !important;
-    margin:5px 2px !important;
-}
-
-.flatpickr-weekday {
-    font-weight:bold;
-    color:#000000 !important;
-}
-.flatpickr-calendar .flatpickr-day{
-    background-color:#EDEDED;
-    color:#708090;
-    margin-block:3px;
-    border-radius:5px !important;
-}
-
-.flatpickr-calendar .flatpickr-day:hover{
-    background-color:#ADD8E6;
-    color:#000000;
-}
-
-.flatpickr-calendar .flatpickr-day.flatpickr-disabled{
-    background-color:#ffffff;
-    color:rgba(57, 57, 57, 0.1);
-}
-
-.flatpickr-calendar .flatpickr-day.today{
-    background-color:#D3DBE3;
-    border-style:dotted;
-}
-
-.flatpickr-calendar .flatpickr-day.selected {
-    background-color: #002B5A !important;
-    color:#ffffff;
-    border-style:solid;
-}
 
 
 .options {
@@ -214,20 +157,43 @@
     cursor: pointer;
 }
 
+
+
+
+
+
+/* ----------------------------- search result information --------------------------------- */
+
+
+.search-results {
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    width:100%;
+    background-color:rgba(241, 223, 117, 0.3);
+    /* border-style:solid; */
+    border-width:1px;
+    border-radius:15px;
+    overflow:hidden;
+    padding:20px;
+    margin-top:40px;
+    gap:10px;
+
+}
+
 .item {
     display:flex;
     flex-direction:row;
     justify-content:space-between;
     width:100%;
     font-size:1.5rem;
-    font-family:'Times New Roman', serif;
+    font-family:"Noto Sans Khmer", sans-serif;
     background-color:#002B5A;
     color:#F1DF75;
     border-style:solid;
     border-width:1px;
     border-radius:15px;
     overflow:hidden;
-    margin:20px 10px;
 }
 
 .item img {
@@ -329,7 +295,7 @@
 .sub, .sub-sm {
     background-color:#F1DF75;
     color:#002B5A;
-    font-family:'Times New Roman', serif;
+    font-family:"Noto Sans Khmer", sans-serif;
     font-size:1.5rem;
     border-radius:15px;
     padding-inline:10px;
@@ -363,7 +329,7 @@
     text-decoration: none;
     padding: 6px 12px;
     text-align: center;
-    font-family: 'Times New Roman', serif;
+    font-family: "Noto Sans Khmer", sans-serif;
     font-size: 1.5rem;
     border-radius: 15px;
 }

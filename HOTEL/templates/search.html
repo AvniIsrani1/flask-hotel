@@ -3,19 +3,14 @@
 {% block title %} Search {% endblock %}
 
 {% block styles %} 
-<!-- Include Flatpickr CSS -->
-<!-- Include jQuery UI CSS -->
-<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 
-<!-- Include Flatpickr CSS -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-
-<!-- Include Flatpickr JS -->
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
 
 
 <link rel="stylesheet" href="../static/css/search.css" />
+<link rel="stylesheet" href="../static/css/dates.css" />
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
 {% endblock %}
@@ -28,17 +23,18 @@
         <br>
     </div>
     <div class="options">
-        <form class="searchbar">
+        <form method="post" id="searchbar" class="searchbar">
+            <input type="hidden" name="stype" value="apply_search">
             <div class="locations">
                 <div class="search-description">
                     <i class="fa-solid fa-location-dot" ></i>
                     <p>DESTINATION</p>
                 </div>
-                <select name="location-type" class="location-type">
+                <select name="location-type" class="location-type" title="Select a Location">
                     <option disabled selected>Select Location</option>
                       {% if locations %}
                         {% for loc in locations %}
-                          <option value="{{loc[0]}}">{{ loc[0].value }}</option>
+                          <option value="{{loc[0].value}}">{{ loc[0].value }}</option>
                         {% endfor %}
                       {% endif %}
                 </select>
@@ -49,8 +45,8 @@
                     <p class="nights" id="nights">PERIOD OF STAY</p>
                 </div>
                 <div class="date-selection">
-                    <input type="text" id="startdate" class="startdate" placeholder="Select Start Date">
-                    <input type="text" id="enddate" class="enddate" placeholder="Select End Date"> 
+                    <input type="text" id="startdate" class="startdate" name="startdate" placeholder="Select Start Date">
+                    <input type="text" id="enddate" class="enddate" name="enddate" placeholder="Select End Date"> 
                 </div>
             </div>
             <div class="submit-area">
@@ -59,45 +55,9 @@
                     <p><span>Find</span> Rooms</p>
                 </button>
             </div>
-            
-            <script>
-                flatpickr("#startdate", {
-                    dateFormat: "F j, Y", 
-                    minDate: "today",  
-                    maxDate: new Date().fp_incr(365*2),
-                    prevArrow:'PREV',
-                    nextArrow:'NEXT', 
-                    onChange: function(dates, datestr, instance) {
-                        let startdate = dates[0]; 
-                        if (startdate) {
-                            document.querySelector("#enddate")._flatpickr.set('minDate', startdate);
-                        }
-                        calcNights();
-                    }
-                });
-                flatpickr("#enddate", {
-                    dateFormat: "F j, Y", 
-                    minDate: "today",  
-                    maxDate: new Date().fp_incr(365*2),
-                    prevArrow:'PREV',
-                    nextArrow:'NEXT',
-                    onChange: function(dates, datestr, instance) {
-                        calcNights();
-                    }
-                });
-
-                function calcNights() {
-                    const startdate = document.querySelector("#startdate")._flatpickr.selectedDates[0];
-                    const enddate = document.querySelector("#enddate")._flatpickr.selectedDates[0];
-                    if(startdate && enddate) {
-                        nights = (enddate-startdate)/(1000*60*60*24) + 1;
-                        document.getElementById('nights').innerText=`${nights} NIGHT${nights<=1?'': 'S'}`;
-                    }
-                };
-            </script>
+            <script src="../static/js/dates.js"></script>
         </form>
-
-        <div class="filters">
+        <div class="filters ptop">
             <div class="button-area">
                 <button class="icon" id="icon" onclick="toggle_filters()">
                     <i class="fa-solid fa-filter"></i>
@@ -105,23 +65,24 @@
                 </button>
             </div>
             <form method="post" id="filter-selection">
-                <select name="room_type" id="room_type">
+                <input type="hidden" name="stype" value="apply_filters">
+                <select name="room_type" id="room_type" title="Select a Room Type">
                     <option value="" selected disabled>Room Type</option>
                     <option value="standard">Standard</option>
                     <option value="deluxe">Deluxe</option>
                     <option value="suite">Suite</option>
                 </select> 
-                <select name="bed_type" id="bed_type">
+                <select name="bed_type" id="bed_type" title="Select Bed Count">
                     <option value="" selected disabled>Bed Type</option>
                     <option value="one">1 Bed</option>
                     <option value="two">2 Beds</option>
                 </select>   
-                <select name="smoking_preference" id="smoking_preference">
+                <select name="smoking_preference" id="smoking_preference" title="Select Smoking Preference">
                     <option value="" selected disabled>Smoking Preference</option>
                     <option value="one">Smoking</option>
                     <option value="two">Non-Smoking</option>
                 </select>  
-                <select name="accessibility" id="accessibility">
+                <select name="accessibility" id="accessibility" title="Accessibility Needs">
                     <option value="" selected disabled>Accessibility Features</option>
                     <option value="one">Wheelchair</option>
                 </select>  
@@ -131,7 +92,7 @@
                     <p id="price-display">700</p>
                 </div>
                 <div class="buttons">
-                    <button class="sub-sm" type="button" onclick="close_filter()">
+                    <button class="sub-sm" type="button" onclick="close_filter()" title="Submit">
                         <i class="fa-solid fa-xmark"></i>
                     </button>
                     <input type="submit" class="sub-sm" value="Apply">                 
@@ -141,16 +102,18 @@
         <br>
         <div class="search-info">
             <p>1-40 of 200 hotels</p>
-            <select name="sort-by" id="sort-by">
+            <select name="sort-by" id="sort-by" title="Sort By">
                 <option value="" selected disabled>Sort By</option>
                 <option value="priceL">Price (Low to High)</option>
                 <option value="priceL">Price (High to Low)</option>
             </select> 
         </div>
+        <br>
+        {% for room in rooms %}
         <div class = "item">
             <script src="https://unpkg.com/focus-visible@5.0.2/dist/focus-visible.js" defer></script>
             <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
-            <img src="../static/images/inside.jpeg" id="thumbnail" onclick="openModal()">
+            <img src="../static/images/inside.jpeg" alt="Room" id="thumbnail" onclick="openModal()">
             <div id="modelModal" class="modal">
                 <span class="close" onclick="closeModal()">&times;</span>
                 <model-viewer src="/static/assets/highly_detailed_opti_0225234237_texture.glb"
@@ -173,29 +136,34 @@
             <div class="description">
                 <div class="details">
                     <div class="upper-details">
-                        <p class="title pbot">[Room Overview]</p>
+                        <p class="title pbot">{{room.number_beds}}-Bedroom {{room.room_type.value}}</p>
                         <i class="fa-regular fa-heart save"></i>
                         <i class="fa-solid fa-heart unsave"></i>
                     </div>
-                    <p class="subtitle ptop">[Room Description]</p>
+                    {% if room.ocean_view==YesNo.Y %}
+                        <p class="subtitle ptop">Ocean View</p>
+                    {% elif room.city_view==YesNo.Y %}
+                        <p class="subtitle ptop">City View</p>
+                    {% endif %}
+                    {% if room.balcony==YesNo.Y %}
+                        <p class="subtitle ptop">Balcony</p>
+                    {% endif %}
+                    {% if room.wheelchair_accessible==YesNo.Y %}
+                        <p class="subtitle ptop">Wheelchair Accessible</p>
+                    {% endif %}
+                    {% if room.smoking==YesNo.Y %}
+                        <p class="subtitle ptop">Non-Smoking Room</p>
+                    {% endif %}
                 </div>
                 <div class="pricing">
-                    <p>[100] USD / NIGHT</p>
+                    <p>{{room.rate}} USD / NIGHT</p>
                     <a href="{{ url_for('payment') }}" class="sub">Book</a>
                 </div>                
             </div>
         </div>
-        <!--<div class="description">
-                <div class="details">
-                    <p class="title pbot">[Room Overview]</p>
-                    <p class="subtitle ptop">[Room Description]</p>
-                </div>
-                <div class="pricing">
-                    <p>[100] USD / NIGHT</p>
-                    <button class="sub">Book</button>
-                </div>
-            </div> 
-        </div>-->
+        <br>
+        <br>
+        {% endfor %}
     </div> 
 </div>
 

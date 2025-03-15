@@ -8,6 +8,7 @@ from urllib.parse import quote
 import boto3
 from botocore.exceptions import ClientError
 import json
+from .models import db, User, Hotel, Floor, Room, Booking, FAQ, YesNo, Locations, RoomType, Availability
 
 
 
@@ -33,87 +34,7 @@ pwd = quote(secret.get("password"))
 
 
 app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql+pymysql://{username}:{pwd}@hotel-db-instance.cvwasiw2g3h6.us-west-1.rds.amazonaws.com:3306/hotel_db'
-# Create the SQLAlchemy db instance
-db = SQLAlchemy(app)
-
-# Define the User model/table
-class YesNo(PyEnum):
-    Y = 'Y'
-    N = "N"
-class Locations(PyEnum):
-    MALIBU = "Malibu"
-    SM = "Santa Monica"
-class RoomType(PyEnum):
-    STRD = 'standard'
-    DLX = 'deluxe'
-    ST = 'suite'
-class Availability(PyEnum):
-    A = 'available'
-    B = 'booked'
-    M = 'maintenance'
-
-
-class User(db.Model):
-    __tablename__ = 'user'  # Name of the table in the database
-    id = db.Column(db.Integer, primary_key=True)  # Unique id for each user
-    name = db.Column(db.String(150), nullable=False)  # User's name
-    email = db.Column(db.String(150), unique=True, nullable=False)  # User's email (must be unique)
-    password = db.Column(db.String(255), nullable=False)  # Hashed password
-    phone = db.Column(db.String(15))
-    address_line1 = db.Column(db.String(100))
-    address_line2 = db.Column(db.String(100))
-    city = db.Column(db.String(50))
-    state = db.Column(db.String(50))
-    zipcode = db.Column(db.String(10))
-    rewards = db.Column(db.Integer,default=0)
-    room_number = db.Column(db.String(15), default="")
-    first_login = db.Column(db.Enum(YesNo), nullable=False, default=YesNo.Y) 
-    text_notifications = db.Column(db.Enum(YesNo), nullable=False, default=YesNo.N) 
-    email_notifications = db.Column(db.Enum(YesNo), nullable=False, default=YesNo.N) 
-    bookings = db.relationship('Booking', backref='user', lazy=True) #user is keeping track of bookings
-
-
-class Hotel(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    location = db.Column(db.Enum(Locations), nullable=False) 
-    #services
-    free_wifi = db.Column(db.Enum(YesNo), nullable=False, default=YesNo.Y) 
-    free_breakfast = db.Column(db.Enum(YesNo), nullable=False, default=YesNo.N) 
-    pool = db.Column(db.Enum(YesNo), nullable=False, default=YesNo.N) 
-    gym = db.Column(db.Enum(YesNo), nullable=False, default=YesNo.N) 
-    golf = db.Column(db.Enum(YesNo), nullable=False, default=YesNo.N) 
-    rooms = db.relationship('Room', backref='hotel', lazy=True, cascade='all, delete-orphan') #hotel is keeping track of rooms
-
-class Room(db.Model):
-    __tablename__ = 'room'
-    id = db.Column(db.Integer, primary_key=True) #room number (floornum(1) then roomnum(2))
-    hid = db.Column(db.Integer, db.ForeignKey('hotel.id'))
-    img = db.Column(db.String(200), nullable=False)
-    room_type = db.Column(db.Enum(RoomType),nullable=False,default=RoomType.STRD)
-    number_beds = db.Column(db.Integer,default=1)
-    rate = db.Column(db.Integer, nullable=False)
-    available = db.Column(db.Enum(Availability),nullable=False,default=Availability.A)
-    max_guests = db.Column(db.Integer,default=2,nullable=False)
-    num_guests = db.Column(db.Integer)
-    wheelchair_accessible = db.Column(db.Enum(YesNo), nullable=False, default=YesNo.N) 
-    bookings = db.relationship('Booking', backref='room', lazy=True, cascade='all, delete-orphan')  
-
-
-class Booking(db.Model):
-    __tablename__ = 'booking'
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    uid = db.Column(db.Integer, db.ForeignKey('user.id'))
-    room_num = db.Column(db.Integer, db.ForeignKey('room.id'))
-    check_in = db.Column(DateTime)
-    check_out = db.Column(DateTime)
-    fees = db.Column(db.Integer, default=50)
-
-class FAQ(db.Model):
-    __tablename__ = 'faq'
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    question = db.Column(db.String(150), nullable=False)
-    answer = db.Column(db.String(500), nullable=False)
-
+db.init_app(app)
 
 
 # Create all database tables (if they don't exist already)
@@ -286,7 +207,22 @@ def request_services():
 @app.route("/search", methods=["GET", "POST"])
 def search():
     locations = db.session.query(distinct(Hotel.location)).all()
-    return render_template('search.html',locations=locations)
+    rooms = Room.query.all()
+    if request.method == "POST":
+        stype = request.form.get('stype')
+        if stype == 'apply_search':
+            location = request.form.get('location-type')
+            start = request.form.get('startdate')
+            end = request.form.get('enddate')
+            query = Room.query.join(Hotel)
+            print("finding hotel", location, " and ", Hotel.location , " and2 ", Hotel.location==location)
+            if location:
+                location = Locations(location)
+                query = query.filter(Hotel.location == location)
+            rooms = query.all()
+        elif stype=='apply_filters':
+            pass
+    return render_template('search.html',locations=locations, rooms=rooms, YesNo = YesNo)
 
 @app.route("/terms")
 def terms():
@@ -370,31 +306,91 @@ def add_sample_data():
             db.session.add(malibu_hotel)
             db.session.add(sm_hotel)
             db.session.commit()
-        
+
         # Get hotel IDs
         malibu_id = Hotel.query.filter_by(location=Locations.MALIBU).first().id
+        sm_id = Hotel.query.filter_by(location=Locations.SM).first().id
         
+        #create floors
+        malibu_floor1 = Floor(hid=malibu_id, floor_number=1)
+        malibu_floor2 = Floor(hid=malibu_id, floor_number=2)
+        db.session.add(malibu_floor1)
+        db.session.add(malibu_floor2)
+        sm_floor1 = Floor(hid=sm_id, floor_number=1)
+        sm_floor2 = Floor(hid=sm_id, floor_number=2)
+        db.session.add(sm_floor1)
+        db.session.add(sm_floor2)
+        db.session.commit()
+
+        floor1_malibu_id = Floor.query.filter_by(hid=malibu_id, floor_number=1).first().id
+        floor2_malibu_id = Floor.query.filter_by(hid=malibu_id, floor_number=2).first().id
+        floor1_sm_id = Floor.query.filter_by(hid=sm_id, floor_number=1).first().id
+        floor2_sm_id = Floor.query.filter_by(hid=sm_id, floor_number=2).first().id
+
         # Create sample rooms
-        room1 = Room(
+        malibu_room11 = Room(
+            fid=floor1_malibu_id,
             hid=malibu_id,
             img="inside.jpeg",
             room_type=RoomType.DLX,
             number_beds=2,
             rate=150,
+            balcony=YesNo.N,
+            city_view=YesNo.Y,
+            ocean_view=YesNo.N,
+            smoking=YesNo.Y,
             available=Availability.A,
-            max_guests=4
+            max_guests=4,
+            wheelchair_accessible=YesNo.Y
         )
-        room2 = Room(
+        malibu_room21 = Room(
+            fid=floor2_malibu_id,
             hid=malibu_id,
             img="inside.jpeg", 
             room_type=RoomType.ST,
             number_beds=1,
             rate=250,
+            balcony=YesNo.Y,
+            city_view=YesNo.N,
+            ocean_view=YesNo.Y,
+            smoking=YesNo.N,
             available=Availability.A,
             max_guests=2
         )
-        db.session.add(room1)
-        db.session.add(room2)
+        sm_room11 = Room(
+            fid=floor1_sm_id,
+            hid=sm_id,
+            img="inside.jpeg",
+            room_type=RoomType.STRD,
+            number_beds=2,
+            rate=200,
+            balcony=YesNo.Y,
+            city_view=YesNo.Y,
+            ocean_view=YesNo.N,
+            smoking=YesNo.N,
+            available=Availability.A,
+            max_guests=4
+        )
+        sm_room21 = Room(
+            fid=floor2_sm_id,
+            hid=sm_id,
+            img="inside.jpeg", 
+            room_type=RoomType.ST,
+            number_beds=1,
+            rate=275,
+            balcony=YesNo.Y,
+            city_view=YesNo.N,
+            ocean_view=YesNo.Y,
+            smoking=YesNo.Y,
+            available=Availability.A,
+            max_guests=3, 
+            wheelchair_accessible=YesNo.Y
+        )        
+        db.session.add(malibu_room11)
+        db.session.add(malibu_room21)
+        db.session.add(sm_room11)
+        db.session.add(sm_room21)
+
         db.session.commit()
         print("Sample rooms added")
 
