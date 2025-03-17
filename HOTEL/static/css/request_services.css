@@ -3,6 +3,7 @@
     flex-direction:row;
     margin-block:50px;
     justify-content:center;
+    width:100%;
 }
 
 .images {

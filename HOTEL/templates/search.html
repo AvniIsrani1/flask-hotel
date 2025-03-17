@@ -23,8 +23,10 @@
         <br>
     </div>
     <div class="options">
-        <form method="post" id="searchbar" class="searchbar">
+        <form method="get" action={{url_for('search')}} id="searchbar" class="searchbar">
             <input type="hidden" name="stype" value="apply_search">
+            <input type="hidden" name="startdate" value="{{ request.args.get('startdate') }}">
+            <input type="hidden" name="enddate" value="{{ request.args.get('enddate') }}">
             <div class="locations">
                 <div class="search-description">
                     <i class="fa-solid fa-location-dot" ></i>
@@ -64,31 +66,33 @@
                     <p>Filters</p>
                 </button>
             </div>
-            <form method="post" id="filter-selection">
+            <form method="get" action={{url_for('search')}} id="filter-selection">
                 <input type="hidden" name="stype" value="apply_filters">
                 <select name="room_type" id="room_type" title="Select a Room Type">
                     <option value="" selected disabled>Room Type</option>
-                    <option value="standard">Standard</option>
-                    <option value="deluxe">Deluxe</option>
-                    <option value="suite">Suite</option>
+                    {% if roomtypes %}
+                    {% for rt in roomtypes %}
+                      <option value="{{rt[0].value}}">{{ rt[0].value }}</option>
+                    {% endfor %}
+                    {% endif %}
                 </select> 
                 <select name="bed_type" id="bed_type" title="Select Bed Count">
                     <option value="" selected disabled>Bed Type</option>
-                    <option value="one">1 Bed</option>
-                    <option value="two">2 Beds</option>
+                    <option value="1">1 Bed</option>
+                    <option value="2">2 Beds</option>
                 </select>   
                 <select name="smoking_preference" id="smoking_preference" title="Select Smoking Preference">
                     <option value="" selected disabled>Smoking Preference</option>
-                    <option value="one">Smoking</option>
-                    <option value="two">Non-Smoking</option>
+                    <option value="Smoking">Smoking</option>
+                    <option value="Non-Smoking">Non-Smoking</option>
                 </select>  
                 <select name="accessibility" id="accessibility" title="Accessibility Needs">
                     <option value="" selected disabled>Accessibility Features</option>
                     <option value="one">Wheelchair</option>
                 </select>  
                 <div class="pricing">
-                    <label for="price-range">Maximum Rate</label>
-                    <input type="range" id="price-range" min="10" max="700" step="1" value="700" oninput="price_update(this.value)">
+                    <label for="price_range">Maximum Rate</label>
+                    <input type="range" name="price_range" id="price_range" min="10" max="700" step="1" value="700" oninput="price_update(this.value)">
                     <p id="price-display">700</p>
                 </div>
                 <div class="buttons">
@@ -102,14 +106,14 @@
         <br>
         <div class="search-info">
             <p>1-40 of 200 hotels</p>
-            <select name="sort-by" id="sort-by" title="Sort By">
+            <select name="sort-by" id="sort-by" title="Sort By" onchange="sort()">
                 <option value="" selected disabled>Sort By</option>
                 <option value="priceL">Price (Low to High)</option>
-                <option value="priceL">Price (High to Low)</option>
+                <option value="priceH">Price (High to Low)</option>
             </select> 
         </div>
         <br>
-        {% for room in rooms %}
+        {% for room, number_rooms, min_rid in rooms %}
         <div class = "item">
             <script src="https://unpkg.com/focus-visible@5.0.2/dist/focus-visible.js" defer></script>
             <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
@@ -142,7 +146,8 @@
                     </div>
                     {% if room.ocean_view==YesNo.Y %}
                         <p class="subtitle ptop">Ocean View</p>
-                    {% elif room.city_view==YesNo.Y %}
+                    {% endif %}
+                    {% if room.city_view==YesNo.Y %}
                         <p class="subtitle ptop">City View</p>
                     {% endif %}
                     {% if room.balcony==YesNo.Y %}
@@ -151,13 +156,15 @@
                     {% if room.wheelchair_accessible==YesNo.Y %}
                         <p class="subtitle ptop">Wheelchair Accessible</p>
                     {% endif %}
-                    {% if room.smoking==YesNo.Y %}
+                    {% if room.smoking==YesNo.N %}
                         <p class="subtitle ptop">Non-Smoking Room</p>
                     {% endif %}
                 </div>
                 <div class="pricing">
                     <p>{{room.rate}} USD / NIGHT</p>
-                    <a href="{{ url_for('payment') }}" class="sub">Book</a>
+                    {% set startdate = request.args.get('startdate', '') %}
+                    {% set enddate = request.args.get('enddate', '') %}
+                    <a href="{{ url_for('reserve', rid=min_rid) + '?startdate=' + startdate + '&enddate=' + enddate}}" class="sub">Book</a>
                 </div>                
             </div>
         </div>
@@ -178,6 +185,12 @@
         (document.getElementById("filter-selection").style.display ==='none' || document.getElementById("filter-selection").style.display ==='') ? document.getElementById("filter-selection").style.display = 'flex' : document.getElementById("filter-selection").style.display = 'none';
     }
 
+    function sort(){
+        let val = document.getElementById('sort-by').value;
+        if(val){
+            window.location.href = window.location.pathname + "?sort-by=" + encodeURIComponent(val);
+        }
+    }
 </script>
 
 

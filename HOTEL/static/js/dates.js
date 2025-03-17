@@ -4,6 +4,7 @@ flatpickr("#startdate", {
     maxDate: new Date().fp_incr(365*2),
     prevArrow:'PREV',
     nextArrow:'NEXT', 
+    default:startdate&&startdate!=='null'? startdate: null,
     onChange: function(dates, datestr, instance) {
         let startdate = dates[0]; 
         if (startdate) {
@@ -18,6 +19,7 @@ flatpickr("#enddate", {
     maxDate: new Date().fp_incr(365*2),
     prevArrow:'PREV',
     nextArrow:'NEXT',
+    default:enddate&&enddate!=='null'? enddate: null,
     onChange: function(dates, datestr, instance) {
         calcNights();
     }

@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash, get_flashed_messages
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import DateTime, distinct, Computed
+from sqlalchemy import DateTime, distinct, desc, cast, func, String, Computed
 from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
 from enum import Enum as PyEnum
@@ -204,25 +204,86 @@ def request_services():
         return redirect(url_for("log_in"))
     return render_template('request_services.html')
 
+
+
 @app.route("/search", methods=["GET", "POST"])
 def search():
     locations = db.session.query(distinct(Hotel.location)).all()
+    roomtypes = db.session.query(distinct(cast(Room.room_type, String))).order_by(desc(cast(Room.room_type, String))).all()
+    
     rooms = Room.query.all()
-    if request.method == "POST":
-        stype = request.form.get('stype')
+    query = Room.query.join(Hotel).filter(Room.available==Availability.A)
+
+    if request.method == "GET":
+        stype = request.args.get('stype')
         if stype == 'apply_search':
-            location = request.form.get('location-type')
-            start = request.form.get('startdate')
-            end = request.form.get('enddate')
-            query = Room.query.join(Hotel)
+            location = request.args.get('location-type')
+            start = request.args.get('startdate')
+            end = request.args.get('enddate')
             print("finding hotel", location, " and ", Hotel.location , " and2 ", Hotel.location==location)
             if location:
                 location = Locations(location)
                 query = query.filter(Hotel.location == location)
-            rooms = query.all()
-        elif stype=='apply_filters':
-            pass
-    return render_template('search.html',locations=locations, rooms=rooms, YesNo = YesNo)
+        if stype=='apply_filters':
+            room_type = request.args.get('room_type')
+            bed_type = request.args.get('bed_type')
+            smoking_preference = request.args.get('smoking_preference')
+            accessibility = request.args.get('accessibility')
+            price_range = request.args.get('price_range')
+            if room_type:
+                room_type = RoomType(room_type)
+                query = query.filter(Room.room_type == room_type)
+            if bed_type:
+                query = query.filter(Room.number_beds == bed_type)
+            if smoking_preference:
+                if smoking_preference == 'Smoking':
+                    smoking_preference = YesNo.Y
+                else:
+                    smoking_preference = YesNo.N
+                query = query.filter(Room.smoking == smoking_preference)
+            if accessibility:
+                accessibility = YesNo.Y
+                query = query.filter(Room.wheelchair_accessible == accessibility)
+            if price_range:
+                query = query.filter(Room.rate <= price_range)
+    sort = request.args.get('sort-by')
+    if sort=='priceL':
+        query = query.order_by(Room.rate.asc())
+    elif sort=='priceH':
+        query = query.order_by(Room.rate.desc())
+    query = query.group_by(
+        Room.hid, Room.room_type, Room.number_beds, Room.rate, Room.balcony, Room.city_view, Room.ocean_view, 
+        Room.smoking, Room.max_guests, Room.wheelchair_accessible
+    )
+    query = query.with_entities(Room, func.count(distinct(Room.id)).label('number_rooms'), func.min(Room.id).label('min_rid'))
+    rooms = query.all()
+    print(rooms)
+    return render_template('search.html', locations=locations, roomtypes=roomtypes, rooms=rooms, YesNo = YesNo)
+
+@app.route("/reserve", methods=["GET", "POST"])
+def reserve():
+    if "user_id" not in session:
+        flash("Please log in first.", "error")
+        return redirect(url_for("log_in"))
+    
+    user = User.query.get(session["user_id"])
+    rid = request.args.get('rid')
+    startdate = request.args.get('startdate')
+    enddate = request.args.get('enddate')
+    print(startdate, 'and', enddate)
+    query = Room.query.join(Hotel).filter(Room.available==Availability.A)
+    query = query.group_by(
+        Room.hid, Room.room_type, Room.number_beds, Room.rate, Room.balcony, Room.city_view, Room.ocean_view, 
+        Room.smoking, Room.max_guests, Room.wheelchair_accessible
+    )
+    query = query.with_entities(Room, Hotel.address, func.count(distinct(Room.id)).label('number_rooms'), func.min(Room.id).label('min_rid'))
+    query = query.having(func.min(Room.id) == rid)
+    room = query.first()
+    print(query)
+    if not room:
+        flash('Room not found',"error")
+        return redirect(url_for('search'))
+    return render_template('reserve.html', user=user, room=room, YesNo=YesNo, startdate=startdate, enddate=enddate)
 
 @app.route("/terms")
 def terms():
@@ -301,8 +362,8 @@ def add_sample_data():
         print("Adding sample rooms")
         # First check if we have hotels
         if not Hotel.query.first():
-            malibu_hotel = Hotel(location=Locations.MALIBU)
-            sm_hotel = Hotel(location=Locations.SM)
+            malibu_hotel = Hotel(location=Locations.MALIBU, address="1234 Sunset Blvd, Malibu, CA 90265")
+            sm_hotel = Hotel(location=Locations.SM, address="5678 Ocean Drive, Santa Monica, CA 90401")
             db.session.add(malibu_hotel)
             db.session.add(sm_hotel)
             db.session.commit()
@@ -331,6 +392,23 @@ def add_sample_data():
         malibu_room11 = Room(
             fid=floor1_malibu_id,
             hid=malibu_id,
+            room_number = 1,
+            img="inside.jpeg",
+            room_type=RoomType.DLX,
+            number_beds=2,
+            rate=150,
+            balcony=YesNo.N,
+            city_view=YesNo.Y,
+            ocean_view=YesNo.N,
+            smoking=YesNo.Y,
+            available=Availability.A,
+            max_guests=4,
+            wheelchair_accessible=YesNo.Y
+        )
+        malibu_room12 = Room(
+            fid=floor1_malibu_id,
+            hid=malibu_id,
+            room_number = 2,
             img="inside.jpeg",
             room_type=RoomType.DLX,
             number_beds=2,
@@ -346,6 +424,7 @@ def add_sample_data():
         malibu_room21 = Room(
             fid=floor2_malibu_id,
             hid=malibu_id,
+            room_number = 1,
             img="inside.jpeg", 
             room_type=RoomType.ST,
             number_beds=1,
@@ -360,6 +439,7 @@ def add_sample_data():
         sm_room11 = Room(
             fid=floor1_sm_id,
             hid=sm_id,
+            room_number = 1,
             img="inside.jpeg",
             room_type=RoomType.STRD,
             number_beds=2,
@@ -374,6 +454,7 @@ def add_sample_data():
         sm_room21 = Room(
             fid=floor2_sm_id,
             hid=sm_id,
+            room_number=1,
             img="inside.jpeg", 
             room_type=RoomType.ST,
             number_beds=1,
@@ -385,11 +466,29 @@ def add_sample_data():
             available=Availability.A,
             max_guests=3, 
             wheelchair_accessible=YesNo.Y
-        )        
+        )  
+        sm_room22 = Room(
+            fid=floor2_sm_id,
+            hid=sm_id,
+            room_number=2,
+            img="inside.jpeg", 
+            room_type=RoomType.ST,
+            number_beds=1,
+            rate=275,
+            balcony=YesNo.Y,
+            city_view=YesNo.N,
+            ocean_view=YesNo.Y,
+            smoking=YesNo.Y,
+            available=Availability.A,
+            max_guests=3, 
+            wheelchair_accessible=YesNo.Y
+        )       
         db.session.add(malibu_room11)
+        db.session.add(malibu_room12)
         db.session.add(malibu_room21)
         db.session.add(sm_room11)
         db.session.add(sm_room21)
+        db.session.add(sm_room22)
 
         db.session.commit()
         print("Sample rooms added")
@@ -400,7 +499,7 @@ with app.app_context():
     add_sample_data()
 
 # Payment page route
-@app.route("/payment")
+@app.route("/payment", methods=["GET","POST"])
 def payment():
     if "user_id" not in session:
         flash("Please log in first.", "error")

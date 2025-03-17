@@ -43,6 +43,7 @@ class User(db.Model):
 class Hotel(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     location = db.Column(db.Enum(Locations), nullable=False) 
+    address = db.Column(db.String(200), nullable=False)
     #services
     free_wifi = db.Column(db.Enum(YesNo), nullable=False, default=YesNo.Y) 
     free_breakfast = db.Column(db.Enum(YesNo), nullable=False, default=YesNo.N) 
@@ -62,9 +63,10 @@ class Floor(db.Model):
 
 class Room(db.Model):
     __tablename__ = 'room'
-    id = db.Column(db.Integer, primary_key=True) #room number
+    id = db.Column(db.Integer, primary_key=True) 
     fid = db.Column(db.Integer, db.ForeignKey('floor.id'))
     hid = db.Column(db.Integer, db.ForeignKey('hotel.id'))
+    room_number = db.Column(db.Integer,nullable=False) #room number
     img = db.Column(db.String(200), nullable=False)
     room_type = db.Column(db.Enum(RoomType),nullable=False,default=RoomType.STRD)
     number_beds = db.Column(db.Integer,default=1)
@@ -78,6 +80,8 @@ class Room(db.Model):
     num_guests = db.Column(db.Integer)
     wheelchair_accessible = db.Column(db.Enum(YesNo), nullable=False, default=YesNo.N) 
     bookings = db.relationship('Booking', backref='room', lazy=True, cascade='all, delete-orphan')  
+    
+    __table_args__ = (db.UniqueConstraint('hid', 'fid', 'room_number', name='hid_fid_room_number_unique'),)
 
 
 class Booking(db.Model):
