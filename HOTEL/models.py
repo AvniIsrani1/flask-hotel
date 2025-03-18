@@ -98,3 +98,4 @@ class FAQ(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     question = db.Column(db.String(150), nullable=False)
     answer = db.Column(db.String(500), nullable=False)
+    subject = db.Column(db.String(150), nullable=False)

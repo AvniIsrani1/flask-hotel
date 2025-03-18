@@ -9,7 +9,7 @@ import boto3
 from botocore.exceptions import ClientError
 import json
 from .models import db, User, Hotel, Floor, Room, Booking, FAQ, YesNo, Locations, RoomType, Availability
-from .adding import add_floor, add_room, add_layout, add_booking
+from .adding import add_floor, add_room, add_layout, add_booking, add_faq
 
 
 app = Flask(__name__,
@@ -319,7 +319,8 @@ def terms():
 
 @app.route("/faq")
 def faq():
-    return render_template('faq.html')
+    faqs = FAQ.query.all()
+    return render_template('faq.html',faqs=faqs)
 
 from datetime import datetime, timedelta
 
@@ -420,13 +421,65 @@ def add_sample_data():
         add_booking(uid=avni_id, rid=malibu_room_1, check_in=datetime.now(), check_out=datetime.now()+timedelta(5),fees=500)
         add_booking(uid=avni_id, rid=sm_room_1, check_in=datetime.now()+timedelta(5), check_out=datetime.now()+timedelta(10),fees=600)
 
+def add_sample_faq():
+    faqs = [
+        ("Where are Ocean Vista's locations?", 
+        "Ocean Vista Hotel has two locations: one in Malibu and one in Santa Monica.", 
+        "General Information"),
 
+        ("What are the check-in and check-out times?", 
+        "Check-in is at 3:00 PM, and check-out is at 11:00 AM.", 
+        "General Information"),
+
+        ("Do you allow early check-in or late check-out?", 
+        "Early check-in and late check-out are subject to availability. Please contact the front desk for requests.", 
+        "General Information"),
+
+        ("Is parking available at the hotel?", 
+        "Yes, both locations offer on-site parking. A daily parking fee may apply.", 
+        "General Information"),
+
+        ("Does Ocean Vista have an on-site restaurant?", 
+        "Yes, our Ocean Breeze Restaurant serves fresh seafood and international cuisine with stunning oceanfront views.", 
+        "Dining & Activities"),
+
+        ("Is room service available?", 
+        "Yes, room service is available from 7:00 AM to 10:00 PM.", 
+        "Dining & Activities"),
+
+        ("Does Ocean Vista have a pool or spa?", 
+        "Our Santa Monica location features a rooftop infinity pool, while our Malibu location has a full-service spa and wellness center.", 
+        "Dining & Activities"),
+
+        ("Is Wi-Fi available?", 
+        "Yes, we offer complimentary high-speed Wi-Fi in all rooms and public areas.", 
+        "Rooms & Amenities"),
+
+        ("Do rooms have kitchenettes or minibars?", 
+        "Select suites come with kitchenettes. All rooms include a minibar, coffee maker, and essential appliances.", 
+        "Rooms & Amenities"),
+
+        ("Is Ocean Vista pet-friendly?", 
+        "Yes! We welcome pets for an additional fee. Please review our pet policy before booking.", 
+        "Rooms & Amenities"),
+
+        ("What is the cancellation policy?", 
+        "Our standard cancellation policy allows free cancellations up to 48 hours before check-in. Policies may vary for special rates and peak seasons.", 
+        "Reservations & Policies"),
+
+        ("Can I host an event or wedding at Ocean Vista?", 
+        "Absolutely! We offer event spaces, wedding packages, and beachside ceremonies at both locations.", 
+        "Reservations & Policies")
+    ]
+    add_faq(faqs)
 
 
 # Add this after db.create_all() in your __init__.py
 with app.app_context():
     db.create_all()
     add_sample_data()
+    if not FAQ.query.first():
+        add_sample_faq()
 
 # Payment page route
 @app.route("/payment", methods=["GET","POST"])

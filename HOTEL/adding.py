@@ -73,3 +73,11 @@ def add_booking(uid, rid, check_in, check_out, fees):
     booking = Booking(uid=uid, rid=rid, check_in=check_in, check_out=check_out, fees=fees)
     db.session.add(booking)
     db.session.commit()
+
+def add_faq(f):
+    faqs = []
+    for question, answer, subject in f:
+        faq = FAQ(question=question, answer=answer, subject=subject)
+        faqs.append(faq)
+    db.session.add_all(faqs)
+    db.session.commit()
