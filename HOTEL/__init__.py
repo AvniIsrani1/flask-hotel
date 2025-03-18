@@ -238,6 +238,8 @@ def search():
         if stype=='apply_filters':
             room_type = request.args.get('room_type')
             bed_type = request.args.get('bed_type')
+            view = request.args.get('view')
+            balcony = request.args.get('balcony')
             smoking_preference = request.args.get('smoking_preference')
             accessibility = request.args.get('accessibility')
             price_range = request.args.get('price_range')
@@ -246,6 +248,16 @@ def search():
                 query = query.filter(Room.room_type == room_type)
             if bed_type:
                 query = query.filter(Room.number_beds == bed_type)
+            if view:
+                if view=='ocean':
+                    query = query.filter(Room.ocean_view==YesNo.Y)
+                elif view=='city':
+                    query = query.filter(Room.city_view==YesNo.Y)
+            if balcony:
+                if balcony=='balcony':
+                    query = query.filter(Room.balcony==YesNo.Y)
+                elif balcony=='no_balcony':
+                    query = query.filter(Room.balcony==YesNo.N)
             if smoking_preference:
                 if smoking_preference == 'Smoking':
                     smoking_preference = YesNo.Y

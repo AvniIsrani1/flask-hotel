@@ -76,16 +76,21 @@
                     {% endfor %}
                     {% endif %}
                 </select> 
-                <select name="view" id="view" title="Select View">
-                    <option value="" selected disabled>View</option>
-                    <option value="ocean">Ocean View</option>
-                    <option value="city">City View</option>
-                </select>
                 <select name="bed_type" id="bed_type" title="Select Bed Count">
                     <option value="" selected disabled>Bed Type</option>
                     <option value="1" {% if request.args.get('bed_type')=="1" %} selected {% endif %}>1 Bed</option>
                     <option value="2" {% if request.args.get('bed_type')=="2" %} selected {% endif %}>2 Beds</option>
                 </select>   
+                <select name="balcony" id="balcony" title="Select Balcony Preference">
+                    <option value="" selected disabled>Balcony Preference</option>
+                    <option value="balcony" {% if request.args.get('balcony')=='balcony' %} selected {% endif %}>Balcony</option>
+                    <option value="no_balcony" {% if request.args.get('balcony')=='no_balcony' %} selected {% endif %}>No Balcony</option>
+                </select>
+                <select name="view" id="view" title="Select View">
+                    <option value="" selected disabled>View</option>
+                    <option value="ocean" {% if request.args.get('view')=='ocean' %} selected {% endif %}>Ocean View</option>
+                    <option value="city" {% if request.args.get('view')=='city' %} selected {% endif %}>City View</option>
+                </select>
                 <select name="smoking_preference" id="smoking_preference" title="Select Smoking Preference">
                     <option value="" selected disabled>Smoking Preference</option>
                     <option value="Smoking" {% if request.args.get('smoking_preference')=="Smoking" %} selected {% endif %}>Smoking</option>
@@ -184,7 +189,7 @@
 <script>
     function close_filter(){
         let filters = document.getElementById("filter-selection").style.display="none";
-        let filter = ['room_type','view','bed_type','smoking_preference','accessibility','price_range']
+        let filter = ['room_type','bed_type', 'view', 'balcony','smoking_preference','accessibility','price_range']
         let url = new URL(window.location.href);
         url.searchParams.delete("apply_filters")
         for(let i=0; i<filter.length; i++){
