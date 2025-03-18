@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash, get_flashed_messages
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import DateTime, distinct, desc, cast, func, String, Computed
+from sqlalchemy import DateTime, distinct, desc, cast, func, not_, String, Computed
 from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
 from enum import Enum as PyEnum
@@ -9,7 +9,7 @@ import boto3
 from botocore.exceptions import ClientError
 import json
 from .models import db, User, Hotel, Floor, Room, Booking, FAQ, YesNo, Locations, RoomType, Availability
-
+from .adding import add_floor, add_room, add_layout, add_booking
 
 
 app = Flask(__name__,
@@ -216,14 +216,25 @@ def search():
 
     if request.method == "GET":
         stype = request.args.get('stype')
-        if stype == 'apply_search':
-            location = request.args.get('location-type')
-            start = request.args.get('startdate')
-            end = request.args.get('enddate')
-            print("finding hotel", location, " and ", Hotel.location , " and2 ", Hotel.location==location)
-            if location:
-                location = Locations(location)
-                query = query.filter(Hotel.location == location)
+        # if stype == 'apply_search':
+        location = request.args.get('location-type')
+        start = request.args.get('startdate') 
+        end = request.args.get('enddate') 
+        if location:
+            location = Locations(location)
+            query = query.filter(Hotel.location == location)
+        if start:
+            starting = datetime.strptime(str(start), "%B %d, %Y").replace(hour=0,minute=0,second=0)
+            ending = datetime.strptime(str(start), "%B %d, %Y").replace(hour=23,minute=59,second=59)
+        if end:
+            ending = datetime.strptime(str(end), "%B %d, %Y").replace(hour=23,minute=59,second=59)
+            if not start:
+                starting = datetime.strptime(str(end), "%B %d, %Y").replace(hour=0,minute=0,second=0)
+        if not start and not end:
+            starting = datetime.now().replace(hour=0,minute=0,second=0)
+            ending = datetime.now().replace(hour=23,minute=59,second=59)
+        # if start or end:
+        query = query.filter(not_(db.exists().where(Booking.rid == Room.id).where(Booking.check_in < ending).where(Booking.check_out>starting)))
         if stype=='apply_filters':
             room_type = request.args.get('room_type')
             bed_type = request.args.get('bed_type')
@@ -279,7 +290,12 @@ def reserve():
     query = query.with_entities(Room, Hotel.address, func.count(distinct(Room.id)).label('number_rooms'), func.min(Room.id).label('min_rid'))
     query = query.having(func.min(Room.id) == rid)
     room = query.first()
-    print(query)
+    # similar_rooms = Room.query.join(Hotel).filter(
+    #     Room.hid==room.hid, Room.room_type==room.room_type, Room.number_beds==room.number_beds, Room.rate==room.rate, Room.balcony==room.balcony, Room.city_view==room.city_view,
+    #     Room.ocean_view==room.ocean_view, Room.smoking==room.smoking, Room.max_guests==room.max_guests, Room.wheelchair_accessible==room.wheelchair_accessible
+    # )
+    # similar_rooms = similar_rooms.filter(not_(db.exists().where(Booking.rid == Room.id).where(Booking.check_in < ending).where(Booking.check_out>starting)))
+
     if not room:
         flash('Room not found',"error")
         return redirect(url_for('search'))
@@ -355,6 +371,7 @@ class CreditCard:
                 self.validate_cvv())
 
 # Add sample rooms if needed (run this after db.create_all())
+
 def add_sample_data():
     """Add sample data to the database if tables are empty"""
     # Check if we have any rooms
@@ -372,126 +389,27 @@ def add_sample_data():
         malibu_id = Hotel.query.filter_by(location=Locations.MALIBU).first().id
         sm_id = Hotel.query.filter_by(location=Locations.SM).first().id
         
-        #create floors
-        malibu_floor1 = Floor(hid=malibu_id, floor_number=1)
-        malibu_floor2 = Floor(hid=malibu_id, floor_number=2)
-        db.session.add(malibu_floor1)
-        db.session.add(malibu_floor2)
-        sm_floor1 = Floor(hid=sm_id, floor_number=1)
-        sm_floor2 = Floor(hid=sm_id, floor_number=2)
-        db.session.add(sm_floor1)
-        db.session.add(sm_floor2)
-        db.session.commit()
-
-        floor1_malibu_id = Floor.query.filter_by(hid=malibu_id, floor_number=1).first().id
-        floor2_malibu_id = Floor.query.filter_by(hid=malibu_id, floor_number=2).first().id
-        floor1_sm_id = Floor.query.filter_by(hid=sm_id, floor_number=1).first().id
-        floor2_sm_id = Floor.query.filter_by(hid=sm_id, floor_number=2).first().id
-
-        # Create sample rooms
-        malibu_room11 = Room(
-            fid=floor1_malibu_id,
-            hid=malibu_id,
-            room_number = 1,
-            img="inside.jpeg",
-            room_type=RoomType.DLX,
-            number_beds=2,
-            rate=150,
-            balcony=YesNo.N,
-            city_view=YesNo.Y,
-            ocean_view=YesNo.N,
-            smoking=YesNo.Y,
-            available=Availability.A,
-            max_guests=4,
-            wheelchair_accessible=YesNo.Y
-        )
-        malibu_room12 = Room(
-            fid=floor1_malibu_id,
-            hid=malibu_id,
-            room_number = 2,
-            img="inside.jpeg",
-            room_type=RoomType.DLX,
-            number_beds=2,
-            rate=150,
-            balcony=YesNo.N,
-            city_view=YesNo.Y,
-            ocean_view=YesNo.N,
-            smoking=YesNo.Y,
-            available=Availability.A,
-            max_guests=4,
-            wheelchair_accessible=YesNo.Y
-        )
-        malibu_room21 = Room(
-            fid=floor2_malibu_id,
-            hid=malibu_id,
-            room_number = 1,
-            img="inside.jpeg", 
-            room_type=RoomType.ST,
-            number_beds=1,
-            rate=250,
-            balcony=YesNo.Y,
-            city_view=YesNo.N,
-            ocean_view=YesNo.Y,
-            smoking=YesNo.N,
-            available=Availability.A,
-            max_guests=2
-        )
-        sm_room11 = Room(
-            fid=floor1_sm_id,
-            hid=sm_id,
-            room_number = 1,
-            img="inside.jpeg",
-            room_type=RoomType.STRD,
-            number_beds=2,
-            rate=200,
-            balcony=YesNo.Y,
-            city_view=YesNo.Y,
-            ocean_view=YesNo.N,
-            smoking=YesNo.N,
-            available=Availability.A,
-            max_guests=4
-        )
-        sm_room21 = Room(
-            fid=floor2_sm_id,
-            hid=sm_id,
-            room_number=1,
-            img="inside.jpeg", 
-            room_type=RoomType.ST,
-            number_beds=1,
-            rate=275,
-            balcony=YesNo.Y,
-            city_view=YesNo.N,
-            ocean_view=YesNo.Y,
-            smoking=YesNo.Y,
-            available=Availability.A,
-            max_guests=3, 
-            wheelchair_accessible=YesNo.Y
-        )  
-        sm_room22 = Room(
-            fid=floor2_sm_id,
-            hid=sm_id,
-            room_number=2,
-            img="inside.jpeg", 
-            room_type=RoomType.ST,
-            number_beds=1,
-            rate=275,
-            balcony=YesNo.Y,
-            city_view=YesNo.N,
-            ocean_view=YesNo.Y,
-            smoking=YesNo.Y,
-            available=Availability.A,
-            max_guests=3, 
-            wheelchair_accessible=YesNo.Y
-        )       
-        db.session.add(malibu_room11)
-        db.session.add(malibu_room12)
-        db.session.add(malibu_room21)
-        db.session.add(sm_room11)
-        db.session.add(sm_room21)
-        db.session.add(sm_room22)
-
-        db.session.commit()
+        add_layout(hid=malibu_id,base_floor_number=1,num_floors=4)
+        add_layout(hid=sm_id,base_floor_number=1,num_floors=4)
         print("Sample rooms added")
+
+        users = []
+        avni = User(name="avni",email="avni@gmail.com",password="avni")
+        devansh = User(name="devansh",email="devansh@gmail.com",password="devansh")
+        elijah = User(name="elijah",email="elijah@gmail.com",password="elijah")
+        andrew = User(name="andrew",email="andrew@gmail.com",password="andrew")
+        users.extend([avni, devansh, elijah, andrew])
+        db.session.add_all(users)
+        db.session.commit()
+
+        avni_id = User.query.filter_by(email="avni@gmail.com").first().id
+        malibu_room_1 = Room.query.filter_by(hid=malibu_id).first().id
+        sm_room_1 = Room.query.filter_by(hid=sm_id).first().id
+        add_booking(uid=avni_id, rid=malibu_room_1, check_in=datetime.now(), check_out=datetime.now()+timedelta(5),fees=500)
+        add_booking(uid=avni_id, rid=sm_room_1, check_in=datetime.now()+timedelta(5), check_out=datetime.now()+timedelta(10),fees=600)
+
+
+
 
 # Add this after db.create_all() in your __init__.py
 with app.app_context():

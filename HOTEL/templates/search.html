@@ -25,18 +25,16 @@
     <div class="options">
         <form method="get" action={{url_for('search')}} id="searchbar" class="searchbar">
             <input type="hidden" name="stype" value="apply_search">
-            <input type="hidden" name="startdate" value="{{ request.args.get('startdate') }}">
-            <input type="hidden" name="enddate" value="{{ request.args.get('enddate') }}">
             <div class="locations">
                 <div class="search-description">
                     <i class="fa-solid fa-location-dot" ></i>
                     <p>DESTINATION</p>
                 </div>
                 <select name="location-type" class="location-type" title="Select a Location">
-                    <option disabled selected>Select Location</option>
-                      {% if locations %}
+                    <option disabled {% if not request.args.get('location-type') %} selected {% endif %}>Select Location</option>
+                    {% if locations %}
                         {% for loc in locations %}
-                          <option value="{{loc[0].value}}">{{ loc[0].value }}</option>
+                          <option value="{{loc[0].value}}" {% if request.args.get('location-type')==loc[0].value %} selected {% endif %}>{{ loc[0].value }}</option>
                         {% endfor %}
                       {% endif %}
                 </select>
@@ -57,7 +55,6 @@
                     <p><span>Find</span> Rooms</p>
                 </button>
             </div>
-            <script src="../static/js/dates.js"></script>
         </form>
         <div class="filters ptop">
             <div class="button-area">
@@ -68,27 +65,35 @@
             </div>
             <form method="get" action={{url_for('search')}} id="filter-selection">
                 <input type="hidden" name="stype" value="apply_filters">
+                <input type="hidden" name="location-type" value="{{ request.args.get('location-type', '')}}">
+                <input type="hidden" name="startdate" value="{{ request.args.get('startdate', '') }}">
+                <input type="hidden" name="enddate" value="{{ request.args.get('enddate', '') }}">
                 <select name="room_type" id="room_type" title="Select a Room Type">
                     <option value="" selected disabled>Room Type</option>
                     {% if roomtypes %}
                     {% for rt in roomtypes %}
-                      <option value="{{rt[0].value}}">{{ rt[0].value }}</option>
+                      <option value="{{rt[0].value}}" {% if request.args.get('room_type')==rt[0].value %} selected {% endif %}>{{ rt[0].value }}</option>
                     {% endfor %}
                     {% endif %}
                 </select> 
+                <select name="view" id="view" title="Select View">
+                    <option value="" selected disabled>View</option>
+                    <option value="ocean">Ocean View</option>
+                    <option value="city">City View</option>
+                </select>
                 <select name="bed_type" id="bed_type" title="Select Bed Count">
                     <option value="" selected disabled>Bed Type</option>
-                    <option value="1">1 Bed</option>
-                    <option value="2">2 Beds</option>
+                    <option value="1" {% if request.args.get('bed_type')=="1" %} selected {% endif %}>1 Bed</option>
+                    <option value="2" {% if request.args.get('bed_type')=="2" %} selected {% endif %}>2 Beds</option>
                 </select>   
                 <select name="smoking_preference" id="smoking_preference" title="Select Smoking Preference">
                     <option value="" selected disabled>Smoking Preference</option>
-                    <option value="Smoking">Smoking</option>
-                    <option value="Non-Smoking">Non-Smoking</option>
+                    <option value="Smoking" {% if request.args.get('smoking_preference')=="Smoking" %} selected {% endif %}>Smoking</option>
+                    <option value="Non-Smoking" {% if request.args.get('smoking_preference')=="Non-Smoking" %} selected {% endif %}>Non-Smoking</option>
                 </select>  
                 <select name="accessibility" id="accessibility" title="Accessibility Needs">
                     <option value="" selected disabled>Accessibility Features</option>
-                    <option value="one">Wheelchair</option>
+                    <option value="wheelchair" {% if request.args.get('accessibility')=="wheelchair" %} selected {% endif %}>Wheelchair</option>
                 </select>  
                 <div class="pricing">
                     <label for="price_range">Maximum Rate</label>
@@ -97,7 +102,8 @@
                 </div>
                 <div class="buttons">
                     <button class="sub-sm" type="button" onclick="close_filter()" title="Submit">
-                        <i class="fa-solid fa-xmark"></i>
+                        <!-- <i class="fa-solid fa-xmark"></i> -->
+                        <p>Clear</p>
                     </button>
                     <input type="submit" class="sub-sm" value="Apply">                 
                 </div>
@@ -105,7 +111,7 @@
         </div>
         <br>
         <div class="search-info">
-            <p>1-40 of 200 hotels</p>
+            <p>{{rooms | length}} rooms found</p>
             <select name="sort-by" id="sort-by" title="Sort By" onchange="sort()">
                 <option value="" selected disabled>Sort By</option>
                 <option value="priceL">Price (Low to High)</option>
@@ -162,9 +168,10 @@
                 </div>
                 <div class="pricing">
                     <p>{{room.rate}} USD / NIGHT</p>
+                    {% set location_type = request.args.get('location-type', '') %}
                     {% set startdate = request.args.get('startdate', '') %}
                     {% set enddate = request.args.get('enddate', '') %}
-                    <a href="{{ url_for('reserve', rid=min_rid) + '?startdate=' + startdate + '&enddate=' + enddate}}" class="sub">Book</a>
+                    <a href="{{ url_for('reserve', rid=min_rid) + '&location-type=' + location_type +'&startdate=' + startdate + '&enddate=' + enddate}}" class="sub">Book</a>
                 </div>                
             </div>
         </div>
@@ -176,7 +183,14 @@
 
 <script>
     function close_filter(){
-        document.getElementById("filter-selection").style.display="none";
+        let filters = document.getElementById("filter-selection").style.display="none";
+        let filter = ['room_type','view','bed_type','smoking_preference','accessibility','price_range']
+        let url = new URL(window.location.href);
+        url.searchParams.delete("apply_filters")
+        for(let i=0; i<filter.length; i++){
+            url.searchParams.delete(filter[i])
+        }
+        window.location.href = url.toString();
     }
     function price_update(val){
         document.getElementById("price-display").innerHTML = val;
@@ -188,10 +202,38 @@
     function sort(){
         let val = document.getElementById('sort-by').value;
         if(val){
-            window.location.href = window.location.pathname + "?sort-by=" + encodeURIComponent(val);
+            let url = new URL(window.location.href);
+            url.searchParams.set("sort-by",val);
+            window.location.href = url.toString();
         }
     }
+
+    document.addEventListener("click", function(event){
+        let filterForm = document.getElementById("filter-selection");
+        let filterButton = document.getElementById("icon");
+
+        if (filterForm.style.display === "flex" && !filterForm.contains(event.target) && !filterButton.contains(event.target)) {
+            filterForm.style.display = "none";
+        }  
+    });
+
+    var startdate_url = "{{ request.args.get('startdate', '') or request.args.get('enddate','') }}";
+    var enddate_url = "{{ request.args.get('enddate', '') or request.args.get('startdate','') }}";
+    if(!startdate_url){
+        startdate_url = new Date().toLocaleDateString('en-US',{
+            month:'long',
+            day:'numeric',
+            year:'numeric'
+        });
+    }
+    if(!enddate_url){
+        enddate_url = startdate_url;
+    }
 </script>
+
+
+<script src="../static/js/dates.js"></script>
+
 
 
 {% endblock %}

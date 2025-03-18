@@ -1,21 +1,24 @@
 {% extends 'base.html' %}
- 
- {% block title %} Reserve {% endblock %}
- 
- {% block styles %} 
- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
- <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
- 
- <link rel="stylesheet" href="../static/css/dates.css" />
- <link rel="stylesheet" href="../static/css/reserve.css" />
- {% endblock %}
- 
- {% block content %}
- <form method='post' action={{url_for('payment')}} id="reservation-details" class="reservation-details">
+{% block title %} Reserve {% endblock %}
+
+{% block styles %} 
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+
+<link rel="stylesheet" href="../static/css/dates.css" />
+<link rel="stylesheet" href="../static/css/reserve.css" />
+{% endblock %}
+
+{% block content %}
+
+ {% set rid = request.args.get('rid','') %}
+
+ <form method='post' action={{url_for('payment', rid=rid)}} id="reservation-details" class="reservation-details">
     <p class="main-title">Booking Details</p>
     <div class="image-container">
-        <img src="../static/images/outside.webp" width="1100px" height="550px" class="hotel-image">
+        <img src="../static/images/outside.webp" width="1100px" height="550px" class="hotel-image" alt="Hotel Image">
     </div>
     <div class="section">
         <p class="title">Overview</p>
@@ -45,14 +48,15 @@
         </div>
         <div class="check-date">
             <label for="enddate">Check-Out Date: </label>
-            <input type="text" id="enddate" class="" name="enddate" placeholder="Select End Date"> 
+            <input type="text" id="enddate" class="" name="enddate" placeholder="Select End Date" required> 
         </div>
+        <p>Length of Stay: <span id="nights"></span></p>
         <div class="">
             <label for="rooms">Number of Rooms: </label>
             <input type="number" id="rooms" name="rooms" value="1" min="1" max="{{room.number_rooms}}" onchange="calcRate()">
         </div>
         <p>Total Price <span id="total-price">${{room[0].rate}}</span></p>
-        <p>Cancellation Policy</p>
+        <p class="cancel-policy">Guests may cancel their reservation at any time up to 48 hours before the check-in date without penalty. Cancellations made within 48 hours of check-in are non-refundable.</p>
     </div>
     <div class="section">
         <p class="title">Modify Booking Details</p>
@@ -78,12 +82,24 @@
             <input type="number" id="guests" name="guests" value="1" min="1" max="{{room[0].max_guests}}">
         </div>
     </div>
-
-    <input type="submit" class="submit-button" value="Proceed to Checkout">  
-    <a href="{{ url_for('search') }}" class="cancel">Cancel and Return to Search</a>               
+    <div class="section">
+        <p class="title">Payment Details</p>
+        <div>
+            <label for="promo">Promo Code</label>
+            <input type="text" id="promo" name="promo">
+            <button>Apply</button>
+        </div>
+        <p>Price Per Night</p>
+        <p>Resort Fee</p>
+        <p>Total Price</p>
+    </div>
+    <input type="submit" class="submit-button" value="Proceed to Checkout">
+    {% set location_type = request.args.get('location-type', '') %}
+    {% set startdate = request.args.get('startdate', '') %}
+    {% set enddate = request.args.get('enddate', '') %}  
+    <a href="{{ url_for('search') + '?location-type=' + location_type + '&startdate=' + startdate + '&enddate=' + enddate }}" class="cancel">Cancel and Return to Search</a>               
 </form>
 
-<script src="../static/js/dates.js"></script>
 
 
 <script>
@@ -93,6 +109,12 @@
         var total = rate * rooms;
         document.getElementById('total-price').textContent = '$'+total;
     }
- </script>
+
+    var startdate_url = "{{ request.args.get('startdate', '') or request.args.get('enddate','') }}";
+    var enddate_url = "{{ request.args.get('enddate', '') or request.args.get('startdate','') }}";
+</script>
+
+<script src="../static/js/dates.js"></script>
+
  
- {% endblock %}
+{% endblock %}

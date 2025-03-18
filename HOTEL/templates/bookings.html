@@ -8,7 +8,7 @@
 
 {% block content %}
 <div class="content">
-    <p class="title">Welcome, {{ session.get('user_name', '[Name]') }}</p>
+    <p class="title">Welcome, {{ session.get('user_name', '[Name]') | upper }}</p>
     <br>
     <br>
 

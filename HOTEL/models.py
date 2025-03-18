@@ -88,7 +88,7 @@ class Booking(db.Model):
     __tablename__ = 'booking'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     uid = db.Column(db.Integer, db.ForeignKey('user.id'))
-    room_num = db.Column(db.Integer, db.ForeignKey('room.id'))
+    rid = db.Column(db.Integer, db.ForeignKey('room.id'))
     check_in = db.Column(DateTime)
     check_out = db.Column(DateTime)
     fees = db.Column(db.Integer, default=50)
