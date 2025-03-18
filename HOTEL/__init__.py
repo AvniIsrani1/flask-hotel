@@ -290,28 +290,43 @@ def reserve():
         return redirect(url_for("log_in"))
     
     user = User.query.get(session["user_id"])
-    rid = request.args.get('rid')
-    startdate = request.args.get('startdate')
-    enddate = request.args.get('enddate')
-    print(startdate, 'and', enddate)
-    query = Room.query.join(Hotel).filter(Room.available==Availability.A)
-    query = query.group_by(
-        Room.hid, Room.room_type, Room.number_beds, Room.rate, Room.balcony, Room.city_view, Room.ocean_view, 
-        Room.smoking, Room.max_guests, Room.wheelchair_accessible
-    )
-    query = query.with_entities(Room, Hotel.address, func.count(distinct(Room.id)).label('number_rooms'), func.min(Room.id).label('min_rid'))
-    query = query.having(func.min(Room.id) == rid)
-    room = query.first()
-    # similar_rooms = Room.query.join(Hotel).filter(
-    #     Room.hid==room.hid, Room.room_type==room.room_type, Room.number_beds==room.number_beds, Room.rate==room.rate, Room.balcony==room.balcony, Room.city_view==room.city_view,
-    #     Room.ocean_view==room.ocean_view, Room.smoking==room.smoking, Room.max_guests==room.max_guests, Room.wheelchair_accessible==room.wheelchair_accessible
-    # )
-    # similar_rooms = similar_rooms.filter(not_(db.exists().where(Booking.rid == Room.id).where(Booking.check_in < ending).where(Booking.check_out>starting)))
-
-    if not room:
-        flash('Room not found',"error")
-        return redirect(url_for('search'))
-    return render_template('reserve.html', user=user, room=room, YesNo=YesNo, startdate=startdate, enddate=enddate)
+    room = None
+    startdate = None
+    enddate = None
+    if request.method=='POST':
+        rid = request.form.get('rid')
+        location_type = request.form.get('location-type')
+        startdate = request.form.get('startdate')
+        enddate = request.form.get('enddate')
+        print(f"Received rid: {rid}, location_type: {location_type}, startdate: {startdate}, enddate: {enddate}")  # Debugging
+        if not startdate or not enddate:
+            flash('Please enter both the start and end dates',"error")
+            return redirect(url_for('search'))
+        query = Room.query.join(Hotel).filter(Room.available==Availability.A)
+        # query = query.group_by(
+        #     Room.hid, Room.room_type, Room.number_beds, Room.rate, Room.balcony, Room.city_view, Room.ocean_view, 
+        #     Room.smoking, Room.max_guests, Room.wheelchair_accessible
+        # )
+        starting = datetime.strptime(str(startdate), "%B %d, %Y").replace(hour=0,minute=0,second=0)
+        ending = datetime.strptime(str(enddate), "%B %d, %Y").replace(hour=23,minute=59,second=59)
+        duration = (ending - starting).days + 1
+        room = query.filter(Room.id==rid).first()
+        similar_rooms = Room.query.join(Hotel).filter(
+            Room.hid==room.hid, Room.room_type==room.room_type, Room.number_beds==room.number_beds, Room.rate==room.rate, Room.balcony==room.balcony, Room.city_view==room.city_view,
+            Room.ocean_view==room.ocean_view, Room.smoking==room.smoking, Room.max_guests==room.max_guests, Room.wheelchair_accessible==room.wheelchair_accessible
+        )
+        similar_rooms = similar_rooms.filter(not_(db.exists().where(Booking.rid == Room.id).where(Booking.check_in < ending).where(Booking.check_out>starting)))
+        similar_rooms = similar_rooms.group_by(
+            Room.hid, Room.room_type, Room.number_beds, Room.rate, Room.balcony, Room.city_view, Room.ocean_view, 
+            Room.smoking, Room.max_guests, Room.wheelchair_accessible
+        )
+        similar_rooms = similar_rooms.with_entities(Room, Hotel.address, func.count(distinct(Room.id)).label('number_rooms'), func.min(Room.id).label('min_rid'))
+        room = similar_rooms.first()
+        if not room:
+            print('room not found')
+            flash('Room not found',"error")
+            return redirect(url_for('home'))
+    return render_template('reserve.html', user=user, room=room, YesNo=YesNo, rid=rid, location_type=location_type, duration=duration, startdate=startdate, enddate=enddate)
 
 @app.route("/terms")
 def terms():
@@ -487,7 +502,11 @@ def payment():
     if "user_id" not in session:
         flash("Please log in first.", "error")
         return redirect(url_for("log_in"))
-    return render_template('payment.html')
+    rid = request.form.get('rid') #only being used to get back to reserve page if cancel button is clicked; otherwise is never used
+    location_type = request.form.get('location-type')
+    startdate = request.form.get('startdate')
+    enddate = request.form.get('enddate')
+    return render_template('payment.html', rid=rid, location_type=location_type, startdate=startdate, enddate=enddate)
 
 # Process payment route (form submission handling)
 @app.route("/process-payment", methods=["POST"])

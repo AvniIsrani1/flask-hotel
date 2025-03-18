@@ -203,14 +203,17 @@ select:focus {
     margin-top: 15px;
 }
 
-.cancel-link a {
+.cancel-link button {
+    background-color: transparent;
+    border:none;
     color: #002B5A;
     text-decoration: none;
     font-size: 0.9rem;
 }
 
-.cancel-link a:hover {
+.cancel-link button:hover {
     text-decoration: underline;
+    cursor:pointer;
 }
 
 /* Improved Error Messages Styling */

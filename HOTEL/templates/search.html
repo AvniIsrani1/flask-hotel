@@ -17,6 +17,16 @@
 
 {% block content %}
 
+<div class="options">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div class="flash-message {{ messages[-1][0] }}">
+        {{ messages[-1][1] }}
+      </div>
+    {% endif %}
+  {% endwith %}
+</div>
+
 <div class="content">
     <div class="main-title">
         <p>Search For Rooms</p>
@@ -176,7 +186,13 @@
                     {% set location_type = request.args.get('location-type', '') %}
                     {% set startdate = request.args.get('startdate', '') %}
                     {% set enddate = request.args.get('enddate', '') %}
-                    <a href="{{ url_for('reserve', rid=min_rid) + '&location-type=' + location_type +'&startdate=' + startdate + '&enddate=' + enddate}}" class="sub">Book</a>
+                    <form method="post" action="{{url_for('reserve')}}" id='submit-room'>
+                        <input type="hidden" name="rid" id="submitted-rid" value="{{ min_rid }}">
+                        <input type="hidden" name="location-type" id="submitted-location" value="{{ request.args.get('location-type', '')}}">
+                        <input type="hidden" name="startdate" id="submitted-startdate" value="{{ request.args.get('startdate', '') }}">
+                        <input type="hidden" name="enddate" id="submitted-enddate" value="{{ request.args.get('enddate', '') }}">
+                        <button type="submit" class="sub">Book</button>
+                    </form>
                 </div>                
             </div>
         </div>
@@ -222,23 +238,69 @@
         }  
     });
 
-    var startdate_url = "{{ request.args.get('startdate', '') or request.args.get('enddate','') }}";
-    var enddate_url = "{{ request.args.get('enddate', '') or request.args.get('startdate','') }}";
-    if(!startdate_url){
-        startdate_url = new Date().toLocaleDateString('en-US',{
-            month:'long',
-            day:'numeric',
-            year:'numeric'
-        });
-    }
-    if(!enddate_url){
-        enddate_url = startdate_url;
-    }
+    //set start and end date to today if the fields are empty
+    // let startdate_url = new URL(window.location.href).searchParams.get("startdate");
+    // let enddate_url = new URL(window.location.href).searchParams.get("enddate");
+
+    // if (!startdate_url || !enddate_url) {
+    //     let url = new URL(window.location.href);
+    //     let today = new Date().toLocaleDateString('en-US', { month:'long', day:'numeric', year:'numeric' });
+
+    //     if (!startdate_url) {
+    //         url.searchParams.set("startdate", today);
+    //     }
+    //     if (!enddate_url) {
+    //         url.searchParams.set("enddate", today);
+    //     }
+        
+    //     window.location.href = url.toString();
+    // }
+    // document.getElementById('startdate').addEventListener('change', function(){
+    //     document.getElementById('submitted-startdate').value = this.value;
+    // });
+    // document.getElementById('enddate').addEventListener('change', function(){
+    //     document.getElementById('submitted-enddate').value = this.value;
+    // });
+
+    var startdate_url = "{{ request.args.get('startdate', '')}}";
+    var enddate_url = "{{ request.args.get('enddate', '') }}";
+
+    // document.addEventListener('DOMContentLoaded', function(){
+    // let form = document.getElementById('submit-room');
+    // let startdate = document.getElementById('startdate')
+    // let enddate = document.getElementById('enddate');
+    // form.addEventListener("submit", function(event){
+    //     if(!startdate.value || !enddate.value){
+    //         event.preventDefault();
+    //         alert("Enter both Start and End Date");
+    //     }
+    // });
+    // });
+
 </script>
 
 
 <script src="../static/js/dates.js"></script>
 
 
+<style>
+    .flash-message {
+      padding: 10px;
+      margin: 10px auto;
+      border-radius: 5px;
+      text-align: center;
+      width: 100%;
+    }
+    .success {
+      background-color: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+    .error {
+      background-color: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+</style>
 
 {% endblock %}

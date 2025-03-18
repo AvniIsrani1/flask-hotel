@@ -13,9 +13,21 @@
 
 {% block content %}
 
- {% set rid = request.args.get('rid','') %}
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    {% for category, message in messages %}
+      <div class="flash-message {{ category }}">
+        {{ message }}
+      </div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
 
- <form method='post' action={{url_for('payment', rid=rid)}} id="reservation-details" class="reservation-details">
+ <form method='post' action={{url_for('payment')}} id="reservation-details" class="reservation-details">
+    <input type="hidden" name="rid" value="{{rid}}">
+    <input type="hidden" name="location-type" value="{{location_type}}">
+    <input type="hidden" name="startdate" value="{{startdate}}">
+    <input type="hidden" name="enddate" value="{{ enddate}}">
     <p class="main-title">Booking Details</p>
     <div class="image-container">
         <img src="../static/images/outside.webp" width="1100px" height="550px" class="hotel-image" alt="Hotel Image">
@@ -42,20 +54,25 @@
                 <span>| Non-Smoking</span>
             {% endif %}
         </p>
-        <div class="check-date">
+        <!-- <div class="check-date">
             <label for="startdate">Check-In Date: </label>
             <input type="text" id="startdate" class="" name="startdate" placeholder="Select Start Date">
         </div>
         <div class="check-date">
             <label for="enddate">Check-Out Date: </label>
             <input type="text" id="enddate" class="" name="enddate" placeholder="Select End Date" required> 
-        </div>
-        <p>Length of Stay: <span id="nights"></span></p>
+        </div> -->
+        <p>Check-In Date: {{startdate}}</p>
+        <p>Check-Out Date: {{enddate}}</p>
+
+        <p>Length of Stay: {{duration}} {% if duration > 1 %} Nights{% else %}Night{% endif %}</p>
         <div class="">
             <label for="rooms">Number of Rooms: </label>
             <input type="number" id="rooms" name="rooms" value="1" min="1" max="{{room.number_rooms}}" onchange="calcRate()">
+            <p>Maximum: {{room.number_rooms}}</p>
         </div>
-        <p>Total Price <span id="total-price">${{room[0].rate}}</span></p>
+        <p>Price per Room per Night: ${{room[0].rate}}</p>
+        <p>Total Price <span id="total-price">${{room[0].rate * duration}}</span></p>
         <p class="cancel-policy">Guests may cancel their reservation at any time up to 48 hours before the check-in date without penalty. Cancellations made within 48 hours of check-in are non-refundable.</p>
     </div>
     <div class="section">
@@ -94,9 +111,6 @@
         <p>Total Price</p>
     </div>
     <input type="submit" class="submit-button" value="Proceed to Checkout">
-    {% set location_type = request.args.get('location-type', '') %}
-    {% set startdate = request.args.get('startdate', '') %}
-    {% set enddate = request.args.get('enddate', '') %}  
     <a href="{{ url_for('search') + '?location-type=' + location_type + '&startdate=' + startdate + '&enddate=' + enddate }}" class="cancel">Cancel and Return to Search</a>               
 </form>
 
@@ -106,7 +120,7 @@
     function calcRate(){
         var rate = {{room[0].rate}};
         var rooms = document.getElementById('rooms').value;
-        var total = rate * rooms;
+        var total = rate * rooms * duration;
         document.getElementById('total-price').textContent = '$'+total;
     }
 
@@ -116,5 +130,25 @@
 
 <script src="../static/js/dates.js"></script>
 
+<style>
+    .flash-message {
+      padding: 10px;
+      margin: 10px auto;
+      border-radius: 5px;
+      text-align: center;
+      width: 80%;
+      max-width: 800px;
+    }
+    .success {
+      background-color: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+    .error {
+      background-color: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+</style>
  
 {% endblock %}

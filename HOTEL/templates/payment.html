@@ -159,11 +159,16 @@
             </div>
             
             <button type="submit" class="payment-button">Complete Payment</button>
-            
-            <div class="cancel-link">
-                <a href="{{ url_for('reserve') }}">Cancel and Return to Reservation Details</a>
-            </div>
         </form>
+        <div class="cancel-link">
+            <form method="post" action="{{url_for('reserve')}}" id='submit-room'>
+                <input type="hidden" name="rid" value="{{rid}}">
+                <input type="hidden" name="location-type" value="{{location_type}}">
+                <input type="hidden" name="startdate" value="{{startdate}}">
+                <input type="hidden" name="enddate" value="{{ enddate}}">
+                <button type="submit">Cancel and Return to Reservation Details</button>
+            </form>
+        </div>
     </div>
 </div>
 
