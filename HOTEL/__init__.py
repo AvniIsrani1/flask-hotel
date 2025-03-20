@@ -8,7 +8,7 @@ from urllib.parse import quote
 import boto3
 from botocore.exceptions import ClientError
 import json
-from .models import db, User, Hotel, Floor, Room, Booking, FAQ, YesNo, Locations, RoomType, Availability
+from .models import db, User, Hotel, Floor, Room, Booking, FAQ, YesNo, Locations, RoomType, Availability, Saved
 from .adding import add_floor, add_room, add_layout, add_booking, add_faq
 
 
@@ -194,8 +194,14 @@ def bookings():
     if "user_id" not in session:
         flash("Please log in first.", "error")
         return redirect(url_for("log_in"))
-    
-    return render_template('bookings.html')
+    user = User.query.get(session["user_id"])
+
+    current = Booking.get_current_bookings().join(Room).join(Hotel).filter(Booking.uid==user.id).all()
+    future = Booking.get_future_bookings().filter(Booking.uid==user.id).all()
+    past = Booking.get_past_bookings().filter(Booking.uid==user.id).all()
+    canceled = Booking.get_canceled_bookings().filter(Booking.uid==user.id).all()
+
+    return render_template('bookings.html', current=current, future=future, past=past, canceled=canceled, YesNo=YesNo)
 
 @app.route("/request-services")
 def request_services():
@@ -440,8 +446,14 @@ def add_sample_data():
         avni_id = User.query.filter_by(email="avni@gmail.com").first().id
         malibu_room_1 = Room.query.filter_by(hid=malibu_id).first().id
         sm_room_1 = Room.query.filter_by(hid=sm_id).first().id
-        add_booking(uid=avni_id, rid=malibu_room_1, check_in=datetime.now(), check_out=datetime.now()+timedelta(5),fees=500)
+        add_booking(uid=avni_id, rid=malibu_room_1, check_in=datetime.now(), check_out=datetime.now()+timedelta(5), fees=500)
         add_booking(uid=avni_id, rid=sm_room_1, check_in=datetime.now()+timedelta(5), check_out=datetime.now()+timedelta(10),fees=600)
+        add_booking(uid=avni_id, rid=malibu_room_1, check_in=datetime.now()-timedelta(2), check_out=datetime.now()-timedelta(1), fees=400)
+        add_booking(uid=avni_id, rid=sm_room_1, check_in=datetime.now()-timedelta(3), check_out=datetime.now()-timedelta(1), fees=300)
+        add_booking(uid=avni_id, rid=malibu_room_1, check_in=datetime.now(), check_out=datetime.now()+timedelta(1), fees=300)
+        b = Booking.query.get(1)
+        if b:
+            b.cancel_booking()
 
 def add_sample_faq():
     faqs = [

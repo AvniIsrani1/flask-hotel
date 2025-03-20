@@ -77,7 +77,6 @@ class Room(db.Model):
     smoking = db.Column(db.Enum(YesNo), nullable=False, default=YesNo.N)  
     available = db.Column(db.Enum(Availability),nullable=False,default=Availability.A)
     max_guests = db.Column(db.Integer,default=2,nullable=False)
-    num_guests = db.Column(db.Integer)
     wheelchair_accessible = db.Column(db.Enum(YesNo), nullable=False, default=YesNo.N) 
     bookings = db.relationship('Booking', backref='room', lazy=True, cascade='all, delete-orphan')  
     
@@ -87,11 +86,43 @@ class Room(db.Model):
 class Booking(db.Model):
     __tablename__ = 'booking'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    uid = db.Column(db.Integer, db.ForeignKey('user.id'))
-    rid = db.Column(db.Integer, db.ForeignKey('room.id'))
-    check_in = db.Column(DateTime)
-    check_out = db.Column(DateTime)
+    uid = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    rid = db.Column(db.Integer, db.ForeignKey('room.id'), nullable=False)
+    check_in = db.Column(DateTime, nullable=False)
+    check_out = db.Column(DateTime, nullable=False)
+    num_guests = db.Column(db.Integer, default=1, nullable=False)
     fees = db.Column(db.Integer, default=50)
+    cancel_date = db.Column(DateTime)
+    refund_type = db.Column(db.Enum(YesNo)) 
+
+
+    @classmethod
+    def get_current_bookings(cls):
+        today = datetime.now()
+        return cls.query.filter(cls.check_in<=today,cls.check_out>=today)
+    
+    @classmethod
+    def get_future_bookings(cls):
+        today = datetime.now()
+        return cls.query.filter(cls.check_in>today)
+    
+    @classmethod
+    def get_past_bookings(cls):
+        today = datetime.now()
+        return cls.query.filter(cls.check_out<today)
+    
+    @classmethod
+    def get_canceled_bookings(cls):
+        return cls.query.filter(cls.cancel_date.isnot(None))
+    
+    def cancel_booking(self):
+        today = datetime.now()
+        if (self.check_in - today).days >=2:
+            self.refund_type = YesNo.Y
+        else:
+            self.refund_type = YesNo.N
+        self.cancel_date = today
+        db.session.commit()
 
 class FAQ(db.Model):
     __tablename__ = 'faq'
@@ -99,3 +130,11 @@ class FAQ(db.Model):
     question = db.Column(db.String(150), nullable=False)
     answer = db.Column(db.String(500), nullable=False)
     subject = db.Column(db.String(150), nullable=False)
+
+class Saved(db.Model):
+    __tablename__ = 'saved'
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    uid = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    rid = db.Column(db.Integer, db.ForeignKey('room.id'), nullable=False) 
+    user = db.relationship('User', backref=db.backref('saved_u', lazy=True))
+    room = db.relationship('Room', backref=db.backref('saved_r', lazy=True)) 

@@ -23,12 +23,36 @@
             <br>
             <p class="subtitle">My Current Stay</p>
             <div class="placards">
+                {% for c in current %}
                 <div class="placard">
-                    <img src="../static/images/inside.jpeg" alt="Current Room" width="330" height="200">
+                    <i class="fa-solid fa-circle-info placard-information" onclick='openModal(event, {{ {
+                        "img": c.room.img,
+                        "checkin": c.check_in.strftime("%A, %B %d, %Y"),
+                        "checkout": c.check_out.strftime("%A, %B %d, %Y"),
+                        "room_number": c.room.room_number,
+                        "address": c.room.hotel.address,
+                        "number_beds": c.room.number_beds,
+                        "room_type": c.room.room_type.value,
+                        "wheelchair":c.room.wheelchair_accessible.value,
+                        "balcony": c.room.balcony.value,
+                        "ocean_view": c.room.ocean_view.value,
+                        "city_view": c.room.city_view.value,
+                        "smoking": c.room.smoking.value,
+                        "num_guests": c.num_guests,
+                        "fees":c.fees,
+                    } | tojson | safe }})'></i>
+                    <img src="{{c.room.img}}" alt="Current Room" width="330" height="200">
                     <div class="information">
                         <div class="details pbot">
-                            <p>[Date of Booking]</p>
-                            <p>[Location of Hotel]</p>
+                            <div class="date-info">
+                                <p>{{c.check_in.strftime('%A, %B %d, %Y')}}</p>
+                                <p>{{c.check_out.strftime('%A, %B %d, %Y')}}</p>
+                            </div>
+                            <br>
+                            <div class="hotel-details">
+                                {% set s = c.room.hotel.address.split(',')[2][:3] %}
+                                <p>{{c.room.hotel.location.value}}, {{s}}</p>
+                            </div>
                         </div>
                         <div class="links ptop">
                             <a href="">Billing Details</a>
@@ -38,6 +62,7 @@
                         </div>
                     </div>
                 </div>
+                {% endfor %}
             </div>
         </div>
         <br>
@@ -45,19 +70,43 @@
         <div class="section1">
             <p class="subtitle">My Upcoming Bookings</p>
             <div class="placards">
+                {% for f in future %}
                 <div class="placard">
-                    <img src="../static/images/inside.jpeg" alt="Upcoming Bookings" width="330" height="200">
+                    <i class="fa-solid fa-circle-info placard-information" onclick='openModal(event, {{ {
+                        "img": f.room.img,
+                        "checkin": f.check_in.strftime("%A, %B %d, %Y"),
+                        "checkout": f.check_out.strftime("%A, %B %d, %Y"),
+                        "room_number": f.room.room_number,
+                        "address": f.room.hotel.address,
+                        "number_beds": f.room.number_beds,
+                        "room_type": f.room.room_type.value,
+                        "wheelchair":f.room.wheelchair_accessible.value,
+                        "balcony": f.room.balcony.value,
+                        "ocean_view": f.room.ocean_view.value,
+                        "city_view": f.room.city_view.value,
+                        "smoking": f.room.smoking.value,
+                        "num_guests": f.num_guests,
+                        "fees":f.fees,
+                    } | tojson | safe }})'></i>
+                    <img src="{{f.room.img}}" alt="Upcoming Bookings" width="330" height="200">
                     <div class="information">
                         <div class="details pbot">
-                            <p>[Date of Booking]</p>
-                            <p>[Location of Hotel]</p>
+                            <div class="date-info">
+                                <p>{{f.check_in.strftime('%A, %B %d, %Y')}}</p>
+                                <p>{{f.check_out.strftime('%A, %B %d, %Y')}}</p>
+                            </div> 
+                            <br>                           
+                            <div class="hotel-details">
+                                {% set s = f.room.hotel.address.split(',')[2][:3] %}
+                                <p>{{f.room.hotel.location.value}}, {{s}}</p>
+                            </div>                        
                         </div>
                         <div class="links2 ptop">
-                            <a href="">View more details</button>
                             <a href="">Modify Booking</a>
                         </div>
                     </div>
                 </div>
+                {% endfor %}
             </div>
         </div>
     </div>
@@ -68,40 +117,72 @@
         <br>
         <p class="subtitle">Past Bookings</p>
         <div class="placards">
+            {% for pa in past %}
             <div class="placard">
+                <i class="fa-solid fa-circle-info placard-information" onclick='openModal(event, {{ {
+                    "img": pa.room.img,
+                    "checkin": pa.check_in.strftime("%A, %B %d, %Y"),
+                    "checkout": pa.check_out.strftime("%A, %B %d, %Y"),
+                    "room_number": pa.room.room_number,
+                    "address": pa.room.hotel.address,
+                    "number_beds": pa.room.number_beds,
+                    "room_type": pa.room.room_type.value,
+                    "wheelchair":pa.room.wheelchair_accessible.value,
+                    "balcony": pa.room.balcony.value,
+                    "ocean_view": pa.room.ocean_view.value,
+                    "city_view": pa.room.city_view.value,
+                    "smoking": pa.room.smoking.value,
+                    "num_guests": pa.num_guests,
+                    "fees":pa.fees,
+                } | tojson | safe }})'></i>
                 <img src="../static/images/inside.jpeg" alt="Past Bookings" width="330" height="200">
                 <div class="information">
                     <div class="details pbot">
-                        <p>[Date of Booking]</p>
-                        <p>[Location of Hotel]</p>
+                        <div class="date-info">
+                            <p>{{pa.check_in.strftime('%A, %B %d, %Y')}}</p>
+                            <p>{{pa.check_out.strftime('%A, %B %d, %Y')}}</p>
+                        </div>
+                        <br>
+                        <div class="hotel-details">
+                            {% set s = pa.room.hotel.address.split(',')[2][:3] %}
+                            <p>{{pa.room.hotel.location.value}}, {{s}}</p>
+                        </div>
                     </div>
                     <div class="links ptop">
                         <a href="">Leave a review</a>
-                        <a href="">View more details</a>
                     </div>
                 </div>
             </div>
+            {% endfor %}
         </div>
     </div>
     <br>
     <br>
     <div class="section1">
         <p class="subtitle">Canceled Bookings</p>
+        {% for ca in canceled %}
         <div class="placards">
             <div class="placard">
                 <img src="../static/images/inside.jpeg" alt="Canceled Bookings" width="330" height="200">
                 <div class="information">
                     <div class="details pbot">
-                        <p>[Date of Booking]</p>
-                        <p>[Location of Hotel]</p>
-                    </div>
+                        <div class="date-info">
+                            <p>{{ca.check_in.strftime('%A, %B %d, %Y')}}</p>
+                            <p>{{ca.check_out.strftime('%A, %B %d, %Y')}}</p>
+                        </div>
+                        <br>
+                        <div class="hotel-details">
+                            {% set s = ca.room.hotel.address.split(',')[2][:3] %}
+                            <p>{{ca.room.hotel.location.value}}, {{s}}</p>
+                        </div>                    </div>
                     <div class="links ptop">
-                        <p>[Cancel Date]</p>
-                        <p>[Refund Type: Full]</p>
+                        <p>Cancel Date: {{ca.cancel_date.strftime('%B %d, %Y')}}</p>
+                        <p>Refund Type: {{'None' if ca.refund_type==YesNo.N else 'Full'}}</p>
                     </div>
                 </div>
             </div>
         </div>
+        {% endfor %}
     </div>
 </div>
 <!-- -------------------------------------- -->
@@ -129,7 +210,65 @@
 
 </div>
 
+<div class="room-modal" id="room-modal">
+    <div class="more-info-content" id="more-info-content">
+        <div class="close">
+            <p id="close" onclick="closeModal()">&times;</p>
+        </div>
+
+        <!-- <p class="more-info-title">Reservation Details</p>
+        <img id="modal-img" src=""> -->
+        <p id="modal-room-details"></p>
+
+        <br>
+        <p id="modal-checkin-date"></p>
+        <p id="modal-checkout-date"></p>
+        <p id="modal-hotel-address"></p>
+        <br>
+        <p id="modal-room-number"></p>
+        <p id="modal-num-guests"></p>
+        <br>
+        <p id="modal-fees"></p>
+
+
+
+
+    </div>
+</div>
+
 <script>
+    function openModal(event, details) {
+        document.getElementById("room-modal").style.display = "flex";
+        // document.getElementById('modal-img').src = details.img;
+        document.getElementById('modal-checkin-date').textContent = 'Check-In Date: ' + details.checkin;
+        document.getElementById('modal-checkout-date').textContent = 'Check-Out Date: ' + details.checkout;
+        document.getElementById('modal-room-number').textContent = 'Room Number: ' + details.room_number;
+        document.getElementById('modal-hotel-address').textContent = 'Hotel Address: ' + details.address;
+        let sentence = details.number_beds + '-Bedroom ' + details.room_type
+        if(details.wheelchair==='Y'){
+            sentence += " (Wheelchair Accessible)";
+        }
+        if(details.balcony==='Y'){
+            sentence += " with Balcony";
+        }
+        if(details.ocean_view==='Y' && details.city_view==='Y' ){
+            sentence += " - Ocean View, City View";
+        } else if(details.ocean_view=='Y'){
+            sentence += " - Ocean View";
+        } else if(details.city_view==='Y'){
+            sentence += " - City View";
+        }
+        if(details.smoking==='N'){
+            sentence += " | Non-Smoking";
+        }
+        document.getElementById('modal-room-details').textContent = sentence;
+        document.getElementById('modal-num-guests').textContent = 'Number of Guests: ' + details.num_guests;
+        document.getElementById('modal-fees').textContent = 'Total Fees: $' + details.fees;
+    }
+    
+    function closeModal() {
+        document.getElementById("room-modal").style.display = "none";
+    }
     document.addEventListener("DOMContentLoaded", function(){
         const items = document.querySelectorAll('.view');
         document.querySelectorAll('#current').forEach(i=>{i.style.borderColor='#000000';});
@@ -156,6 +295,9 @@
             
         })
     });
+
+
 </script>
+
 
 {% endblock %}

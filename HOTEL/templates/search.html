@@ -138,7 +138,7 @@
         <div class = "item">
             <script src="https://unpkg.com/focus-visible@5.0.2/dist/focus-visible.js" defer></script>
             <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
-            <img src="../static/images/inside.jpeg" alt="Room" id="thumbnail" onclick="openModal()">
+            <img src="{{room.img}}" alt="Room" id="thumbnail" onclick="openModal()">
             <div id="modelModal" class="modal">
                 <span class="close" onclick="closeModal()">&times;</span>
                 <model-viewer src="/static/assets/highly_detailed_opti_0225234237_texture.glb"
@@ -162,8 +162,8 @@
                 <div class="details">
                     <div class="upper-details">
                         <p class="title pbot">{{room.number_beds}}-Bedroom {{room.room_type.value}}</p>
-                        <i class="fa-regular fa-heart save"></i>
-                        <i class="fa-solid fa-heart unsave"></i>
+                        <i class="fa-regular fa-heart save" id="save-{{room.id}}"></i>
+                        <i class="fa-solid fa-heart unsave" id="unsave-{{room.id}}"></i>
                     </div>
                     {% if room.ocean_view==YesNo.Y %}
                         <p class="subtitle ptop">Ocean View</p>
