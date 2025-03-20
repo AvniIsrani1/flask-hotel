@@ -26,10 +26,18 @@
       <a href=""><i class="fa-regular fa-calendar-days"></i><p>Events</p></a>
       <a href=""><i class="fa-solid fa-utensils"></i><p>Dining</p></a>
       {% if session.get('user_name') %}
+      <div class="profile-info">
         <a href="{{ url_for('profile') }}">
           <i class="fa-solid fa-user"></i>
           <p>{{ session['user_name'] | upper }}</p>
         </a>
+        <nav>
+          <a href="{{ url_for('bookings') }}">
+            <i class="fa-solid fa-calendar-check"></i>
+            <p>My Reservations</p>
+          </a>
+        </nav>
+      </div>
         <a href="{{ url_for('logout') }}">
           <i class="fa-solid fa-right-from-bracket"></i>
           <p>Logout</p>
