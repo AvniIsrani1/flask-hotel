@@ -9,6 +9,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400..700&family=Khula:wght@300;400;600;700;800&family=Lusitana:wght@400;700&family=Mrs+Sheppards&family=Noto+Sans+Khmer:wght@100..900&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Tiro+Tamil:ital@0;1&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/chat.css') }}">  <!-- Added Chatbox CSS -->
     
   {% block styles %}{% endblock %}
 </head>
@@ -50,7 +51,7 @@
       {% endif %}
     </nav>
   </header>
-
+  
   <section class="main-content">
     {% block content %}{% endblock %}
   </section>
@@ -85,15 +86,30 @@
     </div>
   </footer>
 
-  <script>
-    document.addEventListener("DOMContentLoaded", function(){
-      const items = document.querySelectorAll('.logo','.logo-format');
-      items.forEach(item => {
-        item.addEventListener("click", function(){
-          window.location.replace("{{ url_for('home') }}")
-        })
-      })
-    });
+    <!-- Chat Component -->
+    <div class="chat-component">
+      <button class="open-button" onclick="openChat()">
+          <i class="fa-solid fa-comment"></i> Chat with Ocean Vista AI
+      </button>
+
+      <div class="form-popup" id="myForm">
+          <div class="form-container">
+              <h1>OV Chatbot</h1>
+
+              <div class="chat-box" id="chatBox">
+                  <!-- Messages will be appended here -->
+              </div>
+
+              <textarea id="userInput" placeholder="Type a message..." required></textarea>
+
+              <button type="button" class="btn" onclick="sendMessage()">Send</button>
+              <button type="button" class="btn cancel" onclick="closeChat()">Close</button>
+          </div>
+      </div>
+  </div>
+    
+    <!-- JavaScript files -->
+    <script src="{{ url_for('static', filename='js/chat.js') }}"></script>
   </script>
 </body>
 </html>

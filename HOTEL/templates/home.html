@@ -179,3 +179,60 @@
   });
 </script>
 {% endblock %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chat Test</title>
+    <style>
+        .open-button {
+            background-color: #555;
+            color: white;
+            padding: 16px 20px;
+            border: none;
+            cursor: pointer;
+            position: fixed;
+            bottom: 23px;
+            right: 28px;
+            width: 280px;
+            z-index: 9999;
+        }
+        
+        .form-popup {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            right: 15px;
+            border: 3px solid #f1f1f1;
+            z-index: 9999;
+        }
+        
+        .form-container {
+            max-width: 300px;
+            padding: 10px;
+            background-color: white;
+        }
+    </style>
+</head>
+<body>
+    <h1>Test Page</h1>
+    
+    <button class="open-button" onclick="openChat()">Chat</button>
+    
+    <div class="form-popup" id="myForm">
+        <div class="form-container">
+            <h1>Chat</h1>
+            <button type="button" onclick="closeChat()">Close</button>
+        </div>
+    </div>
+
+    <script>
+        function openChat() {
+            document.getElementById("myForm").style.display = "block";
+        }
+        
+        function closeChat() {
+            document.getElementById("myForm").style.display = "none";
+        }
+    </script>
+</body>
+</html>
