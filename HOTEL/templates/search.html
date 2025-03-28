@@ -267,33 +267,12 @@
     var startdate_url = "{{ request.args.get('startdate', '')}}";
     var enddate_url = "{{ request.args.get('enddate', '') }}";
 
-    var glocation = '';
-    var gstartdate = '';
-    var genddate = '';
-
-
-document.addEventListener('DOMContentLoaded', function() {
-    const location = document.querySelector('select[name="location-type"]');
-    const startdate = document.getElementById('startdate');
-    const enddate = document.getElementById('enddate');
-
-    location.addEventListener('change', function() {
-        glocation = location.value;
-    });
-    startdate.addEventListener('change', function() {
-        gstartdate = startdate.value;
-    });
-    enddate.addEventListener('change', function() {
-        genddate = enddate.value;
-    });
-});
-
 function submitAllForms(event) {
     event.preventDefault();
     let filters = document.getElementById("filter-selection");
-    filters.querySelector('input[name="location-type"]').value = glocation;
-    filters.querySelector('input[name="startdate"]').value = gstartdate;
-    filters.querySelector('input[name="enddate"]').value = genddate;
+    filters.querySelector('input[name="location-type"]').value = document.querySelector('select[name="location-type"]').value;
+    filters.querySelector('input[name="startdate"]').value = document.getElementById('startdate').value;
+    filters.querySelector('input[name="enddate"]').value = document.getElementById('enddate').value;
     filters.submit();
 };
 

@@ -23,37 +23,59 @@
   {% endwith %}
 </div>
 
- <form method='post' action={{url_for('payment')}} id="reservation-details" class="reservation-details">
+<div class="image-container">
+    <p>Experience Luxury by the Ocean</p>
+</div>
+
+<div class="all-sections">
+ <form method='post' action={{url_for('payment')}} id="reservation-details">
     <input type="hidden" name="rid" value="{{rid}}">
     <input type="hidden" name="location-type" value="{{location_type}}">
     <input type="hidden" name="startdate" value="{{startdate}}">
     <input type="hidden" name="enddate" value="{{ enddate}}">
-    <p class="main-title">Booking Details</p>
-    <div class="image-container">
-        <img src="../static/images/outside.webp" width="1100px" height="550px" class="hotel-image" alt="Hotel Image">
-    </div>
     <div class="section">
         <p class="title">Overview</p>
-        <p>Ocean Vista</p>
-        <p>{{room.address}}</p>
-        <p>{{room[0].number_beds}}-Bedroom {{room[0].room_type.value}}
-            {% if room[0].wheelchair_accessible==YesNo.Y %}
-                <span> (Wheelchair Accessible) </span>
-            {% endif %}
-            {% if room[0].balcony==YesNo.Y %}
-                <span> with Balcony</span>
-            {% endif %}
-            {% if room[0].ocean_view==YesNo.Y and room[0].city_view==YesNo.Y %}
-                <span> - Ocean View, City View</span>
-            {% elif room[0].ocean_view==YesNo.Y %}
-                <span> - Ocean View</span>
-            {% elif room[0].city_view==YesNo.Y %}
-                <span> - City View</span>
-            {% endif %}
-            {% if room[0].smoking==YesNo.N %}
-                <span>| Non-Smoking</span>
-            {% endif %}
-        </p>
+        <div class="line">
+            <div class="title-info">
+                <p class="subtitle">Ocean Vista</p>
+                <p class="subtitle-info">{{room.address}}</p>
+            </div>
+            <div class="row">
+                <div class="title-info">
+                    <p class="subtitle">Check-In</p>
+                    <p class="subtitle-info">{{startdate}}</p>
+                </div>
+                <div class="title-info">
+                    <p class="subtitle">Check-Out</p>
+                    <p class="subtitle-info">{{enddate}}</p>
+                </div>
+                <div class="title-info">
+                    <p class="subtitle">Length of Stay</p>
+                    <p class="subtitle-info">{{duration}} {% if duration > 1 %} Nights{% else %}Night{% endif %}</p>
+                </div>
+            </div>
+        </div>
+        <div class="title-info">
+            <p class="subtitle">Room Details</p>
+            <p class="subtitle-info">{{room[0].number_beds}}-Bedroom {{room[0].room_type.value}}
+                {% if room[0].wheelchair_accessible==YesNo.Y %}
+                    <span> (Wheelchair Accessible) </span>
+                {% endif %}
+                {% if room[0].balcony==YesNo.Y %}
+                    <span> with Balcony</span>
+                {% endif %}
+                {% if room[0].ocean_view==YesNo.Y and room[0].city_view==YesNo.Y %}
+                    <span> - Ocean View, City View</span>
+                {% elif room[0].ocean_view==YesNo.Y %}
+                    <span> - Ocean View</span>
+                {% elif room[0].city_view==YesNo.Y %}
+                    <span> - City View</span>
+                {% endif %}
+                {% if room[0].smoking==YesNo.N %}
+                    <span>| Non-Smoking</span>
+                {% endif %}
+            </p>
+        </div>
         <!-- <div class="check-date">
             <label for="startdate">Check-In Date: </label>
             <input type="text" id="startdate" class="" name="startdate" placeholder="Select Start Date">
@@ -62,57 +84,46 @@
             <label for="enddate">Check-Out Date: </label>
             <input type="text" id="enddate" class="" name="enddate" placeholder="Select End Date" required> 
         </div> -->
-        <p>Check-In Date: {{startdate}}</p>
-        <p>Check-Out Date: {{enddate}}</p>
 
-        <p>Length of Stay: {{duration}} {% if duration > 1 %} Nights{% else %}Night{% endif %}</p>
         <div class="">
-            <label for="rooms">Number of Rooms: </label>
+            <label for="rooms" class="subtitle">Number of Rooms: </label>
             <input type="number" id="rooms" name="rooms" value="1" min="1" max="{{room.number_rooms}}" onchange="calcRate()">
-            <p>Maximum: {{room.number_rooms}}</p>
+            <p class="cancel-policy">Maximum: {{room.number_rooms}}</p>
         </div>
-        <p>Price per Room per Night: ${{room[0].rate}}</p>
-        <p>Total Price <span id="total-price">${{room[0].rate * duration}}</span></p>
+        <div class="title-info">
+            <p class="subtitle">Pricing</p>
+            <p class="subtitle-info">Price per Room per Night: ${{room[0].rate}}</p>
+            <p class="subtitle-info">Total Price: <span id="total-price">${{room[0].rate * duration}}</span></p>
+        </div>
+
+        <p class="subtitle">Special Requests</p>
+        <textarea type="text" id="requests" name="requests" rows="4" placeholder="Please let us know if you have any special requests, and we will do our best to accommodate your needs."></textarea>
+
         <p class="cancel-policy">Guests may cancel their reservation at any time up to 48 hours before the check-in date without penalty. Cancellations made within 48 hours of check-in are non-refundable.</p>
     </div>
-    <div class="section">
-        <p class="title">Modify Booking Details</p>
-        <p>Special Requests</p>
-        <textarea type="text" id="requests" name="requests" rows="4" placeholder="Please let us know if you have any special requests, and we will do our best to accommodate your needs."></textarea>
-    </div>
-    <div class="section">
+    <div class="section upper">
         <p class="title">Guest Information</p>
-        <div class="">
-            <label for="name">Name:</label>
-            <input type="text" id="name" name="name" placeholder="Name" value="{{ user.name or '' }}" required>
-        </div>
-        <div class="">
-            <label for="email">Email: </label>
-            <input type="text" id="email" name="email" placeholder="Email" value="{{ user.email }}" required>
-        </div>
-        <div class="">
-            <label for="phone">Phone Number: </label>
-            <input type="number" id="phone" name="phone" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" placeholder="Phone Number" value="{{ user.phone or '' }}" inputmode='numeric' required>
-        </div>
-        <div class="">
-            <label for="guests">Number of Guests:</label>
-            <input type="number" id="guests" name="guests" value="1" min="1" max="{{room[0].max_guests}}">
-        </div>
-    </div>
-    <div class="section">
-        <p class="title">Payment Details</p>
-        <div>
-            <label for="promo">Promo Code</label>
-            <input type="text" id="promo" name="promo">
-            <button>Apply</button>
-        </div>
-        <p>Price Per Night</p>
-        <p>Resort Fee</p>
-        <p>Total Price</p>
+            <div class="guests">
+                <label for="name" class="subtitle">Name:</label>
+                <input type="text" id="name" name="name" placeholder="Name" value="{{ user.name or '' }}" required>
+            </div>
+            <div class="guests">
+                <label for="email" class="subtitle">Email: </label>
+                <input type="text" id="email" name="email" placeholder="Email" value="{{ user.email }}" required>
+            </div>
+            <div class="guests">
+                <label for="phone" class="subtitle">Phone Number: </label>
+                <input type="number" id="phone" name="phone" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" placeholder="Phone Number" value="{{ user.phone or '' }}" inputmode='numeric' required>
+            </div>
+            <div class="guests">
+                <label for="guests" class="subtitle">Number of Guests:</label>
+                <input type="number" id="guests" name="guests" value="1" min="1" max="{{room[0].max_guests}}">
+            </div>
     </div>
     <input type="submit" class="submit-button" value="Proceed to Checkout">
     <a href="{{ url_for('search') + '?location-type=' + location_type + '&startdate=' + startdate + '&enddate=' + enddate }}" class="cancel">Cancel and Return to Search</a>               
 </form>
+</div>
 
 
 

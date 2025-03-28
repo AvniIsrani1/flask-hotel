@@ -38,6 +38,10 @@ hr {
   align-items:center;
   justify-content:center;
 }
+
+.home-searchbar .searchbar{
+  background-color:rgba(0, 43, 90, 0.4) !important;
+}
 /* Box1: Date Pickers, Room Selector, and Price Calculator */
 .box1{
   display: flex;

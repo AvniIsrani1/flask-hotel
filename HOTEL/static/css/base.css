@@ -21,7 +21,7 @@ hr {
 
 header {
     background-color:#002B5A;
-    width:100vw;
+    width:100%;
     color:#F1DF75;
     display:flex;
     flex-direction:row;
@@ -34,6 +34,7 @@ header {
     position:sticky;
     z-index: 1000;
     top:0;
+    position:relative;
 }
 
 

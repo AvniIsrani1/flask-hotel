@@ -1,27 +1,46 @@
-.reservation-details {
+.reservation-details, .all-sections {
     display:flex;
     flex-direction:column;
     align-items:center !important;
     justify-content:center !important;
-    margin-block:20px;
     width:100%;
+}
+
+#reservation-details {
+    position:relative;
+    margin-block:350px 50px;
+    margin-inline:5px;
+    padding:20px 40px;
+    border-style:solid;
+    border-width:1px;
+    border-color:#b8b8b8;
+    border-radius:15px;
+    overflow:hidden;
+    background-color:#FFF9ED;
 }
 
 .image-container {
     display:flex;
     align-items:center;
     justify-content:center;
-    max-width:1100px;
+    background-image: 
+        linear-gradient(to right, #002B5A 5%, transparent 80%, #002B5A 95%),
+        linear-gradient(to bottom, #002B5A 15%, transparent 80%, #008DE8 95%),
+        url('../images/outside.webp');
+    background-position:center;
+    background-repeat:no-repeat;
+    height:600px;
+    width:100%;
+    position:absolute;
+    top:0;
+    color:#ffffff;
 }
 
-.hotel-image {
-    border-radius:50px;
-    border-style:solid;
-    border-width:2px;
-    border-color:#F1DF75;
-    width:100%;
-    height:auto;
-    overflow:hidden;
+.image-container p {
+    font-size:45px;
+    font-family:"Noto Sans Khmer", sans-serif;
+    margin:25px;
+    text-align:center;
 }
 
 p {
@@ -31,8 +50,13 @@ p {
 
 
 .main-title, .title {
-    font-weight:bold;
     text-align:center;
+}
+
+.main-title, .title, .subtitle {
+    font-weight:bold;
+    font-family:"Noto Sans Khmer", sans-serif;
+
 }
 
 .main-title {
@@ -45,20 +69,81 @@ p {
     font-size:25px !important;
 }
 
+.title-info {
+    display:flex;
+    flex-direction:column;
+}
+
+.subtitle, .subtitle-info {
+    font-size:15px;
+}
+
+.subtitle-info {
+    color:#7f8081;
+}
+
+.line {
+    display:flex;
+    justify-content:space-between;
+}
+.row {
+    display:flex;
+    gap:100px;
+    flex-wrap:wrap;
+}
+
+.col {
+    display:flex;
+    flex-direction:column;
+}
+
+
 .section {
     display:flex;
     flex-direction:column;
     width:85%;
-    gap:5px;
-    margin-top:25px;
-    padding:10px 15px;
+    gap:10px;
     background-color:#FFF9ED;
-    border-style:solid;
-    border-width:1px;
-    border-radius:15px;
     border-color:#002B5A;
     width:100%;
     max-width:1100px;
+}
+
+
+.guests {
+    display:flex;
+    flex-wrap:nowrap;
+}
+.guests label {
+    display:inline-block;
+    width:150px;
+}
+.guests input {
+    flex-grow:1;
+}
+
+
+.upper {
+    border-top-style:solid;
+    border-width:1px;
+    border-color:#b8b8b8;
+    margin-top:45px;
+    padding-top:20px;
+}
+
+textarea {
+    border-radius:15px;
+    padding:10px;
+    font-family:"Noto Sans Khmer", sans-serif;
+}
+
+.section input {
+    border-radius:7px;
+    padding:5px 10px;
+    font-family:"Noto Sans Khmer", sans-serif;
+    border-style:solid;
+    border-width:1px;
+    margin-left:8px;
 }
 
 
@@ -89,28 +174,41 @@ p {
     text-decoration: underline;
 }
 
+.cancel-policy {
+    font-size:0.7rem;
+    font-style:italic;
+}
 
 
 
 @media only screen and (max-width:1200px){
-    .reservation-details {
+    .reservation-details, #reservation-details {
         width:75%;
         max-width:900px;
+    }
+
+    .row {
+        margin-left:10px;
+        justify-content:right;
+        gap:20px;
     }
 
 }
 
 @media only screen and (max-width:1000px){
-    .reservation-details {
+    .reservation-details, #reservation-details {
         width:90%;
-        max-width:830px;
+        max-width:800px;
     }
 }
 
 @media only screen and (max-width:850px){
-    .reservation-details {
+    .reservation-details, #reservation-details {
         width:80%;
-        max-width:680px;
+        max-width:700px;
+    }
+    #reservation-details {
+        padding:20px 20px;
     }
 }
 
