@@ -1,19 +1,35 @@
 .content {
     display:flex;
     flex-direction:column;
-    margin-block:50px;
     justify-content:center;
     align-items:center;
     width:100%;
 }
 
+.messages {
+    background-color:#002B5A;
+    width:100vw;
+}
 
-.main-title p {
+.banner {
+    width:100vw;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    background:linear-gradient(to bottom, #002B5A, #008DE8);
+    padding-block:50px;
+}
+
+.main-title {
     font-family: "Noto Sans Khmer", sans-serif !important;
-    font-size:45px;
     text-align:center;
+    color:#ffffff;
+}
+
+.title {
+    font-size:45px;
     font-weight:bold;
-    color:#15A6DE;
 }
 
 .location-type, .startdate, .enddate, .submit-button {
@@ -30,10 +46,13 @@
     flex-direction:row;
     justify-content:center;
     gap:5px;
-    background-color:#002c5a74;
+    background-color:rgba(255, 255, 255, 0.2);
     padding:25px;
-    border-radius:15px;
     width:100%;
+    border-style:solid;
+    border-width:1px;
+    border-color:rgba(255, 255, 255, 0.2);
+    border-radius:15px;
 }
 
 .searchbar .submit-area {
@@ -66,7 +85,7 @@
     flex:1;
 }
 .location-type {
-    border-radius:50px;
+    border-radius:15px;
     padding-inline:20px 30px !important;
     appearance:none;
 }
@@ -78,12 +97,12 @@
 }
 
 .startdate {
-    border-radius:50px 0px 0px 50px;
+    border-radius:15px 0px 0px 15px;
     flex:1;
 }
 
 .enddate {
-    border-radius:0px 50px 50px 0px;
+    border-radius:0px 15px 15px 0px;
     flex:1;
 }
 
@@ -94,7 +113,7 @@
 }
 
 .submit-button {
-    border-radius:50px;
+    border-radius:15px;
     display:flex;
     flex-direction:row;
     gap:5px;
@@ -103,7 +122,7 @@
     background-color:#F1DF75;
 }
 
-.submit-button:hover {
+.submit-button:hover, .submit-room button:hover {
     background-color:lightgoldenrodyellow;
 }
 
@@ -121,7 +140,6 @@
 .options .search-info {
     display:flex;
     flex-direction:row;
-    justify-content:space-between;
     width:100%;
 }
   
@@ -166,62 +184,78 @@
 
 
 /* ----------------------------- search result information --------------------------------- */
-
-
-.search-results {
+.item-container {
     display:flex;
-    flex-direction:column;
-    align-items:center;
-    width:100%;
-    background-color:rgba(241, 223, 117, 0.3);
-    /* border-style:solid; */
-    border-width:1px;
-    border-radius:15px;
-    overflow:hidden;
-    padding:20px;
-    margin-top:40px;
-    gap:10px;
-
+    flex-direction:row;
+    gap:20px;
+    flex-wrap:wrap;
+    justify-content:center;
+    margin-block:25px 50px;
 }
 
 .item {
     display:flex;
-    flex-direction:row;
-    justify-content:space-between;
-    width:100%;
+    flex-direction:column;
+    position:relative;
+    width:50%;
+    max-width:500px;
+    /* height:550px; */
     font-size:1.5rem;
     font-family:"Noto Sans Khmer", sans-serif;
-    background-color:#002B5A;
-    color:#F1DF75;
+    background-color:#ffffff;
+    color:#002B5A;
     border-style:solid;
     border-width:1px;
     border-radius:15px;
     overflow:hidden;
+    padding-bottom:15px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.5);
+
 }
 
 .item img {
-    width:45%;
-    height:280px;
-    border-right-style:solid;
-    border-right-width:1px;
-    border-right-color:#F1DF75;
+    width:100%;
+    height:300px;
+    border-bottom-style:solid;
+    border-bottom-width:1px;
+    border-bottom-color:#F1DF75;
+    position:relative;
+}
+
+.item .circle {
+    position:absolute;
+    right:0;
+    margin:10px;
+    padding:8px;
+    border-radius:50%;
+    color:rgba(255, 255, 255, 0.2);
+    font-size:2.5rem;
+}
+
+.item .save {
+    position:absolute;
+    right:0;
+    margin:10px;
+    padding:16px;
 }
 
 .item .description {
     display:flex;
     flex-direction:column;
     justify-content:space-between;
-    width:55%;
+    width:100%;
     padding:10px 20px;
+    font-family:"Noto Sans Khmer", sans-serif;
 }
 
 .upper-details {
     display:flex;
     flex-direction:row;
     justify-content:space-between;
-    font-size:1.8rem;
-    border-bottom-style:solid;
-    border-width:1px;
+    font-size:1.4rem;
+    font-weight:bold;
+    /* border-bottom-style:solid;
+    border-width:1px; */
 }
 
 .upper-details i {
@@ -232,8 +266,12 @@
     display:none;
 }
 
-.item .subtitle {
-    font-size:1rem;
+.inner-details {
+    margin-block:10px;
+    display:flex;
+    flex-direction:row;
+    flex-wrap:wrap;
+    gap:20px;
 }
 
 .item .pricing {
@@ -241,15 +279,40 @@
     flex-direction:row;
     justify-content:space-between;
     align-items:center;
+}
+
+.item .pricing-inner {
+    display:flex;
+    flex-direction:column;
+    text-align:right;
+}
+
+.item .price {
+    font-weight:bold;
     font-size:1.2rem;
 }
 
+.item .price-rate {
+    font-size:0.8rem;
+    font-weight:normal;
+}
+
+.desc {
+    font-size:1rem;
+    display:flex;
+    flex-direction:row;
+    align-items:center;
+    gap:5px;
+}
+
+
 .filters {
     display:flex;
-    flex-direction:column;
-    justify-content:start;
+    flex-direction:row;
+    justify-content: space-between;
     width:100%;
     margin-block:10px;
+    position:relative;
 }
 
 .filters .icon {
@@ -296,20 +359,16 @@
 }
 
 
-.sub, .sub-sm {
+.sub-sm {
     background-color:#F1DF75;
     color:#002B5A;
     font-family:"Noto Sans Khmer", sans-serif;
-    font-size:1.5rem;
+    font-size:1rem;
     border-radius:15px;
     padding-inline:10px;
 }
 
-.sub-sm {
-    font-size:1rem !important;
-}
-
-.sub:hover, .sub-sm:hover{
+.sub-sm:hover{
     cursor:pointer;
     background-color:lightgoldenrodyellow;
 }
@@ -328,20 +387,33 @@
     padding-bottom:10px;
 }
 
-#submit-room {
+.submit-room {
+    margin-top:auto;
     display:flex;
-    flex-direction:row;
-    justify-content: right;
+    align-items:center;
+    justify-content:center;
+    width:100%;
+    padding-inline:20px;
 }
-.pricing .sub {
-    display: inline-block;
-    text-decoration: none;
-    padding: 6px 12px;
-    text-align: center;
-    font-family: "Noto Sans Khmer", sans-serif;
-    font-size: 1.5rem;
-    border-radius: 15px;
+.submit-room button {
+    width:100%;
+    overflow:hidden;
+    height:30px;
+    background-color:#F1DF75;
+    color:#002B5A;
+    font-family:"Noto Sans Khmer", sans-serif;
+    font-size:1rem;
+    border-style:solid;
+    border-width:1px;
+    border-color:#002B5A;
+    border-radius:10px;
 }
+
+.submit-room-button:hover, .item img:hover, .item .save:hover {
+    cursor:pointer;
+}
+
+
 
 @media only screen and (max-width:1200px){
     .options, .search-bar {
@@ -351,6 +423,11 @@
     form {
         width:95%;
         max-width:850px;
+    }
+
+    .item {
+        max-width:550px;
+        width:95%;
     }
 
     .submit-button span {
@@ -389,25 +466,13 @@
 }
 
 @media only screen and (max-width:650px){
-    .item, .date-selection {
+    .date-selection {
         flex-direction:column;
     }
 
     .date-selection {
         gap:5px;
     }
-
-    .item img, .item .description {
-        width:100%;
-    }
-
-    .item img {
-        border-right-style:unset;
-        border-bottom-style:solid;
-        border-bottom-width:1px;
-        border-bottom-color:#F1DF75;
-    }
-
 
     .startdate, .enddate {
         border-radius:50px;

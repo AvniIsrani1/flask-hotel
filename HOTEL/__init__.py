@@ -10,6 +10,8 @@ from botocore.exceptions import ClientError
 import json
 from .models import db, User, Hotel, Floor, Room, Booking, FAQ, YesNo, Locations, RoomType, Availability, Saved
 from .adding import add_floor, add_room, add_layout, add_booking, add_faq
+from flask_admin import Admin
+from flask_admin.contrib.sqla import ModelView
 
 
 app = Flask(__name__,
@@ -36,10 +38,16 @@ pwd = quote(secret.get("password"))
 app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql+pymysql://{username}:{pwd}@hotel-db-instance.cvwasiw2g3h6.us-west-1.rds.amazonaws.com:3306/hotel_db'
 db.init_app(app)
 
+models = [User, Hotel, Floor, Room, Booking, FAQ, YesNo, Locations, RoomType, Availability, Saved]
+admin = Admin(app, name="Admin", template_mode="bootstrap4")
+
+
 
 # Create all database tables (if they don't exist already)
 with app.app_context():
     db.create_all()
+
+    admin.add_view(ModelView(User, db.session))
 
 # ----- Routes -----
 
@@ -435,10 +443,10 @@ def add_sample_data():
         print("Sample rooms added")
 
         users = []
-        avni = User(name="avni",email="avni@gmail.com",password="avni")
-        devansh = User(name="devansh",email="devansh@gmail.com",password="devansh")
-        elijah = User(name="elijah",email="elijah@gmail.com",password="elijah")
-        andrew = User(name="andrew",email="andrew@gmail.com",password="andrew")
+        avni = User(name="avni",email="avni@gmail.com",password=generate_password_hash("avni"))
+        devansh = User(name="devansh",email="devansh@gmail.com",password=generate_password_hash("devansh"))
+        elijah = User(name="elijah",email="elijah@gmail.com",password=generate_password_hash("elijah"))
+        andrew = User(name="andrew",email="andrew@gmail.com",password=generate_password_hash("andrew"))
         users.extend([avni, devansh, elijah, andrew])
         db.session.add_all(users)
         db.session.commit()

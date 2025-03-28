@@ -22,7 +22,7 @@
 {% block content %}
 
 <!-- Flash Message Display -->
-{% with messages = get_flashed_messages(with_categories=true) %}
+<!-- {% with messages = get_flashed_messages(with_categories=true) %}
   {% if messages %}
     {% for category, message in messages %}
       <div class="flash-message {{ category }}">
@@ -30,6 +30,13 @@
       </div>
     {% endfor %}
   {% endif %}
+{% endwith %} -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+  <div class="flash-message {{ messages[-1][0] }}">
+    {{ messages[-1][1] }}
+  </div>
+{% endif %}
 {% endwith %}
 
 <div class="content">
