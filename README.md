@@ -12,9 +12,15 @@ pip install flask-sqlalchemy
 pip install flask-admin
 pip install pymysql
 pip install boto3
-
-
-
+pip install flask-cors 
+pip install transformers
+pip install torch
+pip install huggingface_hub
+pip install pandas
+pip install langchain-huggingface
+pip install langchain-community
+pip install faiss-cpu
+pip install faiss-gpu
 
 TO RUN
 flask --app hotel run --debug

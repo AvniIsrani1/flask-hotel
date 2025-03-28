@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, session, flash, get_flashed_messages
+from flask import Flask, jsonify, render_template, request, redirect, url_for, session, flash, get_flashed_messages
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import DateTime, distinct, desc, cast, func, not_, String, Computed
 from datetime import datetime
@@ -12,7 +12,9 @@ from .models import db, User, Hotel, Floor, Room, Booking, FAQ, YesNo, Locations
 from .adding import add_floor, add_room, add_layout, add_booking, add_faq
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
-
+from HOTEL.AImodels.ai_model import load_ai_model, generate_ai_response
+from HOTEL.AImodels.csv_retriever import setup_csv_retrieval, get_answer_from_csv
+from .response import format_response  # Make sure helpers.py is in the correct location
 
 app = Flask(__name__,
             static_folder='static',     # Define the static folder (default is 'static')
@@ -33,7 +35,8 @@ secret = json.loads(response['SecretString'])
 username=secret.get("username")
 pwd = quote(secret.get("password"))
 
-
+ai_model = load_ai_model()
+ai_db = setup_csv_retrieval()
 
 app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql+pymysql://{username}:{pwd}@hotel-db-instance.cvwasiw2g3h6.us-west-1.rds.amazonaws.com:3306/hotel_db'
 db.init_app(app)
@@ -515,6 +518,38 @@ def add_sample_faq():
     ]
     add_faq(faqs)
 
+def process_query(user_question):
+    "Processes the user query using CSV first, AI as backup."
+    csv_answer = get_answer_from_csv(ai_db, user_question)
+    formatted_response = format_response(csv_answer, user_question)
+    
+    # If we got a valid formatted response, return it
+    if formatted_response:
+        return formatted_response
+    
+    # Otherwise, use the AI model to generate a response
+    return generate_ai_response(ai_model, user_question)
+
+@app.route("/")
+def index():
+    return render_template("chat.html")
+
+@app.route("/get_response", methods=["POST"])
+def get_response():
+    try:
+        csv_data = request.get_json()
+        user_message = csv_data.get("message", "")
+        
+        if not user_message:
+            return jsonify({"response": "I'm not sure what you mean."})
+        
+        ai_response = process_query(user_message)
+        return jsonify({"response": ai_response})
+    except Exception as e:
+        # Log the error
+        print(f"Error: {str(e)}")
+        # Return a proper error response
+        return jsonify({"response": "An error occurred while processing your request."}), 500
 
 # Add this after db.create_all() in your __init__.py
 with app.app_context():
