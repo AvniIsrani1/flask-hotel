@@ -30,7 +30,7 @@
 <div class="all-sections">
  <form method='post' action={{url_for('payment')}} id="reservation-details">
     <input type="hidden" name="rid" value="{{rid}}">
-    <input type="hidden" name="location-type" value="{{location_type}}">
+    <input type="hidden" name="location_type" value="{{location_type}}">
     <input type="hidden" name="startdate" value="{{startdate}}">
     <input type="hidden" name="enddate" value="{{ enddate}}">
     <div class="section">
@@ -51,7 +51,7 @@
                 </div>
                 <div class="title-info">
                     <p class="subtitle">Length of Stay</p>
-                    <p class="subtitle-info">{{duration}} {% if duration > 1 %} Nights{% else %}Night{% endif %}</p>
+                    <p class="subtitle-info">{{duration+1}}{% if duration > 1 %} Days{% else %} Days{% endif %}, {{duration}}{% if duration > 1 %} Nights{% else %} Night{% endif %}</p>
                 </div>
             </div>
         </div>
@@ -121,8 +121,15 @@
             </div>
     </div>
     <input type="submit" class="submit-button" value="Proceed to Checkout">
-    <a href="{{ url_for('search') + '?location-type=' + location_type + '&startdate=' + startdate + '&enddate=' + enddate }}" class="cancel">Cancel and Return to Search</a>               
 </form>
+
+<form method="get" action="{{url_for('search')}}" id='returned-room' class="returned-room">
+    <input type="hidden" name="location_type" id="returned-location" value="{{ request.args.get('location_type', '')}}">
+    <input type="hidden" name="startdate" id="returned-startdate" value="{{ request.args.get('startdate', '') }}">
+    <input type="hidden" name="enddate" id="returned-enddate" value="{{ request.args.get('enddate', '') }}">
+    <button type="submit" class="submit-room-button">Cancel and Return to Search</button>
+</form>
+
 </div>
 
 

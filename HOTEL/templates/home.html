@@ -40,7 +40,7 @@
                 <i class="fa-solid fa-location-dot" ></i>
                 <p>DESTINATION</p>
             </div>
-            <select name="location-type" class="location-type" title="Select a Location">
+            <select name="location_type" class="location_type" title="Select a Location">
                 <option disabled selected>Select Location</option>
                   {% if locations %}
                     {% for loc in locations %}
@@ -159,24 +159,6 @@
 <script>
   var startdate_url = "{{ request.args.get('startdate', '') or request.args.get('enddate','') }}";
   var enddate_url = "{{ request.args.get('enddate', '') or request.args.get('startdate','') }}";
-
-  document.addEventListener('DOMContentLoaded', function(){
-    let form = document.getElementById('searchbar');
-    let startdate = document.getElementById('startdate')
-    let enddate = document.getElementById('enddate');
-    form.addEventListener("submit", function(event){
-      if(!startdate.value){
-        startdate.value = new Date().toLocaleDateString('en-US',{
-            month:'long',
-            day:'numeric',
-            year:'numeric'
-        });
-      }
-      if(!enddate.value){
-        enddate.value = startdate.value;
-      }
-    });
-  });
 </script>
 {% endblock %}
 <!DOCTYPE html>

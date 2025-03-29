@@ -8,7 +8,7 @@
 
 #reservation-details {
     position:relative;
-    margin-block:350px 50px;
+    margin-block:350px 25px;
     margin-inline:5px;
     padding:20px 40px;
     border-style:solid;
@@ -29,6 +29,7 @@
         url('../images/outside.webp');
     background-position:center;
     background-repeat:no-repeat;
+    background-size:cover;
     height:600px;
     width:100%;
     position:absolute;
@@ -165,18 +166,34 @@ textarea {
     cursor:pointer;
 }
 
-.cancel {
+.res-cancel {
     font-size:0.9rem;
     color:#002B5A;
 }
 
-.cancel:hover {
+.res-cancel:hover {
     text-decoration: underline;
 }
 
 .cancel-policy {
     font-size:0.7rem;
     font-style:italic;
+}
+
+.returned-room {
+    margin: 25px 10px 50px 10px;
+}
+
+.returned-room button {
+    background-color:transparent;
+    border:none;
+    color:#002B5A;
+    font-size:15px;
+}
+
+.returned-room button:hover{
+    text-decoration:underline;
+    cursor:pointer;
 }
 
 

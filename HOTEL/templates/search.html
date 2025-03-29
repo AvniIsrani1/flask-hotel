@@ -42,11 +42,11 @@
                         <i class="fa-solid fa-location-dot" ></i>
                         <p>DESTINATION</p>
                     </div>
-                    <select name="location-type" class="location-type" title="Select a Location">
-                        <option disabled {% if not request.args.get('location-type') %} selected {% endif %}>Select Location</option>
+                    <select name="location_type" class="location_type" title="Select a Location">
+                        <option value="" disabled {% if not request.args.get('location_type') %} selected {% endif %}>Select Location</option>
                         {% if locations %}
                             {% for loc in locations %}
-                              <option value="{{loc[0].value}}" {% if request.args.get('location-type')==loc[0].value %} selected {% endif %}>{{ loc[0].value }}</option>
+                              <option value="{{loc[0].value}}" {% if request.args.get('location_type')==loc[0].value %} selected {% endif %}>{{ loc[0].value }}</option>
                             {% endfor %}
                           {% endif %}
                     </select>
@@ -80,7 +80,7 @@
             </div>
             <form method="get" action={{url_for('search')}} id="filter-selection">
                 <input type="hidden" name="stype" value="apply_filters">
-                <input type="hidden" name="location-type" value="{{ request.args.get('location-type', '')}}">
+                <input type="hidden" name="location_type" value="{{ request.args.get('location_type', '')}}">
                 <input type="hidden" name="startdate" value="{{ request.args.get('startdate', '') }}">
                 <input type="hidden" name="enddate" value="{{ request.args.get('enddate', '') }}">
                 <select name="room_type" id="room_type" title="Select a Room Type">
@@ -117,8 +117,8 @@
                 </select>  
                 <div class="pricing">
                     <label for="price_range">Maximum Rate</label>
-                    <input type="range" name="price_range" id="price_range" min="10" max="700" step="1" value="700" oninput="price_update(this.value)">
-                    <p id="price-display">700</p>
+                    <input type="range" name="price_range" id="price_range" min="10" max="1000" step="1" value="1000" oninput="price_update(this.value)">
+                    <p id="price-display">1000</p>
                 </div>
                 <div class="buttons">
                     <button class="sub-sm" type="button" onclick="close_filter()" title="Submit">
@@ -209,12 +209,12 @@
                 </div>
                 </div>       
             </div>
-            {% set location_type = request.args.get('location-type', '') %}
+            {% set location_type = request.args.get('location_type', '') %}
             {% set startdate = request.args.get('startdate', '') %}
             {% set enddate = request.args.get('enddate', '') %}
-            <form method="post" action="{{url_for('reserve')}}" id='submit-room' class="submit-room">
+            <form method="get" action="{{url_for('reserve')}}" id='submit-room' class="submit-room">
                 <input type="hidden" name="rid" id="submitted-rid" value="{{ min_rid }}">
-                <input type="hidden" name="location-type" id="submitted-location" value="{{ request.args.get('location-type', '')}}">
+                <input type="hidden" name="location_type" id="submitted-location" value="{{ request.args.get('location_type', '')}}">
                 <input type="hidden" name="startdate" id="submitted-startdate" value="{{ request.args.get('startdate', '') }}">
                 <input type="hidden" name="enddate" id="submitted-enddate" value="{{ request.args.get('enddate', '') }}">
                 <button type="submit" class="submit-room-button">Book</button>
@@ -270,7 +270,7 @@
 function submitAllForms(event) {
     event.preventDefault();
     let filters = document.getElementById("filter-selection");
-    filters.querySelector('input[name="location-type"]').value = document.querySelector('select[name="location-type"]').value;
+    filters.querySelector('input[name="location_type"]').value = document.querySelector('select[name="location_type"]').value;
     filters.querySelector('input[name="startdate"]').value = document.getElementById('startdate').value;
     filters.querySelector('input[name="enddate"]').value = document.getElementById('enddate').value;
     filters.submit();
