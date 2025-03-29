@@ -87,17 +87,17 @@
 
         <div class="">
             <label for="rooms" class="subtitle">Number of Rooms: </label>
-            <input type="number" id="rooms" name="rooms" value="1" min="1" max="{{room.number_rooms}}" onchange="calcRate()">
+            <input type="number" id="rooms" name="rooms" value="{{rooms or 1}}" min="1" max="{{room.number_rooms}}" onchange="calcRate()">
             <p class="cancel-policy">Maximum: {{room.number_rooms}}</p>
         </div>
         <div class="title-info">
             <p class="subtitle">Pricing</p>
             <p class="subtitle-info">Price per Room per Night: ${{room[0].rate}}</p>
-            <p class="subtitle-info">Total Price: <span id="total-price">${{room[0].rate * duration}}</span></p>
+            <p class="subtitle-info">Estimated Price: <span id="total-price">${{room[0].rate * duration}}</span></p>
         </div>
 
         <p class="subtitle">Special Requests</p>
-        <textarea type="text" id="requests" name="requests" rows="4" placeholder="Please let us know if you have any special requests, and we will do our best to accommodate your needs."></textarea>
+        <textarea type="text" id="requests" name="requests" rows="4" placeholder="Please let us know if you have any special requests, and we will do our best to accommodate your needs.">{{requests or ''}}</textarea>
 
         <p class="cancel-policy">Guests may cancel their reservation at any time up to 48 hours before the check-in date without penalty. Cancellations made within 48 hours of check-in are non-refundable.</p>
     </div>
@@ -105,19 +105,19 @@
         <p class="title">Guest Information</p>
             <div class="guests">
                 <label for="name" class="subtitle">Name:</label>
-                <input type="text" id="name" name="name" placeholder="Name" value="{{ user.name or '' }}" required>
+                <input type="text" id="name" name="name" placeholder="Name" value="{{ name or user.name or '' }}" required>
             </div>
             <div class="guests">
                 <label for="email" class="subtitle">Email: </label>
-                <input type="text" id="email" name="email" placeholder="Email" value="{{ user.email }}" required>
+                <input type="text" id="email" name="email" placeholder="Email" value="{{ email or user.email }}" required>
             </div>
             <div class="guests">
                 <label for="phone" class="subtitle">Phone Number: </label>
-                <input type="number" id="phone" name="phone" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" placeholder="Phone Number" value="{{ user.phone or '' }}" inputmode='numeric' required>
+                <input type="number" id="phone" name="phone" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" placeholder="Phone Number" value="{{ phone or user.phone or '' }}" inputmode='numeric' required>
             </div>
             <div class="guests">
                 <label for="guests" class="subtitle">Number of Guests:</label>
-                <input type="number" id="guests" name="guests" value="1" min="1" max="{{room[0].max_guests}}">
+                <input type="number" id="guests" name="guests" value="{{guests or 1}}" min="1" max="{{room[0].max_guests}}">
             </div>
     </div>
     <input type="submit" class="submit-button" value="Proceed to Checkout">
@@ -142,6 +142,10 @@
         var total = rate * rooms * duration;
         document.getElementById('total-price').textContent = '$'+total;
     }
+
+    document.addEventListener('DOMContentLoaded',function(){
+        calcRate();
+    });
 
     var startdate_url = "{{ request.args.get('startdate', '') or request.args.get('enddate','') }}";
     var enddate_url = "{{ request.args.get('enddate', '') or request.args.get('startdate','') }}";

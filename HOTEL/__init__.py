@@ -1,6 +1,6 @@
 from flask import Flask, jsonify, render_template, request, redirect, url_for, session, flash, get_flashed_messages
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import DateTime, distinct, desc, cast, func, not_, String, Computed
+from sqlalchemy import DateTime, distinct, desc, asc, cast, func, not_, String, Computed
 from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
 from enum import Enum as PyEnum
@@ -9,7 +9,7 @@ import boto3
 from botocore.exceptions import ClientError
 import json
 from .models import db, User, Hotel, Floor, Room, Booking, FAQ, YesNo, Locations, RoomType, Availability, Saved
-from .adding import add_floor, add_room, add_layout, add_booking, add_faq
+from .adding import add_layout
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
 from HOTEL.AImodels.ai_model import load_ai_model, generate_ai_response
@@ -302,13 +302,30 @@ def search():
     print(rooms)
     return render_template('search.html', locations=locations, roomtypes=roomtypes, rooms=rooms, YesNo = YesNo)
 
+
+def get_start_end_duration(startdate, enddate):
+    starting = datetime.strptime(str(startdate), "%B %d, %Y").replace(hour=15,minute=0,second=0)
+    ending = datetime.strptime(str(enddate), "%B %d, %Y").replace(hour=11,minute=0,second=0)
+    duration = (ending - starting).days + 1
+    return starting, ending, duration
+
+def get_similar_rooms(rid, starting, ending):
+    query = Room.query.join(Hotel).filter(Room.available==Availability.A)
+    room = query.filter(Room.id==rid).first()
+    similar_rooms = Room.query.join(Hotel).filter(
+        Room.hid==room.hid, Room.room_type==room.room_type, Room.number_beds==room.number_beds, Room.rate==room.rate, Room.balcony==room.balcony, Room.city_view==room.city_view,
+        Room.ocean_view==room.ocean_view, Room.smoking==room.smoking, Room.max_guests==room.max_guests, Room.wheelchair_accessible==room.wheelchair_accessible
+    )
+    similar_rooms = similar_rooms.filter(not_(db.exists().where(Booking.rid == Room.id).where(Booking.check_in < ending).where(Booking.check_out>starting))).order_by(asc(Room.room_number))
+    return similar_rooms
+
 @app.route("/reserve", methods=["GET", "POST"])
 def reserve():
     if "user_id" not in session:
         flash("Please log in first.", "error")
         return redirect(url_for("log_in"))
     user = User.query.get(session["user_id"])
-    if request.method=='GET':
+    if request.method=='GET' or request.method=='POST':
         rid = request.args.get('rid')
         location_type = request.args.get('location_type')
         startdate = request.args.get('startdate')
@@ -320,20 +337,10 @@ def reserve():
                 flash('Please enter both the start and end dates',"error")
             return redirect(url_for('search'))
         print(f"Received rid: {rid}, location_type: {location_type}, startdate: {startdate}, enddate: {enddate}") 
-        query = Room.query.join(Hotel).filter(Room.available==Availability.A)
-    # query = query.group_by(
-    #     Room.hid, Room.room_type, Room.number_beds, Room.rate, Room.balcony, Room.city_view, Room.ocean_view, 
-    #     Room.smoking, Room.max_guests, Room.wheelchair_accessible
-    # )
-        starting = datetime.strptime(str(startdate), "%B %d, %Y").replace(hour=15,minute=0,second=0)
-        ending = datetime.strptime(str(enddate), "%B %d, %Y").replace(hour=11,minute=0,second=0)
-        duration = (ending - starting).days + 1
-        room = query.filter(Room.id==rid).first()
-        similar_rooms = Room.query.join(Hotel).filter(
-            Room.hid==room.hid, Room.room_type==room.room_type, Room.number_beds==room.number_beds, Room.rate==room.rate, Room.balcony==room.balcony, Room.city_view==room.city_view,
-            Room.ocean_view==room.ocean_view, Room.smoking==room.smoking, Room.max_guests==room.max_guests, Room.wheelchair_accessible==room.wheelchair_accessible
-        )
-        similar_rooms = similar_rooms.filter(not_(db.exists().where(Booking.rid == Room.id).where(Booking.check_in < ending).where(Booking.check_out>starting)))
+
+        starting, ending, duration = get_start_end_duration(startdate, enddate)
+        similar_rooms = get_similar_rooms(rid=rid,starting=starting,ending=ending)
+
         similar_rooms = similar_rooms.group_by(
             Room.hid, Room.room_type, Room.number_beds, Room.rate, Room.balcony, Room.city_view, Room.ocean_view, 
             Room.smoking, Room.max_guests, Room.wheelchair_accessible
@@ -343,8 +350,19 @@ def reserve():
         if not room:
             print('room not found')
             flash('Room not found',"error")
-            return redirect(url_for('home'))
+            return redirect(url_for('search'))
+        if request.method=='POST':
+            name=request.form.get('name', user.name)
+            phone=request.form.get('phone', user.phone)
+            email=request.form.get('email', user.email)
+            guests=request.form.get('guests',1)
+            rooms=request.form.get('rooms',1)
+            requests=request.form.get('requests','')
+            return render_template('reserve.html', user=user, room=room, YesNo=YesNo, rid=rid, location_type=location_type, duration=duration, startdate=startdate, enddate=enddate,
+                                   name=name, phone=phone,email=email,guests=guests,rooms=rooms,requests=requests)
+        
         return render_template('reserve.html', user=user, room=room, YesNo=YesNo, rid=rid, location_type=location_type, duration=duration, startdate=startdate, enddate=enddate)
+        
 
 @app.route("/terms")
 def terms():
@@ -451,11 +469,11 @@ def add_sample_data():
         avni_id = User.query.filter_by(email="avni@gmail.com").first().id
         malibu_room_1 = Room.query.filter_by(hid=malibu_id).first().id
         sm_room_1 = Room.query.filter_by(hid=sm_id).first().id
-        add_booking(uid=avni_id, rid=malibu_room_1, check_in=datetime.now(), check_out=datetime.now()+timedelta(5), fees=500)
-        add_booking(uid=avni_id, rid=sm_room_1, check_in=datetime.now()+timedelta(5), check_out=datetime.now()+timedelta(10),fees=600)
-        add_booking(uid=avni_id, rid=malibu_room_1, check_in=datetime.now()-timedelta(2), check_out=datetime.now()-timedelta(1), fees=400)
-        add_booking(uid=avni_id, rid=sm_room_1, check_in=datetime.now()-timedelta(3), check_out=datetime.now()-timedelta(1), fees=300)
-        add_booking(uid=avni_id, rid=malibu_room_1, check_in=datetime.now(), check_out=datetime.now()+timedelta(1), fees=300)
+        Booking.add_booking(uid=avni_id, rid=malibu_room_1, check_in=datetime.now(), check_out=datetime.now()+timedelta(5), fees=500)
+        Booking.add_booking(uid=avni_id, rid=sm_room_1, check_in=datetime.now()+timedelta(5), check_out=datetime.now()+timedelta(10),fees=600)
+        Booking.add_booking(uid=avni_id, rid=malibu_room_1, check_in=datetime.now()-timedelta(2), check_out=datetime.now()-timedelta(1), fees=400)
+        Booking.add_booking(uid=avni_id, rid=sm_room_1, check_in=datetime.now()-timedelta(3), check_out=datetime.now()-timedelta(1), fees=300)
+        Booking.add_booking(uid=avni_id, rid=malibu_room_1, check_in=datetime.now(), check_out=datetime.now()+timedelta(1), fees=300)
         b = Booking.query.get(1)
         if b:
             b.cancel_booking()
@@ -510,7 +528,7 @@ def add_sample_faq():
         "Absolutely! We offer event spaces, wedding packages, and beachside ceremonies at both locations.", 
         "Reservations & Policies")
     ]
-    add_faq(faqs)
+    FAQ.add_faq(faqs)
 
 def process_query(user_question):
     "Processes the user query using CSV first, AI as backup."
@@ -563,7 +581,28 @@ def payment():
         location_type = request.form.get('location_type')
         startdate = request.form.get('startdate')
         enddate = request.form.get('enddate')
-        return render_template('payment.html', rid=rid, location_type=location_type, startdate=startdate, enddate=enddate)
+        rooms = request.form.get('rooms')
+        requests = request.form.get('requests')
+        name = request.form.get('name')
+        email = request.form.get('email')
+        phone = request.form.get('phone')
+        guests = request.form.get('guests')
+
+        starting, ending, duration = get_start_end_duration(startdate, enddate)
+        similar_rooms = get_similar_rooms(rid=rid,starting=starting,ending=ending)
+
+        rooms_to_book = similar_rooms.limit(int(rooms))
+        rooms_to_book_count = rooms_to_book.count()
+        if rooms_to_book_count==0:
+            flash('Room no longer available. Please search for a new room.','error')
+            return redirect(url_for('search'))
+        elif rooms_to_book_count < int(rooms):
+            flash('Not able to book ' + rooms + ' rooms. ' + str(rooms_to_book_count) + ' rooms available.', 'error') 
+        one_room = rooms_to_book.first()
+        return render_template('payment.html', rid=rid, location_type=location_type, startdate=startdate, enddate=enddate,duration=duration,
+                               YesNo=YesNo, one_room=one_room, 
+                               guests=guests, rooms=rooms_to_book_count, name=name, email=email, phone=phone,
+                               requests=requests)
 
 # Process payment route (form submission handling)
 @app.route("/process-payment", methods=["POST"])
@@ -576,6 +615,27 @@ def process_payment():
     credit_card_number = request.form.get("card-number")
     exp_date = request.form.get("expiry")
     cvv = request.form.get("cvv")
+
+    # Extract room informatin from form
+    rid = request.form.get('rid') 
+    location_type = request.form.get('location_type')
+    startdate = request.form.get('startdate')
+    enddate = request.form.get('enddate')
+    rooms = request.form.get('rooms')
+    requests = request.form.get('requests')
+    name = request.form.get('name')
+    email = request.form.get('email')
+    phone = request.form.get('phone')
+    guests = request.form.get('guests')
+
+    # Find a valid room to book 
+    starting, ending, duration = get_start_end_duration(startdate, enddate)
+    similar_rooms = get_similar_rooms(rid=rid,starting=starting,ending=ending)
+    rooms_to_book = similar_rooms.limit(int(rooms))
+    rooms_to_book_count = rooms_to_book.count()
+    one_room = rooms_to_book.first()
+    print(one_room)
+    rooms_to_book = rooms_to_book.all()
     
     # Create a new CreditCard instance with the provided information
     new_credit_card = CreditCard(credit_card_number, exp_date, cvv)
@@ -595,48 +655,57 @@ def process_payment():
         validation_passed = False
         flash("Invalid CVV \n\t The security code should be 3 digits (4 for American Express cards).", "cvv_error")
     
+
     if validation_passed:
         # Card is valid, process the payment
         try:
             user_id = session.get("user_id")
             
-            # Find a valid room to book (first available room)
-            room = Room.query.filter_by(available=Availability.A).first()
-            
-            if not room:
-                flash("No available rooms to book.", "database_error")
-                return render_template('payment.html')
-                
+            if not rooms_to_book:
+                flash('Room no longer available. Please search for a new room.','error')
+                return redirect(url_for('search'))
+            elif rooms_to_book_count < int(rooms):
+                flash('Not able to book ' + rooms + ' rooms. ' + str(rooms_to_book_count) + ' rooms available.', 'error') 
+                return render_template('payment.html', rid=rid, location_type=location_type, startdate=startdate, enddate=enddate,duration=duration,
+                                    YesNo=YesNo, one_room=one_room, 
+                                    guests=guests, rooms=rooms_to_book_count, name=name, email=email, phone=phone,
+                                    requests=requests)                
             # Set check-in and check-out dates
-            check_in_date = datetime.now()
-            check_out_date = check_in_date + timedelta(days=3)
+            check_in_date = starting
+            check_out_date = ending
             
             # Create a new booking record
-            new_booking = Booking(
-                uid=user_id,
-                room_num=room.id,  # Use a valid room ID
-                check_in=check_in_date,
-                check_out=check_out_date,
-                fees=50
-            )
-            
-            # Update room availability
-            room.available = Availability.B
-            
-            db.session.add(new_booking)
+            for room in rooms_to_book:
+                new_booking = Booking(
+                    uid=user_id,
+                    rid=room.id,  # Use a valid room ID
+                    check_in=check_in_date,
+                    check_out=check_out_date,
+                    num_guests=guests,
+                    fees=50 #might need to update fees
+                )
+                # Update room availability
+                #room.available = Availability.B
+                db.session.add(new_booking)
             db.session.commit()
             
             flash("YOUR CARD HAS BEEN ACCEPTED", "success")
-            return redirect(url_for("my_bookings"))
+            return redirect(url_for("bookings"))
             
         except Exception as e:
             db.session.rollback()
             flash(f"Database error: {str(e)}", "database_error")
-            return render_template('payment.html')
+            return redirect(url_for('search'))
+            # return render_template('payment.html', rid=rid, location_type=location_type, startdate=startdate, enddate=enddate,duration=duration,
+            #             YesNo=YesNo, one_room=one_room, 
+            #             guests=guests, rooms=rooms_to_book_count, name=name, email=email, phone=phone,
+            #             requests=requests)
     else:
         # Card is invalid, display appropriate error messages
         flash("INVALID CREDIT CARD DETAILS", "error")
-        return render_template('payment.html')
-
+        return render_template('payment.html', rid=rid, location_type=location_type, startdate=startdate, enddate=enddate,duration=duration,
+                               YesNo=YesNo, one_room=one_room, 
+                               guests=guests, rooms=rooms_to_book_count, name=name, email=email, phone=phone,
+                               requests=requests)
 if __name__ == "__main__":
     app.run(debug=True)

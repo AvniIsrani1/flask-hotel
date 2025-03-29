@@ -16,26 +16,56 @@
         </div>
         <div class="booking-details">
             <div class="detail-item">
-                <span>Room Type:</span>
-                <span>Deluxe Ocean View</span>
+                <span class="mr">Room Details:</span>
+                <span class="ra">
+                    {{one_room.number_beds}}-Bedroom {{one_room.room_type.value}}
+                    {% if one_room.wheelchair_accessible==YesNo.Y %}
+                        <span> (Wheelchair Accessible) </span>
+                    {% endif %}
+                    {% if one_room.balcony==YesNo.Y %}
+                        <span> with Balcony</span>
+                    {% endif %}
+                    {% if one_room.ocean_view==YesNo.Y and one_room.city_view==YesNo.Y %}
+                        <span> - Ocean View, City View</span>
+                    {% elif one_room.ocean_view==YesNo.Y %}
+                        <span> - Ocean View</span>
+                    {% elif one_room.city_view==YesNo.Y %}
+                        <span> - City View</span>
+                    {% endif %}
+                    {% if one_room.smoking==YesNo.N %}
+                        <span>| Non-Smoking</span>
+                    {% endif %}
+                </span>
             </div>
             <div class="detail-item">
-                <span>Check-in:</span>
-                <span>March 15, 2025</span>
+                <span>Check-In:</span>
+                <span>{{startdate}}</span>
             </div>
             <div class="detail-item">
-                <span>Check-out:</span>
-                <span>March 18, 2025</span>
+                <span>Check-Out:</span>
+                <span>{{enddate}}</span>
+            </div>
+            <div class="detail-item">
+                <span>Duration:</span>
+                <span>{{duration+1}}{% if duration > 1 %} Days{% else %} Days{% endif %}, {{duration}}{% if duration > 1 %} Nights{% else %} Night{% endif %}</span>
+            </div>
+            <div class="detail-item">
+                <span>Number of Rooms:</span>
+                <span>{{rooms}}</span>
             </div>
             <div class="detail-item">
                 <span>Guests:</span>
-                <span>2 Adults</span>
+                <span>{{guests}}</span>
             </div>
             <div class="divider"></div>
             <div class="price-breakdown">
                 <div class="detail-item">
-                    <span>Room Rate (3 nights):</span>
-                    <span>$450.00</span>
+                    <span>Room Rate (per night):</span>
+                    <span>${{one_room.rate}}</span>
+                </div>
+                <div class="detail-item">
+                    <span>Total Room Rate:</span>
+                    <span>${{one_room.rate * duration * rooms}}</span>
                 </div>
                 <div class="detail-item">
                     <span>Resort Fee:</span>
@@ -48,7 +78,7 @@
             </div>
             <div class="detail-item total">
                 <span>Total:</span>
-                <span>$528.00</span>
+                <span>${{one_room.rate * duration * rooms + 30 + 48}}</span>
             </div>
         </div>
     </div>
@@ -157,15 +187,27 @@
                 <i class="fa-solid fa-lock"></i>
                 <p>Your payment information is encrypted and secure.</p>
             </div>
-            
+
+            <input type="hidden" id="rid" name="rid" value="{{rid}}">
+            <input type="hidden" id="startdate" name="startdate" value="{{startdate}}">
+            <input type="hidden" id="enddate" name="enddate" value="{{enddate}}">
+            <input type="hidden" id="rooms" name="rooms" value="{{rooms}}">
+            <input type="hidden" id="name" name="name"  value="{{name}}">
+            <input type="hidden" id="email" name="email" value="{{email }}">
+            <input type="hidden" id="phone" name="phone" value="{{phone}}">
+            <input type="hidden" id="guests" name="guests" value="{{guests}}">
+            <input type="hidden" id="rooms" name="rooms" value="{{rooms}}">
+            <input type="hidden" id="requests" name="requests" value="{{requests}}">
             <button type="submit" class="payment-button">Complete Payment</button>
         </form>
         <div class="cancel-link">
-            <form method="get" action="{{url_for('reserve')}}" id='submit-room'>
-                <input type="hidden" name="rid" value="{{rid}}">
-                <input type="hidden" name="location_type" value="{{location_type}}">
-                <input type="hidden" name="startdate" value="{{startdate}}">
-                <input type="hidden" name="enddate" value="{{ enddate}}">
+            <form method="post" action="{{url_for('reserve')}}?rid={{rid}}&location_type={{location_type}}&startdate={{startdate}}&enddate={{enddate}}" id='submit-room'>
+                <input type="hidden" id="name" name="name"  value="{{name}}">
+                <input type="hidden" id="email" name="email" value="{{email }}">
+                <input type="hidden" id="phone" name="phone" value="{{phone}}">
+                <input type="hidden" id="guests" name="guests" value="{{guests}}">
+                <input type="hidden" id="rooms" name="rooms" value="{{rooms}}">
+                <input type="hidden" id="requests" name="requests" value="{{requests}}">
                 <button type="submit">Cancel and Return to Reservation Details</button>
             </form>
         </div>
