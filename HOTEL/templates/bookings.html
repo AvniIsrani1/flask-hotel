@@ -7,7 +7,21 @@
 {% endblock %}
 
 {% block content %}
+
+
+
 <div class="content">
+
+    <div class="section1">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <div class="flash-message {{ messages[-1][0] }}">
+            {{ messages[-1][1] }}
+        </div>
+        {% endif %}
+        {% endwith %}
+    </div>
+
     <p class="title">Welcome, {{ session.get('user_name', '[Name]') | upper }}</p>
     <br>
     <br>
@@ -102,7 +116,7 @@
                             </div>                        
                         </div>
                         <div class="links2 ptop">
-                            <a href="">Modify Booking</a>
+                            <a href="{{url_for('modify',bid=f.id )}}">Modify Booking</a>
                         </div>
                     </div>
                 </div>
@@ -135,7 +149,7 @@
                     "num_guests": pa.num_guests,
                     "fees":pa.fees,
                 } | tojson | safe }})'></i>
-                <img src="../static/images/inside.jpeg" alt="Past Bookings" width="330" height="200">
+                <img src="{{pa.room.img}}" alt="Past Bookings" width="330" height="200">
                 <div class="information">
                     <div class="details pbot">
                         <div class="date-info">
@@ -159,11 +173,28 @@
     <br>
     <br>
     <div class="section1">
+        <br>
         <p class="subtitle">Canceled Bookings</p>
-        {% for ca in canceled %}
         <div class="placards">
+            {% for ca in canceled %}
             <div class="placard">
-                <img src="../static/images/inside.jpeg" alt="Canceled Bookings" width="330" height="200">
+                <i class="fa-solid fa-circle-info placard-information" onclick='openModal(event, {{ {
+                    "img": ca.room.img,
+                    "checkin": ca.check_in.strftime("%A, %B %d, %Y"),
+                    "checkout": ca.check_out.strftime("%A, %B %d, %Y"),
+                    "room_number": ca.room.floor.floor_number ~ ca.room.room_number,
+                    "address": ca.room.hotel.address,
+                    "number_beds": ca.room.number_beds,
+                    "room_type": ca.room.room_type.value,
+                    "wheelchair":ca.room.wheelchair_accessible.value,
+                    "balcony": ca.room.balcony.value,
+                    "ocean_view": ca.room.ocean_view.value,
+                    "city_view": ca.room.city_view.value,
+                    "smoking": ca.room.smoking.value,
+                    "num_guests": ca.num_guests,
+                    "fees":ca.fees,
+                } | tojson | safe }})'></i>
+                <img src="{{ca.room.img}}" alt="Canceled Bookings" width="330" height="200">
                 <div class="information">
                     <div class="details pbot">
                         <div class="date-info">
@@ -174,18 +205,19 @@
                         <div class="hotel-details">
                             {% set s = ca.room.hotel.address.split(',')[2][:3] %}
                             <p>{{ca.room.hotel.location.value}}, {{s}}</p>
-                        </div>                    </div>
+                        </div>
+                    </div>
                     <div class="links ptop">
                         <p>Cancel Date: {{ca.cancel_date.strftime('%B %d, %Y')}}</p>
-                        <p>Refund Type: {{'None' if ca.refund_type==YesNo.N else 'Full'}}</p>
+                        <p>Refund Type: {{'None' if ca.refund_type==YesNo.N else 'Full'}}</p>                   
                     </div>
                 </div>
             </div>
+            {% endfor %}
         </div>
-        {% endfor %}
     </div>
 </div>
-<!-- -------------------------------------- -->
+<!-- ---------------------------------------->
     <div class="saved">
         <div class="section1">
             <br>
@@ -296,8 +328,27 @@
         })
     });
 
-
 </script>
+
+<style>
+    .flash-message {
+      padding: 10px;
+      margin: 10px auto;
+      border-radius: 5px;
+      text-align: center;
+      width: 100%;
+    }
+    .success {
+      background-color: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+    .error {
+      background-color: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+</style>
 
 
 {% endblock %}

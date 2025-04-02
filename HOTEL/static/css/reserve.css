@@ -150,7 +150,7 @@ textarea {
 
 
 
-.submit-button {
+.submit-button, .submit-button1 {
     width:100%;
     max-width:1100px;
     padding:15px;
@@ -159,11 +159,23 @@ textarea {
     font-family:"Noto Sans Khmer", sans-serif;
     border-radius:15px;
     font-size:1.1rem;
+}
+
+.submit-button {
     margin-block:25px;
 }
 
-.submit-button:hover {
+.submit-button:hover, .submit-button1:hover {
     cursor:pointer;
+    background-color:#1E1F42;
+}
+
+.yellow {
+    background-color:#F1DF75;
+    color:#002B5A;
+}
+.yellow:hover {
+    background-color: lightgoldenrodyellow;
 }
 
 .res-cancel {
@@ -184,16 +196,22 @@ textarea {
     margin: 25px 10px 50px 10px;
 }
 
-.returned-room button {
+.returned-room button, .returned-room a{
     background-color:transparent;
     border:none;
     color:#002B5A;
     font-size:15px;
 }
 
-.returned-room button:hover{
+.returned-room button:hover, .returned-room a:hover{
     text-decoration:underline;
     cursor:pointer;
+}
+
+.buttons {
+    display:flex;
+    flex-direction:column;
+    gap:5px;
 }
 
 

@@ -13,7 +13,7 @@
 
 {% block content %}
 
-<div class="reservation-details">
+<div class="">
     {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
       <div class="flash-message {{ messages[-1][0] }}">
@@ -28,7 +28,7 @@
 </div>
 
 <div class="all-sections">
- <form method='post' action={{url_for('payment')}} id="reservation-details">
+ <form method='post' action="{% if modifying %}{{url_for('save',bid=bid)}} {% else %} {{url_for('payment')}} {% endif %}" id="reservation-details">
     <input type="hidden" name="rid" value="{{rid}}">
     <input type="hidden" name="location_type" value="{{location_type}}">
     <input type="hidden" name="startdate" value="{{startdate}}">
@@ -87,7 +87,7 @@
 
         <div class="">
             <label for="rooms" class="subtitle">Number of Rooms: </label>
-            <input type="number" id="rooms" name="rooms" value="{{rooms or 1}}" min="1" max="{{room.number_rooms}}" onchange="calcRate()">
+            <input type="number" id="rooms" name="rooms" value="{{rooms or 1}}" min="1" max="{{room.number_rooms}}" onchange="calcRate()" {% if modifying %} disabled {% endif %}>
             <p class="cancel-policy">Maximum: {{room.number_rooms}}</p>
         </div>
         <div class="title-info">
@@ -120,15 +120,32 @@
                 <input type="number" id="guests" name="guests" value="{{guests or 1}}" min="1" max="{{room[0].max_guests}}">
             </div>
     </div>
+    {% if modifying %}
+    <div class="buttons">
+        <br>
+        <input type="submit" class="submit-button1" value="Save Changes">
+        <input type="hidden" id="canceled" name="canceled" value="false">
+        <input type="button" class="submit-button1 yellow" value="Cancel Booking" onclick="cancelBooking()">
+
+        <br>
+    </div>
+    {% else %}
     <input type="submit" class="submit-button" value="Proceed to Checkout">
+    {% endif %}
 </form>
 
+{% if modifying %}
+<div id='returned-room' class="returned-room">
+    <a href="{{url_for('bookings')}}" class="submit-room-button">Cancel and Return to Bookings</a>
+</div>
+{% else %}
 <form method="get" action="{{url_for('search')}}" id='returned-room' class="returned-room">
     <input type="hidden" name="location_type" id="returned-location" value="{{ request.args.get('location_type', '')}}">
     <input type="hidden" name="startdate" id="returned-startdate" value="{{ request.args.get('startdate', '') }}">
     <input type="hidden" name="enddate" id="returned-enddate" value="{{ request.args.get('enddate', '') }}">
     <button type="submit" class="submit-room-button">Cancel and Return to Search</button>
 </form>
+{% endif %}
 
 </div>
 
@@ -141,17 +158,28 @@
         var rooms = document.getElementById('rooms').value;
         var total = rate * rooms * duration;
         document.getElementById('total-price').textContent = '$'+total;
+        document.getElementById('guests').max = room[0].max_guests * rooms > 0 ? room[0].max_guests * rooms : room[0].max_guests;
     }
 
     document.addEventListener('DOMContentLoaded',function(){
         calcRate();
     });
 
-    var startdate_url = "{{ request.args.get('startdate', '') or request.args.get('enddate','') }}";
-    var enddate_url = "{{ request.args.get('enddate', '') or request.args.get('startdate','') }}";
+    // var startdate_url = "{{ request.args.get('startdate', '') or request.args.get('enddate','') }}";
+    // var enddate_url = "{{ request.args.get('enddate', '') or request.args.get('startdate','') }}";
+
+
+    function cancelBooking(){
+        var c = confirm('Are you sure you want to cancel your booking? This action cannot be undone. Cancellations are non-refundable within 48 hours of the check-in date.');
+        if(c){
+            document.getElementById('canceled').value = 'true';
+            console.log('canceled');
+            document.getElementById('reservation-details').submit();
+        }
+    }
 </script>
 
-<script src="../static/js/dates.js"></script>
+<!-- <script src="../static/js/dates.js"></script> -->
 
 
 <style>
@@ -175,3 +203,4 @@
 </style>
  
 {% endblock %}
+

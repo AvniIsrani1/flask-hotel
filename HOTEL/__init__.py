@@ -319,6 +319,15 @@ def get_similar_rooms(rid, starting, ending):
     similar_rooms = similar_rooms.filter(not_(db.exists().where(Booking.rid == Room.id).where(Booking.check_in < ending).where(Booking.check_out>starting))).order_by(asc(Room.room_number))
     return similar_rooms
 
+def get_similar_quantities(rid, starting, ending):
+    similar_rooms = get_similar_rooms(rid=rid, starting=starting, ending=ending)
+    similar_rooms = similar_rooms.group_by(
+        Room.hid, Room.room_type, Room.number_beds, Room.rate, Room.balcony, Room.city_view, Room.ocean_view, 
+        Room.smoking, Room.max_guests, Room.wheelchair_accessible
+    )
+    similar_rooms = similar_rooms.with_entities(Room, Hotel.address, func.count(distinct(Room.id)).label('number_rooms'), func.min(Room.id).label('min_rid'))
+    return similar_rooms
+
 @app.route("/reserve", methods=["GET", "POST"])
 def reserve():
     if "user_id" not in session:
@@ -337,18 +346,10 @@ def reserve():
                 flash('Please enter both the start and end dates',"error")
             return redirect(url_for('search'))
         print(f"Received rid: {rid}, location_type: {location_type}, startdate: {startdate}, enddate: {enddate}") 
-
         starting, ending, duration = get_start_end_duration(startdate, enddate)
-        similar_rooms = get_similar_rooms(rid=rid,starting=starting,ending=ending)
+        room = get_similar_quantities(rid=rid, starting=starting, ending=ending).first()
 
-        similar_rooms = similar_rooms.group_by(
-            Room.hid, Room.room_type, Room.number_beds, Room.rate, Room.balcony, Room.city_view, Room.ocean_view, 
-            Room.smoking, Room.max_guests, Room.wheelchair_accessible
-        )
-        similar_rooms = similar_rooms.with_entities(Room, Hotel.address, func.count(distinct(Room.id)).label('number_rooms'), func.min(Room.id).label('min_rid'))
-        room = similar_rooms.first()
         if not room:
-            print('room not found')
             flash('Room not found',"error")
             return redirect(url_for('search'))
         if request.method=='POST':
@@ -362,7 +363,50 @@ def reserve():
                                    name=name, phone=phone,email=email,guests=guests,rooms=rooms,requests=requests)
         
         return render_template('reserve.html', user=user, room=room, YesNo=YesNo, rid=rid, location_type=location_type, duration=duration, startdate=startdate, enddate=enddate)
-        
+
+
+@app.route("/modify/<int:bid>", methods=["GET", "POST"])
+def modify(bid):
+    modifying = True
+    if "user_id" not in session:
+        flash("Please log in first.", "error")
+        return redirect(url_for("log_in"))
+    user = User.query.get(session["user_id"])
+    booking = Booking.query.get(bid)
+    if not booking:
+        flash('Unable to modify booking. Please try again later', 'error')
+        return redirect(url_for('bookings'))
+    
+    startdate = booking.check_in.strftime("%B %d, %Y")
+    enddate = booking.check_out.strftime("%B %d, %Y")
+    starting, ending, duration = get_start_end_duration(startdate, enddate)
+    room = get_similar_quantities(rid=booking.rid, starting=starting, ending=ending).first()
+    rid = booking.rid
+    rooms = 1 #user is able to modify 1 room at a time
+    location_type = None
+    return render_template('reserve.html', user=user, room=room, YesNo=YesNo, rid=rid, location_type=location_type, duration=duration, startdate=startdate, enddate=enddate,
+                            name=booking.name, phone=booking.phone,email=booking.email,guests=booking.num_guests,rooms=rooms,requests=booking.special_requests, 
+                            modifying=modifying, bid=bid)
+
+
+@app.route("/save/<int:bid>", methods=["GET", "POST"])
+def save(bid): #currently not able to add more rooms by modifying existing booking
+    print(bid)
+    b = Booking.query.get(bid)
+    if b:
+        canceled = request.form.get('canceled', 'false')
+        if canceled=='true':
+            b.cancel_booking()
+            flash('Booking canceled!','success')
+        else:
+            requests = request.form.get('requests', b.special_requests)
+            name = request.form.get('name', b.name)
+            email = request.form.get('email', b.email)
+            phone = request.form.get('phone', b.phone)
+            guests = request.form.get('guests', b.num_guests)
+            b.update_booking(special_requests=requests, name=name, email=email, phone=phone, num_guests=guests)
+            flash('Booking updated!','success')
+    return redirect(url_for('bookings'))
 
 @app.route("/terms")
 def terms():
@@ -469,11 +513,11 @@ def add_sample_data():
         avni_id = User.query.filter_by(email="avni@gmail.com").first().id
         malibu_room_1 = Room.query.filter_by(hid=malibu_id).first().id
         sm_room_1 = Room.query.filter_by(hid=sm_id).first().id
-        Booking.add_booking(uid=avni_id, rid=malibu_room_1, check_in=datetime.now(), check_out=datetime.now()+timedelta(5), fees=500)
-        Booking.add_booking(uid=avni_id, rid=sm_room_1, check_in=datetime.now()+timedelta(5), check_out=datetime.now()+timedelta(10),fees=600)
-        Booking.add_booking(uid=avni_id, rid=malibu_room_1, check_in=datetime.now()-timedelta(2), check_out=datetime.now()-timedelta(1), fees=400)
-        Booking.add_booking(uid=avni_id, rid=sm_room_1, check_in=datetime.now()-timedelta(3), check_out=datetime.now()-timedelta(1), fees=300)
-        Booking.add_booking(uid=avni_id, rid=malibu_room_1, check_in=datetime.now(), check_out=datetime.now()+timedelta(1), fees=300)
+        Booking.add_booking(uid=avni_id, rid=malibu_room_1, check_in=datetime.now(), check_out=datetime.now()+timedelta(5), fees=500, special_requests=None, name=User.get_user(avni_id).name, email=User.get_user(avni_id).email, phone="818", num_guests=1)
+        Booking.add_booking(uid=avni_id, rid=sm_room_1, check_in=datetime.now()+timedelta(5), check_out=datetime.now()+timedelta(days=10),fees=600, special_requests=None, name=User.get_user(avni_id).name, email=User.get_user(avni_id).email, phone="818", num_guests=1)
+        Booking.add_booking(uid=avni_id, rid=malibu_room_1, check_in=datetime.now()-timedelta(2), check_out=datetime.now()-timedelta(days=1), fees=400, special_requests=None, name=User.get_user(avni_id).name, email=User.get_user(avni_id).email, phone="818", num_guests=1)
+        Booking.add_booking(uid=avni_id, rid=sm_room_1, check_in=datetime.now()-timedelta(3), check_out=datetime.now()-timedelta(days=1), fees=300, special_requests=None, name=User.get_user(avni_id).name, email=User.get_user(avni_id).email, phone="818", num_guests=1)
+        Booking.add_booking(uid=avni_id, rid=malibu_room_1, check_in=datetime.now(), check_out=datetime.now()+timedelta(days=1), fees=300, special_requests=None, name=User.get_user(avni_id).name, email=User.get_user(avni_id).email, phone="818", num_guests=1)
         b = Booking.query.get(1)
         if b:
             b.cancel_booking()
@@ -616,7 +660,7 @@ def process_payment():
     exp_date = request.form.get("expiry")
     cvv = request.form.get("cvv")
 
-    # Extract room informatin from form
+    # Extract room information from form
     rid = request.form.get('rid') 
     location_type = request.form.get('location_type')
     startdate = request.form.get('startdate')
@@ -681,8 +725,12 @@ def process_payment():
                     rid=room.id,  # Use a valid room ID
                     check_in=check_in_date,
                     check_out=check_out_date,
-                    num_guests=guests,
-                    fees=50 #might need to update fees
+                    fees=Room.get_room(id==room.id).rate, #might need to update fees
+                    special_requests=requests,
+                    name=name, 
+                    email=email,
+                    phone=phone, 
+                    num_guests=guests
                 )
                 # Update room availability
                 #room.available = Availability.B

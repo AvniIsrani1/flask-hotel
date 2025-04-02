@@ -39,6 +39,11 @@ class User(db.Model):
     email_notifications = db.Column(db.Enum(YesNo), nullable=False, default=YesNo.N) 
     bookings = db.relationship('Booking', backref='user', lazy=True) #user is keeping track of bookings
 
+    @classmethod
+    def get_user(cls, id):
+        return cls.query.filter(cls.id==id).first()
+
+
 
 class Hotel(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -77,6 +82,7 @@ class Room(db.Model):
     hid = db.Column(db.Integer, db.ForeignKey('hotel.id'))
     room_number = db.Column(db.Integer,nullable=False) #room number
     img = db.Column(db.String(200), nullable=False)
+    modPath = db.Column(db.String(200))
     room_type = db.Column(db.Enum(RoomType),nullable=False,default=RoomType.STRD)
     number_beds = db.Column(db.Integer,default=1)
     rate = db.Column(db.Integer, nullable=False)
@@ -92,7 +98,7 @@ class Room(db.Model):
     __table_args__ = (db.UniqueConstraint('hid', 'fid', 'room_number', name='hid_fid_room_number_unique'),)
 
     @classmethod
-    def add_room(cls, num_rooms, fid, hid, base_room_number, img, room_type, number_beds, rate,balcony,city_view,ocean_view,smoking,available,max_guests,wheelchair_accessible):
+    def add_room(cls, num_rooms, fid, hid, base_room_number, img, modPath, room_type, number_beds, rate,balcony,city_view,ocean_view,smoking,available,max_guests,wheelchair_accessible):
         rooms = []
         for i in range(num_rooms):
             room = cls(
@@ -100,6 +106,7 @@ class Room(db.Model):
                 hid=hid,
                 room_number = base_room_number + i,
                 img = img, 
+                modPath=modPath,
                 room_type = room_type,
                 number_beds = number_beds,
                 rate = rate,
@@ -114,6 +121,10 @@ class Room(db.Model):
             rooms.append(room)
         db.session.add_all(rooms)
         db.session.commit()
+    
+    @classmethod
+    def get_room(cls, id):
+        return cls.query.filter(id==id).first()
 
 
 class Booking(db.Model):
@@ -123,36 +134,48 @@ class Booking(db.Model):
     rid = db.Column(db.Integer, db.ForeignKey('room.id'), nullable=False)
     check_in = db.Column(DateTime, nullable=False)
     check_out = db.Column(DateTime, nullable=False)
-    num_guests = db.Column(db.Integer, default=1, nullable=False)
     fees = db.Column(db.Integer, default=50)
     cancel_date = db.Column(DateTime)
     refund_type = db.Column(db.Enum(YesNo)) 
+    special_requests = db.Column(db.String(1000))
+    name = db.Column(db.String(150),nullable=False)
+    email = db.Column(db.String(150),nullable=False)
+    phone = db.Column(db.String(15),nullable=False)
+    num_guests = db.Column(db.Integer, default=1)
 
     @classmethod
-    def add_booking(cls, uid, rid, check_in, check_out, fees):
-        booking = cls(uid=uid, rid=rid, check_in=check_in, check_out=check_out, fees=fees)
+    def add_booking(cls, uid, rid, check_in, check_out, fees, special_requests, name, email, phone, num_guests):
+        booking = cls(uid=uid, rid=rid, check_in=check_in, check_out=check_out, fees=fees, special_requests=special_requests, name=name, email=email, phone=phone, num_guests=num_guests)
         db.session.add(booking)
         db.session.commit()
 
     @classmethod
     def get_current_bookings(cls):
         today = datetime.now()
-        return cls.query.filter(cls.check_in<=today,cls.check_out>=today)
+        return cls.query.filter(cls.check_in<=today,cls.check_out>=today, cls.cancel_date.is_(None))
     
     @classmethod
     def get_future_bookings(cls):
         today = datetime.now()
-        return cls.query.filter(cls.check_in>today)
+        return cls.query.filter(cls.check_in>today, cls.cancel_date.is_(None))
     
     @classmethod
     def get_past_bookings(cls):
         today = datetime.now()
-        return cls.query.filter(cls.check_out<today)
+        return cls.query.filter(cls.check_out<today, cls.cancel_date.is_(None))
     
     @classmethod
     def get_canceled_bookings(cls):
         return cls.query.filter(cls.cancel_date.isnot(None))
     
+    def update_booking(self, special_requests, name, email, phone, num_guests):
+        self.special_requests = special_requests
+        self.name = name
+        self.email = email
+        self.phone = phone
+        self.num_guests=num_guests
+        db.session.commit()
+
     def cancel_booking(self):
         today = datetime.now()
         if (self.check_in - today).days >=2:
@@ -160,8 +183,15 @@ class Booking(db.Model):
         else:
             self.refund_type = YesNo.N
         self.cancel_date = today
+        print('Canceled booking')
         db.session.commit()
 
+    def full_refund(self):
+        today = datetime.now()
+        if (self.check_in - today).days >=2:
+            return True
+        return False
+    
 class FAQ(db.Model):
     __tablename__ = 'faq'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
