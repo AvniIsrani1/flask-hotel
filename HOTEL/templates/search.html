@@ -140,31 +140,27 @@
         </div>
         <div class="item-container">
         {% for room, number_rooms, min_rid in rooms %}
-        <div class = "item">
-            <script src="https://unpkg.com/focus-visible@5.0.2/dist/focus-visible.js" defer></script>
-            <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
-            <img src="{{room.img}}" alt="Room" id="thumbnail" onclick="openModal()">
-            <i class="fa-solid fa-circle circle"></i>
-            <i class="fa-regular fa-heart save" id="save-{{room.id}}"></i>
-            <!-- <i class="fa-solid fa-heart unsave" id="unsave-{{room.id}}"></i> -->
-            <div id="modelModal" class="modal">
-                <span class="close" onclick="closeModal()">&times;</span>
-                <model-viewer src="/static/assets/highly_detailed_opti_0225234237_texture.glb"
-                    shadow-intensity="1"
-                    camera-controls
-                    auto-rotate
-                    ar>
-                </model-viewer>
+        <div class="item">
+            <div class="item-image-container" style="position: relative; height: 300px; width: 100%;">
+                <img src="{{room.img}}" alt="Room" id="thumbnail-{{room.id}}" class="visible" style="position: absolute; width: 100%; height: 100%; cursor: pointer;" onclick="showModel('{{room.id}}')">
+                <div id="model-container-{{room.id}}" style="position: absolute; width: 100%; height: 100%; display: none;">
+                    <button id="close-button-{{room.id}}" class="model-close-btn" onclick="hideModel('{{room.id}}')">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                    <model-viewer id="model-{{room.id}}" 
+                        src="/static/assets/highly_detailed_opti_0225234237_texture.glb"
+                        shadow-intensity="1"
+                        camera-controls
+                        auto-rotate
+                        ar
+                        disable-zoom
+                        style="width: 100%; height: 100%;">
+                    </model-viewer>
+                </div>
             </div>
-        
-            <script>
-                function openModal() {
-                    document.getElementById("modelModal").style.display = "flex";
-                }
-                function closeModal() {
-                    document.getElementById("modelModal").style.display = "none";
-                }
-            </script>
+
+            <script type="module" src="https://cdnjs.cloudflare.com/ajax/libs/model-viewer/3.1.1/model-viewer.min.js"></script>
+            <script src="../static/js/roomToggle.js"></script>
             
             <div class="description">
                 <div class="details">

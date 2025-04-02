@@ -20,7 +20,6 @@ pip install pandas
 pip install langchain-huggingface
 pip install langchain-community
 pip install faiss-cpu
-pip install faiss-gpu
 
 TO RUN
 flask --app hotel run --debug
