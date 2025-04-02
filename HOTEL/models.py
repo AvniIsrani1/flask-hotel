@@ -61,6 +61,15 @@ class Floor(db.Model):
 
     __table_args__ = (db.UniqueConstraint('hid', 'floor_number', name='hid_floor_number_unique'),)
 
+    @classmethod
+    def add_floor(cls, number_floors, hid, base_floor_number):
+        floors = []
+        for i in range(number_floors):
+            floor = cls(hid=hid, floor_number=base_floor_number+i)
+            floors.append(floor)
+        db.session.add_all(floors)
+        db.session.commit()
+
 class Room(db.Model):
     __tablename__ = 'room'
     id = db.Column(db.Integer, primary_key=True) 
@@ -82,6 +91,30 @@ class Room(db.Model):
     
     __table_args__ = (db.UniqueConstraint('hid', 'fid', 'room_number', name='hid_fid_room_number_unique'),)
 
+    @classmethod
+    def add_room(cls, num_rooms, fid, hid, base_room_number, img, room_type, number_beds, rate,balcony,city_view,ocean_view,smoking,available,max_guests,wheelchair_accessible):
+        rooms = []
+        for i in range(num_rooms):
+            room = cls(
+                fid=fid,
+                hid=hid,
+                room_number = base_room_number + i,
+                img = img, 
+                room_type = room_type,
+                number_beds = number_beds,
+                rate = rate,
+                balcony = balcony,
+                city_view = city_view, 
+                ocean_view = ocean_view,
+                smoking = smoking, 
+                available = available,
+                max_guests = max_guests, 
+                wheelchair_accessible = wheelchair_accessible
+            )     
+            rooms.append(room)
+        db.session.add_all(rooms)
+        db.session.commit()
+
 
 class Booking(db.Model):
     __tablename__ = 'booking'
@@ -95,6 +128,11 @@ class Booking(db.Model):
     cancel_date = db.Column(DateTime)
     refund_type = db.Column(db.Enum(YesNo)) 
 
+    @classmethod
+    def add_booking(cls, uid, rid, check_in, check_out, fees):
+        booking = cls(uid=uid, rid=rid, check_in=check_in, check_out=check_out, fees=fees)
+        db.session.add(booking)
+        db.session.commit()
 
     @classmethod
     def get_current_bookings(cls):
@@ -130,6 +168,15 @@ class FAQ(db.Model):
     question = db.Column(db.String(150), nullable=False)
     answer = db.Column(db.String(500), nullable=False)
     subject = db.Column(db.String(150), nullable=False)
+
+    @classmethod
+    def add_faq(cls, f):
+        faqs = []
+        for question, answer, subject in f:
+            faq = cls(question=question, answer=answer, subject=subject)
+            faqs.append(faq)
+        db.session.add_all(faqs)
+        db.session.commit()
 
 class Saved(db.Model):
     __tablename__ = 'saved'
