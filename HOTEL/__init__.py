@@ -14,7 +14,7 @@ from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
 from HOTEL.AImodels.ai_model import load_ai_model, generate_ai_response
 from HOTEL.AImodels.csv_retriever import setup_csv_retrieval, get_answer_from_csv
-from .response import format_response  # Make sure helpers.py is in the correct location
+from .response import format_response  
 
 app = Flask(__name__,
             static_folder='static',     # Define the static folder (default is 'static')
