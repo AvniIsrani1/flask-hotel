@@ -212,6 +212,31 @@
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.5);
 }
 
+
+.item-image-overlay{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    position:absolute;
+    width:100%;
+    height:100%;
+    color:rgba(255, 255, 255, 0.7);
+    font-weight:bold;
+    font-size:20px;
+}
+
+.item-image-overlay:hover{
+    background-color:rgb(0,43,90,0.3);
+}
+
+.item-image-overlay p{
+    display:none;
+}
+
+.item-image-overlay:hover p {
+    display:flex;
+}
+
 .item img {
     width:100%;
     height:300px;

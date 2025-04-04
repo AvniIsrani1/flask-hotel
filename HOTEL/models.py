@@ -1,7 +1,7 @@
 from flask_sqlalchemy import SQLAlchemy
 from enum import Enum as PyEnum
 from sqlalchemy import DateTime, distinct, Computed
-from datetime import datetime
+from datetime import datetime, timedelta
 
 db = SQLAlchemy()
 
@@ -19,6 +19,19 @@ class Availability(PyEnum):
     A = 'Available'
     B = 'Booked'
     M = 'Maintenance'
+class SType(PyEnum):
+    I = 'Items'
+    H = 'Housekeeping'
+    T = 'Trash'
+    C = 'Call'
+    D = 'Dining'
+    A = 'Assistance'
+    O = 'Other'
+class Assistance(PyEnum):
+    L = 'recommendations'
+    B = 'transportation'
+    R = 'maintenance'
+    A = 'accessibility'
 
 class User(db.Model):
     __tablename__ = 'user'  # Name of the table in the database
@@ -142,6 +155,7 @@ class Booking(db.Model):
     email = db.Column(db.String(150),nullable=False)
     phone = db.Column(db.String(15),nullable=False)
     num_guests = db.Column(db.Integer, default=1)
+    services = db.relationship('Service', backref='booking', lazy=True)
 
     @classmethod
     def add_booking(cls, uid, rid, check_in, check_out, fees, special_requests, name, email, phone, num_guests):
@@ -215,3 +229,94 @@ class Saved(db.Model):
     rid = db.Column(db.Integer, db.ForeignKey('room.id'), nullable=False) 
     user = db.relationship('User', backref=db.backref('saved_u', lazy=True))
     room = db.relationship('Room', backref=db.backref('saved_r', lazy=True)) 
+
+class Service(db.Model):
+    __tablename__ = 'service'
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    bid = db.Column(db.Integer, db.ForeignKey('booking.id'))
+    issued = db.Column(DateTime, nullable=False)
+    stype = db.Column(db.Enum(SType), nullable=False)
+    robes = db.Column(db.Integer)
+    btowels = db.Column(db.Integer)
+    htowels = db.Column(db.Integer)
+    soap = db.Column(db.Integer)
+    shampoo = db.Column(db.Integer)
+    conditioner = db.Column(db.Integer)
+    wash = db.Column(db.Integer)
+    lotion = db.Column(db.Integer)
+    hdryer = db.Column(db.Integer)
+    pillows = db.Column(db.Integer)
+    blankets = db.Column(db.Integer)
+    sheets = db.Column(db.Integer)
+    housedatetime = db.Column(DateTime)
+    trash = db.Column(db.Enum(YesNo)) 
+    calldatetime = db.Column(DateTime)
+    recurrent = db.Column(db.Enum(YesNo)) 
+    restaurant = db.Column(db.String(200)) 
+    assistance = db.Column(db.Enum(Assistance))
+    other = db.Column(db.String(300)) 
+
+    @classmethod
+    def add_item(cls, bid, robes, btowels, htowels, soap, shampoo, conditioner, wash, lotion, hdryer, pillows, blankets, sheets):
+        item = cls(bid=bid,issued=datetime.now(), stype=SType.I, robes=robes,btowels=btowels,htowels=htowels,soap=soap,shampoo=shampoo,conditioner=conditioner,wash=wash,lotion=lotion,hdryer=hdryer,pillows=pillows,blankets=blankets,sheets=sheets)
+        db.session.add(item)
+        db.session.commit()
+
+    @classmethod
+    def add_housekeeping(cls, bid,housetime):
+        today = datetime.now()
+        housedatetime = datetime.combine(today.date(), housetime)
+        if housedatetime < today:
+            housedatetime = today
+        check_out = Booking.query.get(bid).check_out
+        if housedatetime <= check_out:
+            housekeeping = cls(bid=bid,issued=today,stype=SType.H,housedatetime=housedatetime)
+            db.session.add(housekeeping)
+            db.session.commit()
+
+    @classmethod
+    def add_trash(cls, bid):
+        trash = cls(bid=bid,issued=datetime.now(),stype=SType.T,trash=YesNo.Y)
+        db.session.add(trash)
+        db.session.commit()
+
+    @classmethod
+    def add_call(cls, bid, calltime, recurrent): #when calltime is recieved from form, it is of type time (not datetime)
+        today = datetime.now()
+        calls = []
+        calldatetime = datetime.combine(today.date(), calltime)
+        if calldatetime < today:
+            calldatetime = calldatetime + timedelta(days=1)
+        check_out = Booking.query.get(bid).check_out
+        if calldatetime <= check_out:
+            if recurrent==YesNo.Y:
+                while(calldatetime <= check_out):
+                    call = cls(bid=bid,issued=today,stype=SType.C,calldatetime=calldatetime)
+                    calls.append(call)
+                    calldatetime = calldatetime + timedelta(days=1)
+            else:
+                call = cls(bid=bid,issued=today,stype=SType.C,calldatetime=calldatetime)
+                calls.append(call)
+            db.session.add_all(calls)
+            db.session.commit()
+
+    @classmethod
+    def add_dining(cls, bid, restaurant):
+        dining = cls(bid=bid,issued=datetime.now(),stype=SType.D,restaurant=restaurant)
+        db.session.add(dining)
+        db.session.commit()
+    
+    @classmethod
+    def add_assistance(cls, bid, assistance):
+        a = cls(bid=bid,issued=datetime.now(),stype=SType.A,assistance=assistance)
+        db.session.add(a)
+        db.session.commit()
+
+    @classmethod
+    def add_other(cls, bid, other):
+        o = cls(bid=bid,issued=datetime.now(),stype=SType.O,other=other)
+        db.session.add(o)
+        db.session.commit()
+    
+
+    

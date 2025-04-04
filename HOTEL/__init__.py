@@ -8,7 +8,7 @@ from urllib.parse import quote
 import boto3
 from botocore.exceptions import ClientError
 import json
-from .models import db, User, Hotel, Floor, Room, Booking, FAQ, YesNo, Locations, RoomType, Availability, Saved
+from .models import db, User, Hotel, Floor, Room, Booking, FAQ, YesNo, Locations, RoomType, Availability, Assistance, Saved, Service
 from .adding import add_layout
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
@@ -20,8 +20,6 @@ app = Flask(__name__,
             static_folder='static',     # Define the static folder (default is 'static')
             template_folder='templates')
 app.secret_key = 'GITGOOD_12345'  # This key keeps your session data safe.
-# pwd = 'UFxP|gQtX_Ft>(ru.z[rVW1kiHX>'
-# pwd = quote(pwd)
 
 secret_name = "rds!db-d319020b-bb3f-4784-807c-6271ab3293b0"
 client = boto3.client(service_name='secretsmanager', region_name='us-west-1')
@@ -214,12 +212,68 @@ def bookings():
 
     return render_template('bookings.html', current=current, future=future, past=past, canceled=canceled, YesNo=YesNo)
 
-@app.route("/request-services")
-def request_services():
+@app.route("/request-services/<int:bid>", methods=["GET","POST"])
+def request_services(bid):
     if "user_id" not in session:
         flash("Please log in first.", "error")
         return redirect(url_for("log_in"))
+    user = User.query.get(session["user_id"])
+    if request.method == 'POST':
+        #making sure user has active bid
+        booking = Booking.get_current_bookings().filter(Booking.id==bid, Booking.uid==user.id).first()
+        if not booking:
+            flash("You do not have an active booking for this request.",'error')
+            return redirect(url_for('bookings'))
+        robes = int(request.form.get('robes','') or 0)
+        btowels = int(request.form.get('btowels','') or 0)
+        htowels = int(request.form.get('htowels','') or 0)
+        soap = int(request.form.get('soap','') or 0)
+        shampoo = int(request.form.get('shampoo','') or 0)
+        conditioner = int(request.form.get('conditioner','') or 0)
+        wash = int(request.form.get('wash','') or 0)
+        lotion = int(request.form.get('lotion','') or 0)
+        hdryer = int(request.form.get('hdryer','') or 0)
+        pillows = int(request.form.get('pillows','') or 0)
+        blankets = int(request.form.get('blankets','') or 0)
+        sheets = int(request.form.get('sheets','') or 0)
+        print(robes,btowels,htowels,soap,shampoo,conditioner,wash,lotion,hdryer,pillows,blankets,sheets)
+        if robes or btowels or htowels or soap or shampoo or conditioner or wash or lotion or hdryer or pillows or blankets or sheets:
+            Service.add_item(bid=bid,robes=robes,btowels=btowels,htowels=htowels,soap=soap,shampoo=shampoo,conditioner=conditioner,wash=wash,lotion=lotion,hdryer=hdryer,pillows=pillows,blankets=blankets,sheets=sheets)
+        housetime = request.form.get('housetime')
+        if housetime:
+            print('before',housetime)
+            housetime = datetime.strptime(housetime,"%H:%M").time()
+            print('after',housetime)
+            Service.add_housekeeping(bid=bid,housetime=housetime)
+        trash = request.form.get('trash')
+        if trash:
+            Service.add_trash(bid=bid)
+        calltime = request.form.get('calltime')
+        recurrent = request.form.get('recurrent')
+        if calltime:
+            print('before',calltime)
+            calltime = datetime.strptime(calltime, "%H:%M").time()
+            print('after',calltime)
+            if recurrent:
+                Service.add_call(bid=bid,calltime=calltime,recurrent=YesNo.Y)
+            else:
+                Service.add_call(bid=bid,calltime=calltime,recurrent=YesNo.N)
+        restaurant = request.form.get('restaurant')
+        if restaurant:
+            Service.add_dining(bid=bid,restaurant=restaurant)
+        assistance = request.form.get('assistance')
+        if assistance:
+            assistance = Assistance(assistance)
+            Service.add_assistance(bid=bid,assistance=assistance)
+        other = request.form.get('other')
+        if other:
+            Service.add_other(bid=bid,other=other)
+        return render_template("success.html")
     return render_template('request_services.html')
+
+@app.route("/success")
+def success():
+    return render_template('success.html')
 
 
 
