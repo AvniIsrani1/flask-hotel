@@ -11,34 +11,13 @@ body {
     color: #333;
 }
 
-/* Header and footer styles */
-.header, .footer {
-    border: none;
-    padding: 20px;
-    margin-bottom: 20px;
-    text-align: center;
-    background-color: #00315c;
-    color: #f0d889;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
-
-.header, .footer {
-    font-family: 'Georgia', serif;
-    font-weight: normal;
-    letter-spacing: 1px;
-}
-
-.footer {
-    margin-top: 30px;
-}
-
 /* Events section title */
 .events-title {
     font-size: 28px;
     border: none;
     margin: 20px auto;
     text-align: center;
-    background-color: #00315c;
+    background-color: #002B5A;
     color: #f0d889;
     width: 400px;
     padding: 15px;
@@ -145,7 +124,7 @@ body {
 /* Announcement style */
 #announcement {
     text-align: center;
-    background-color: #00315c;
+    background-color: #002B5A;
     color: white;
     padding: 30px;
     display: grid;

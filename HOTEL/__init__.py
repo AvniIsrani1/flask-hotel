@@ -466,6 +466,10 @@ def save(bid): #currently not able to add more rooms by modifying existing booki
 def terms():
     return render_template('terms.html')
 
+@app.route("/events")
+def events():
+    return render_template('events.html')
+
 @app.route("/faq")
 def faq():
     faqs = FAQ.query.all()

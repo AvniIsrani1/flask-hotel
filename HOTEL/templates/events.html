@@ -1,18 +1,16 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width", initial-scale="1.0">
+{% extends 'base.html' %}
+
+{% block title %} Home {% endblock %}
+
+{% block styles %}
     <title> Events Page </title>
-    <link rel="stylesheet" href="Eventstyle.css">
-</head>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/Eventstyle.css') }}">
 
+    {% endblock %}
+
+    {% block content %}
 <body>
-     <!-- hearder section -->
-     <div class="header">
-            <h1> HEADER </h1>
-     </div>
-
+    
      <!-- Events section -->
       <div class="events-section">
         <div class="events-title"> 
@@ -23,7 +21,7 @@
       <!-- Events card latout - image left , title & details right -->
        <div class="event-card" id="Default">
                 <div class="event-image">
-                    <img src="pic/volleyballbeach.jpg" width="400px" height="300" alt="Event Image">
+                    <img src="../static/images/imgEvent/volleyballbeach.jpg" width="400px" height="300" alt="Event Image">
                 </div>
             <div class="event-content">
                 <div class="events-title">
@@ -43,7 +41,7 @@
         <!-- Event card layout 2 -->
         <div class="event-card" id="Default">
             <div class="event-image">
-                <img src="pic/spabeach.jpg" width="400px" height="300" alt="Event Image">
+                <img src="../static/images/imgEvent/spabeach.jpg" width="400px" height="300" alt="Event Image">
             </div>
         <div class="event-content">
             <div class="events-title">
@@ -64,7 +62,7 @@
         <!-- Event card layout 3 -->
         <div class="event-card" id="coming soon">
             <div class="event-image">
-                <img src="pic/eatingwater.jpg" width="400px" height="300" alt="Event Image">
+                <img src="../static/images/imgEvent/eatingwater.jpg" width="400px" height="300" alt="Event Image">
             </div>
         <div class="event-content">
             <div class="events-title">
@@ -86,7 +84,7 @@
         <!-- Event card layout 4 -->
         <div class="event-card " id="Special Event">
             <div class="event-image">
-                <img src="pic/djbeach.jpg" width="400px" height="300" alt="Event Image">
+                <img src="../static/images/imgEvent/djbeach.jpg" width="400px" height="300" alt="Event Image">
             </div>
         <div class="event-content">
             <div class="events-title">
@@ -107,7 +105,7 @@
         
         <div class="event-card " id="Special Event">
             <div class="event-image">
-                <img src="pic/fireworks.jpg" width="400px" height="300" alt="Event Image">
+                <img src="../static/images/imgEvent/fireworks.jpg" width="400px" height="300" alt="Event Image">
             </div>
         <div class="event-content">
             <div class="events-title">
@@ -128,7 +126,7 @@
         <!-- Event card layout 5 -->
         <div class="event-card " id="Special Event">
             <div class="event-image">
-                <img src="pic/groupbeach.jpg" width="400px" height="300" alt="Event Image">
+                <img src="../static/images/imgEvent/groupbeach.jpg" width="400px" height="300" alt="Event Image">
             </div>
         <div class="event-content">
             <div class="events-title">
@@ -151,7 +149,7 @@
             <!-- Event card layout 6 -->
             <div class="event-card" id="Default">
                 <div class="event-image">
-                    <img src="pic/BarBeach.webp" width="400px" height="300" alt="Event Image">
+                    <img src="../static/images/imgEvent/BarBeach.webp" width="400px" height="300" alt="Event Image">
                 </div>
             <div class="event-content">
                 <div class="events-title">
@@ -171,7 +169,7 @@
             <!-- Event card layout 7 special  -->
             <div class="event-card event-card-spacial">
                 <div class="event-image">
-                    <img src="pic/beachwedding.jpg" width="450px" height="300" alt="Event Image">
+                    <img src="../static/images/imgEvent/beachwedding.jpg" width="450px" height="300" alt="Event Image">
                 </div>
             <div class="event-content">
                 <div class="events-title">
@@ -199,14 +197,10 @@
                                 </p>
                         </div>
                     <div class="event-time-block">
-                        <span> Comming soon </span>
+                        <span> Coming soon </span>
                     </div>
             </div>
         </div>
 
-        <!-- Footer section -->
-         <div class="footer">
-            <h1> Footer information </h1>
-         </div>
-
 </body>
+{% endblock %}
