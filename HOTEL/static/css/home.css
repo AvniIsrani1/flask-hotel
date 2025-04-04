@@ -15,20 +15,59 @@ hr {
 }
 .background{
   background-color: #ffffee;
-
+  width:100%;
 }
 
 /* Background & Main Content */
 .background-wrapper {
-  background: url("../images/bg.jpg") no-repeat center 500px;
-  background-size: 195%;
-  background-position: center top;
-  min-height: 200vh;
+  width:100%;
 }
 
-.main-content {
+.banner {
+  position:relative;
+  width:100%;
+  min-height:600px;
+  max-height:650px;
+}
+
+.image-container {
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  background-image: 
+      linear-gradient(to right, #002B5A 5%, transparent 80%, #002B5A 95%),
+      linear-gradient(to bottom, #002B5A 15%, transparent 80%, #008DE8 95%),
+      url('../images/pool.webp');
+  background-position:center;
+  background-repeat:no-repeat;
+  background-size:cover;
+  height:100%;
+  width:100%;
+  position:absolute;
+  top:0;
+  color:#ffffff;
+}
+
+.image-container .title, .image-container .subtitle {
+  font-weight:bold;
+  font-family:"Noto Sans Khmer", sans-serif;
+  text-align:center;
+  color:#ffffff;
+  margin-inline:20px;
+  margin-block:5px;
+}
+.image-container .title {
+  font-size:45px;
+}
+
+.image-container .subtitle {
+  font-size:25px;
+  font-style:italic;
+}
+
+.main-content2 {
   min-height: 100vh;
-  padding: 1rem;
 }
 
 .home-searchbar{
@@ -37,262 +76,10 @@ hr {
   width:100%;
   align-items:center;
   justify-content:center;
+  z-index:200;
+  margin-bottom:60px;
 }
 
-.home-searchbar .searchbar{
-  background-color:rgba(0, 43, 90, 0.4) !important;
-}
-/* Box1: Date Pickers, Room Selector, and Price Calculator */
-.box1{
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: center;
-  /* gap: 1.5rem; */
-  padding:20px;
-  width: 90%;
-  max-width: 1200px;
-  margin: 40px auto 30px;
-  background-color: #002c5a74;
-  border-radius: 50px;
-  font-family: "Noto Sans Khmer", sans-serif;
-}
-
-/* Date Picker Inputs */
-.date-input,
-.date-input-end {
-  padding: 10px;
-  font-family: "Noto Sans Khmer", sans-serif;
-  font-weight: 600;
-  text-align: center;
-  width: 220px;
-  font-size: 1rem;
-  border-radius: 50px;
-  border: 1px solid #eee;
-}
-
-/* Date Picker Containers */
-.datepick-container,
-.datepick-container-end {
-  position: relative;
-  /* margin-block: 19px; */
-
-}
-
-/* Date Picker Pop-ups */
-.datepick,
-.datepick-end {
-  position: absolute;
-  top: 100%;
-  z-index: 100;
-  margin-top: 1rem;
-  background: white;
-  padding: 15px;
-  border-radius: 20px;
-  box-shadow: 10px 10px 10px rgba(0, 0, 0, 0.2);
-  border: 1px solid #000;
-}
-
-/* Common Date Picker Elements */
-.datepick-header,
-.datepick-header-end {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding-bottom: 10px;
-  border-bottom: 1px solid #000;
-}
-
-.datepick-header select,
-.datepick-header-end select,
-.datepick-header input,
-.datepick-header-end input {
-  font-size: 16px;
-  text-align: center;
-  border-radius: 9px;
-  border: 1px solid #000;
-}
-
-.datepick-header input,
-.datepick-header-end input {
-  max-width: 69px;
-}
-
-.datepick-header button,
-.datepick-header-end button {
-  color: slategray;
-  background: transparent;
-  border: none;
-  border-radius: 3px;
-  font-size: 14px;
-  font-weight: 500;
-  text-transform: uppercase;
-  transition: 0.3s;
-}
-
-.datepick-header button:hover,
-.datepick-header-end button:hover {
-  background-color: rgba(255, 255, 255, 0.1);
-  color: #000;
-  border-radius: 15%;
-}
-
-.days,
-.days-end,
-.date,
-.date-end {
-  display: grid;
-  grid-template-columns: repeat(7, 32px);
-  gap: 10px;
-  margin: 15px 0;
-}
-
-.days span,
-.days-end span {
-  font-family: "Noto Sans Khmer", sans-serif;
-  font-size: 14px;
-  font-weight: 600;
-  text-transform: uppercase;
-  text-align: center;
-}
-
-.date button,
-.date-end button {
-  color: slategray;
-  margin-bottom: 10px;
-  aspect-ratio: 1;
-  border-radius: 5px;
-  border: 0;
-}
-
-.date button:disabled,
-.date-end button:disabled {
-  opacity: 0.5;
-  pointer-events: none;
-  user-select: none;
-}
-
-.date button:hover,
-.date-end button:hover {
-  background-color: rgba(119, 136, 153, 0.1);
-  color: #000;
-  border-radius: 15%;
-}
-
-.date button.today,
-.date-end button.today {
-  background: #002c5a2c;
-  color: #002b5a;
-  border: 1px solid #002b5a;
-}
-
-.date button.selected,
-.date-end button.selected {
-  background: #002b5a;
-  color: #fff;
-}
-
-.datepick-footer,
-.datepick-footer-end {
-  display: flex;
-  justify-content: space-between;
-  gap: 10px;
-  padding-top: 10px;
-  border-top: 1px solid #000;
-}
-
-.datepick-footer button,
-.datepick-footer-end button {
-  padding: 5px 10px;
-  font-size: 14px;
-  border-radius: 15px;
-  background: #002c5a2c;
-  color: #000;
-}
-
-.datepick-footer button.apply,
-.datepick-footer-end button.apply-end {
-  background: #002b5a;
-  color: #fff;
-}
-
-/* Room Selector */
-.location-container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  /* padding: 5px; */
-  font-family: "Noto Sans Khmer", sans-serif;
-  font-weight: 100;
-  text-align: center;
-  width: 220px;
-  border-radius: 50px;
-  gap: 6px;
-  /* margin-block: 19px; */
-  background-color: #fff;
-  border: 1px solid #fff;
-  box-shadow: 10px 10px 10px rgba(0, 0, 0, 0.2);
-}
-
-.search {
-  /* justify-content: center; */
-  display:flex;
-  flex-direction:row;
-  align-items:center;
-  padding: 10px 20px;
-  width:220px;
-  font-family: "Noto Sans Khmer", sans-serif;
-  font-weight: 600;
-  font-size: 16px;
-  text-align: center;
-  border-radius: 50px;
-  gap: 8px;
-  background-color: #F1DF75;
-  border: 2px solid #F1DF75;
-  box-shadow: 10px 10px 10px rgba(0, 0, 0, 0.2);
-}
-
-.search:hover {
-  background-color:lightgoldenrodyellow;
-  border-color: lightgoldenrodyellow;
-}
-
-.location-container select {
-  padding: 10px;
-  border-radius: 50px;
-  border:none;
-  /* border: 1px solid #fff; */
-  font-size: 16px;
-  font-family: "Noto Sans Khmer", sans-serif;
-  font-weight: 600;
-  text-align: center;
-  color: #002b5a;
-}
-
-/* Price Calculator */
-.price-calc {
-  display: flex;
-  padding: 9px;
-  font-family: "Noto Sans Khmer", sans-serif;
-  font-weight: 500;
-  text-align: center;
-  width: 300px;
-  border-radius: 50px;
-  gap: 6px;
-  margin-right: 20px;
-  align-items: center;
-  background-color: #fff;
-  border: 1px solid #eee;
-  box-shadow: 10px 10px 10px rgba(0, 0, 0, 0.2);
-}
-
-.price-calc p {
-  font-size: 16px;
-  margin-left: 1.5rem;
-  margin-top: 0px;
-  text-align: center;
-  color: lightslategray;
-}
 
 /* Hero Section */
 .hero-box {
@@ -437,7 +224,7 @@ hr {
   flex-direction: column;
   gap: 80px;
   align-items: center;
-  margin: 80px auto;
+  margin: 60px auto;
 }
 
 /* Box4: Image + Feature Cards */

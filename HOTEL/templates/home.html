@@ -27,47 +27,57 @@
 {% endblock %}
 
 {% block content %}
+
+<div class="banner">
+<div class="image-container">
+  <br>
+  <br>
+  <p class="title">Serenity By The Shore</p>
+  <p class="subtitle">Your Coastal Escape Starts Here</p>
+  <br>
+  <div class="home-searchbar">
+
+  <form method="get" action={{url_for('search')}} id="searchbar" class="searchbar" style="max-width:1200px; width:90%;">
+    <input type="hidden" name="stype" value="apply_search">
+    <div class="locations">
+        <div class="search-description">
+            <i class="fa-solid fa-location-dot" ></i>
+            <p>DESTINATION</p>
+        </div>
+        <select name="location_type" class="location_type" title="Select a Location">
+            <option disabled selected>Select Location</option>
+              {% if locations %}
+                {% for loc in locations %}
+                  <option value="{{loc[0].value}}">{{ loc[0].value }}</option>
+                {% endfor %}
+              {% endif %}
+        </select>
+    </div>
+    <div class="dates">
+        <div class="search-description">
+            <i class="fa-solid fa-calendar-days"></i>
+            <p class="nights" id="nights">PERIOD OF STAY</p>
+        </div>
+        <div class="date-selection">
+            <input type="text" id="startdate" class="startdate" name="startdate" placeholder="Select Start Date">
+            <input type="text" id="enddate" class="enddate" name="enddate" placeholder="Select End Date"> 
+        </div>
+    </div>
+    <div class="submit-area">
+        <button class="submit-button" type="submit">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <p><span>Find</span> Rooms</p>
+        </button>
+    </div>
+    <script src="../static/js/dates.js"></script>
+</form>
+</div>
+</div>
+</div>
+
 <div class="background">
   <div class="background-wrapper">
-    <section class="main-content">
-      <div class="home-searchbar">
-        <br>
-        <br>
-      <form method="get" action={{url_for('search')}} id="searchbar" class="searchbar" style="max-width:1200px; width:90%;">
-        <input type="hidden" name="stype" value="apply_search">
-        <div class="locations">
-            <div class="search-description">
-                <i class="fa-solid fa-location-dot" ></i>
-                <p>DESTINATION</p>
-            </div>
-            <select name="location_type" class="location_type" title="Select a Location">
-                <option disabled selected>Select Location</option>
-                  {% if locations %}
-                    {% for loc in locations %}
-                      <option value="{{loc[0].value}}">{{ loc[0].value }}</option>
-                    {% endfor %}
-                  {% endif %}
-            </select>
-        </div>
-        <div class="dates">
-            <div class="search-description">
-                <i class="fa-solid fa-calendar-days"></i>
-                <p class="nights" id="nights">PERIOD OF STAY</p>
-            </div>
-            <div class="date-selection">
-                <input type="text" id="startdate" class="startdate" name="startdate" placeholder="Select Start Date">
-                <input type="text" id="enddate" class="enddate" name="enddate" placeholder="Select End Date"> 
-            </div>
-        </div>
-        <div class="submit-area">
-            <button class="submit-button" type="submit">
-                <i class="fa-solid fa-magnifying-glass"></i>
-                <p><span>Find</span> Rooms</p>
-            </button>
-        </div>
-        <script src="../static/js/dates.js"></script>
-    </form>
-    </div>
+    <section class="main-content2">
       <div class="boxes-container">
         <div class="hero-box">
           <div class="hero-text">

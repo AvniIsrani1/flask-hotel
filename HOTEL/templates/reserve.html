@@ -88,7 +88,9 @@
         <div class="">
             <label for="rooms" class="subtitle">Number of Rooms: </label>
             <input type="number" id="rooms" name="rooms" value="{{rooms or 1}}" min="1" max="{{room.number_rooms}}" onchange="calcRate()" {% if modifying %} disabled {% endif %}>
+            {% if not modifying %}
             <p class="cancel-policy">Maximum: {{room.number_rooms}}</p>
+            {% endif %}
         </div>
         <div class="title-info">
             <p class="subtitle">Pricing</p>

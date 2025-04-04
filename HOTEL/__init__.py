@@ -363,18 +363,22 @@ def get_start_end_duration(startdate, enddate):
     duration = (ending - starting).days + 1
     return starting, ending, duration
 
-def get_similar_rooms(rid, starting, ending):
+def get_similar_rooms(rid, starting, ending, status): #status refers to if room is available within starting and ending periods
     query = Room.query.join(Hotel).filter(Room.available==Availability.A)
     room = query.filter(Room.id==rid).first()
     similar_rooms = Room.query.join(Hotel).filter(
         Room.hid==room.hid, Room.room_type==room.room_type, Room.number_beds==room.number_beds, Room.rate==room.rate, Room.balcony==room.balcony, Room.city_view==room.city_view,
         Room.ocean_view==room.ocean_view, Room.smoking==room.smoking, Room.max_guests==room.max_guests, Room.wheelchair_accessible==room.wheelchair_accessible
     )
-    similar_rooms = similar_rooms.filter(not_(db.exists().where(Booking.rid == Room.id).where(Booking.check_in < ending).where(Booking.check_out>starting))).order_by(asc(Room.room_number))
+    if status=='open':
+        similar_rooms = similar_rooms.filter(not_(db.exists().where(Booking.rid == Room.id).where(Booking.check_in < ending).where(Booking.check_out>starting))).order_by(asc(Room.room_number))
     return similar_rooms
 
-def get_similar_quantities(rid, starting, ending):
-    similar_rooms = get_similar_rooms(rid=rid, starting=starting, ending=ending)
+def get_similar_quantities(rid, starting, ending, status):
+    if status=='open':
+        similar_rooms = get_similar_rooms(rid=rid, starting=starting, ending=ending, status='open')
+    else:
+        similar_rooms = get_similar_rooms(rid=rid, starting=starting, ending=ending, status='any')
     similar_rooms = similar_rooms.group_by(
         Room.hid, Room.room_type, Room.number_beds, Room.rate, Room.balcony, Room.city_view, Room.ocean_view, 
         Room.smoking, Room.max_guests, Room.wheelchair_accessible
@@ -401,7 +405,7 @@ def reserve():
             return redirect(url_for('search'))
         print(f"Received rid: {rid}, location_type: {location_type}, startdate: {startdate}, enddate: {enddate}") 
         starting, ending, duration = get_start_end_duration(startdate, enddate)
-        room = get_similar_quantities(rid=rid, starting=starting, ending=ending).first()
+        room = get_similar_quantities(rid=rid, starting=starting, ending=ending, status='open').first()
 
         if not room:
             flash('Room not found',"error")
@@ -434,7 +438,8 @@ def modify(bid):
     startdate = booking.check_in.strftime("%B %d, %Y")
     enddate = booking.check_out.strftime("%B %d, %Y")
     starting, ending, duration = get_start_end_duration(startdate, enddate)
-    room = get_similar_quantities(rid=booking.rid, starting=starting, ending=ending).first()
+    room = get_similar_quantities(rid=booking.rid, starting=starting, ending=ending, status="any").first()
+    print(room)
     rid = booking.rid
     rooms = 1 #user is able to modify 1 room at a time
     location_type = None
@@ -687,7 +692,7 @@ def payment():
         guests = request.form.get('guests')
 
         starting, ending, duration = get_start_end_duration(startdate, enddate)
-        similar_rooms = get_similar_rooms(rid=rid,starting=starting,ending=ending)
+        similar_rooms = get_similar_rooms(rid=rid,starting=starting,ending=ending,status='open')
 
         rooms_to_book = similar_rooms.limit(int(rooms))
         rooms_to_book_count = rooms_to_book.count()
@@ -728,7 +733,7 @@ def process_payment():
 
     # Find a valid room to book 
     starting, ending, duration = get_start_end_duration(startdate, enddate)
-    similar_rooms = get_similar_rooms(rid=rid,starting=starting,ending=ending)
+    similar_rooms = get_similar_rooms(rid=rid,starting=starting,ending=ending,status='open')
     rooms_to_book = similar_rooms.limit(int(rooms))
     rooms_to_book_count = rooms_to_book.count()
     one_room = rooms_to_book.first()
