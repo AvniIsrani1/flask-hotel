@@ -116,7 +116,7 @@
                 <input type="number" id="phone" name="phone" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" placeholder="Phone Number" value="{{ phone or user.phone or '' }}" inputmode='numeric' required>
             </div>
             <div class="guests">
-                <label for="guests" class="subtitle">Number of Guests:</label>
+                <label for="guests" class="subtitle">Number of Guests per Room:</label>
                 <input type="number" id="guests" name="guests" value="{{guests or 1}}" min="1" max="{{room[0].max_guests}}">
             </div>
     </div>

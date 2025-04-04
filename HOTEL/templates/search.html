@@ -141,8 +141,8 @@
         <div class="item-container">
         {% for room, number_rooms, min_rid in rooms %}
         <div class="item">
-            <div class="item-image-container" style="position: relative; height: 300px; width: 100%;">
-                <img src="{{room.img}}" alt="Room" id="thumbnail-{{room.id}}" class="visible" style="position: absolute; width: 100%; height: 100%; cursor: pointer;" onclick="showModel('{{room.id}}')">
+            <div class="item-image-container" style="position: relative; height: 200px; width: 100%;">
+                <img src="{{room.img}}" alt="Room" id="thumbnail-{{room.id}}" class="visible" style="position: absolute; width: 100%; height: 100%; cursor: pointer;">
                 <div id="model-container-{{room.id}}" style="position: absolute; width: 100%; height: 100%; display: none;">
                     <button id="close-button-{{room.id}}" class="model-close-btn" onclick="hideModel('{{room.id}}')">
                         <i class="fa-solid fa-xmark"></i>
@@ -157,7 +157,7 @@
                         style="width: 100%; height: 100%;">
                     </model-viewer>
                 </div>
-                <div class="item-image-overlay">
+                <div class="item-image-overlay" id="item-image-overlay-{{room.id}}" onclick="showModel('{{room.id}}')">
                     <p>Click for 3D view!</p>
                 </div>
             </div>

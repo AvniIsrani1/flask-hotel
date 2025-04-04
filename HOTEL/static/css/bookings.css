@@ -83,7 +83,8 @@ p {
 }
 
 .placard {
-    width:330px;
+    width:calc(30%);
+    max-width:330px;
     position:relative;
 }
 
@@ -225,16 +226,22 @@ p {
     text-align:left;
 }
 
+@media only screen and (max-width:1450px){
+    .placard {
+        width:44% !important;
+        max-width:400px !important;
+    }
+}
 
 @media only screen and (max-width:1200px){
     .content {
         align-items:center;
         flex-direction:column;
     }
+
     .title, .section1, .view-options {
         width:65%;
     }
-
 
 }
 
@@ -242,14 +249,27 @@ p {
     .title, .section1, .view-options {
         width:75%;
     }
+
+    .placards {
+        justify-content:center;
+    }
+
+    .placard {
+        width:45% !important;
+        max-width:600px;
+    }
 }
 
-@media only screen and (max-width:700px){
+@media only screen and (max-width:800px){
     .title, .section1, .view-options {
         width:90%;
     }
-    .placards {
-        justify-content:center;
+    .placard {
+        width:90% !important;
+        max-width:400px !important;
+    }
+    .placard img {
+        height:270px;
     }
 }
 
@@ -259,6 +279,10 @@ p {
         min-width:300px;
         max-width:500px;
         max-height:700px;
+    }
+
+    .placard {
+        width:95% !important;
     }
 }
 
