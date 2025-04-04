@@ -24,7 +24,7 @@
     <nav class="base-links">
       <a href="{{url_for('search')}}"><i class="fa-solid fa-hotel"></i><p>Reserve</p></a>
       <a href=""><i class="fa-solid fa-bell-concierge"></i><p>Amenities</p></a>
-      <a href=""><i class="fa-regular fa-calendar-days"></i><p>Events</p></a>
+      <a href="{{url_for('events')}}"><i class="fa-regular fa-calendar-days"></i><p>Events</p></a>
       <a href=""><i class="fa-solid fa-utensils"></i><p>Dining</p></a>
       {% if session.get('user_name') %}
       <div class="profile-info">
