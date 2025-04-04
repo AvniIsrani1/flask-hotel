@@ -5,10 +5,11 @@
     font-family: 'Georgia', serif;
 }
 
-body {
+.content {
     background-color: #FAF9F6;
     padding: 20px;
     color: #333;
+    width:100%;
 }
 
 /* Events section title */
