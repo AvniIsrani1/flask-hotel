@@ -1,0 +1,21 @@
+    <!-- Chat Component -->
+    <div class="chat-component">
+        <button class="open-button" onclick="openChat()">
+            <i class="fa-solid fa-comment"></i> 
+        </button>
+  
+        <div class="form-popup" id="myForm">
+            <div class="form-container">
+                <h1>OV Chatbot</h1>
+  
+                <div class="chat-box" id="chatBox">
+                    <!-- Messages will be appended here -->
+                </div>
+  
+                <textarea id="userInput" placeholder="Type a message..." required></textarea>
+  
+                <button type="button" class="btn" onclick="sendMessage()">Send</button>
+                <button type="button" class="btn cancel" onclick="closeChat()">Close</button>
+            </div>
+        </div>
+    </div>
