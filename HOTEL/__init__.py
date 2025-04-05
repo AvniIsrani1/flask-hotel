@@ -475,6 +475,10 @@ def terms():
 def events():
     return render_template('events.html')
 
+@app.route("/menu1")
+def menu1():
+    return render_template('menu1.html')
+
 @app.route("/faq")
 def faq():
     faqs = FAQ.query.all()
