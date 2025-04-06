@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+
+{% block title %} Home {% endblock %}
+
+{% block styles %}
+    <title> Events Page </title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/about.css') }}">
+
+    {% endblock %}
+
+    {% block content %}
+<div class="content">
+    
+     <!-- Events section -->
+      <div class="aboutInfo-section">
+        <div class="aboutInfo-title"> 
+            <h2> About us </h2>
+        </div>
+      </div>
+
+      <!-- Events card latout - image left , title & details right -->
+       <div class="aboutInfo-card" id="Default">
+                <div class="aboutInfo-image">
+                    <img src="static\images\imgAbout\Team.png" width="400px" height="300" alt="Event Image">
+                </div>
+            <div class="aboutInfo-content">
+                <div class="aboutInfo-title">
+                    <h3> Our Staff </h3>
+                </div>
+                <div class="aboutInfo-details">
+                    <p> At Ocean Vista in beautiful Malibu, our team is dedicated to making your stay unforgettable.
+                        Known for our warmth, professionalism, and attentiveness, we go above and beyond to ensure every guest feels right at home.
+                        Whether it’s a friendly smile at check-in, helpful local recommendations, or prompt service whenever you need it, we’re here to make your experience seamless and enjoyable.
+                        Our staff takes pride in creating a relaxing, welcoming environment where hospitality comes naturally.
+                    </p>
+                </div>
+            </div>
+       </div>
+
+        <!-- Event card layout 2 -->
+        <div class="aboutInfo-card" id="Default">
+            <div class="aboutInfo-image">
+                <img src="static\images\imgAbout\hotelFacade.jpg" width="400px" height="300" alt="Event Image">
+            </div>
+        <div class="aboutInfo-content">
+            <div class="aboutInfo-title">
+                <h3> Ocean Vista </h3>
+            </div>
+            <div class="aboutInfo-details">
+                <p> 
+                    Ocean Vista was born in 1987 from a dream—not just to build a hotel, but to craft a sanctuary that would rise from the edge of the Pacific like a modern palace kissed by the sea. Conceived by visionary architect and seafarer Julian Merrick, Ocean Vista was inspired by the quiet power of the ocean, the elegance of deep tides, and the ever-changing Malibu sky. He imagined a place where white marble met dark blue depths, where gold trim shimmered like sunlight dancing on waves—a refuge where time slows and luxury feels effortless.
+
+                    From its inception, Ocean Vista has been more than a destination; it is a living expression of oceanic grandeur and modern sophistication. Each corridor whispers of salt air and serenity, each suite designed not just for comfort, but to awaken awe. Our commitment to service is not a feature—it is our foundation. With unmatched attentiveness and warmth, we treat every guest not as a visitor, but as part of the legacy.
+                    
+                    There are many places to stay in Malibu, but there is only one Ocean Vista. 
+                </p>
+            </div>
+        </div>
+        </div>
+
+
+        <!-- Event card layout 3 -->
+        <div class="aboutInfo-card" id="coming soon">
+            <div class="aboutInfo-image">
+                <img src="static\images\imgAbout\GrandEntrance1.jpg" width="400px" height="300" alt="Event Image">
+            </div>
+        <div class="aboutInfo-content">
+            <div class="aboutInfo-title">
+                <h3> Design </h3>
+            </div>
+            <div class="aboutInfo-details">
+                <p>
+                    Ocean Vista embodies the elegance of a regal palace infused with the soul of the sea.
+                    Our design weaves together deep, dark blue tones reminiscent of the Pacific’s depths, crisp white marble surfaces that reflect the purity of the coastline, and subtle gold trim accents that echo the shimmer of sunlit waves.
+                    Every detail—from the grand lobby to the private suites—has been crafted to create a serene yet majestic atmosphere. The space is clean, modern, and inviting, evoking the calm of the ocean with the refinement of a luxury retreat.
+                    At Ocean Vista, guests aren’t just welcomed—they’re crowned. Every stay is designed to make you feel like royalty.                  
+                </p>
+            </div>
+        </div>
+        </div>
+
+</div>
+{% endblock %}

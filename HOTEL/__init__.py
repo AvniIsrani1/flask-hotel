@@ -487,6 +487,10 @@ def faq():
     faqs = FAQ.query.all()
     return render_template('faq.html',faqs=faqs)
 
+@app.route("/about")
+def about():
+    return render_template('about.html')
+
 from datetime import datetime, timedelta
 
 # Credit Card Validation Class
