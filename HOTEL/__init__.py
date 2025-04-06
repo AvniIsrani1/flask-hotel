@@ -15,6 +15,9 @@ from flask_admin.contrib.sqla import ModelView
 from HOTEL.AImodels.ai_model import load_ai_model, generate_ai_response
 from HOTEL.AImodels.csv_retriever import setup_csv_retrieval, get_answer_from_csv
 from .response import format_response  
+from io import BytesIO
+from .receipt_generator import ReceiptGenerator
+from flask import send_file
 
 app = Flask(__name__,
             static_folder='static',     # Define the static folder (default is 'static')
@@ -822,5 +825,103 @@ def process_payment():
                                YesNo=YesNo, one_room=one_room, 
                                guests=guests, rooms=rooms_to_book_count, name=name, email=email, phone=phone,
                                requests=requests)
+    
+@app.route("/booking/<int:booking_id>/receipt/view")
+def view_receipt(booking_id):
+    """
+    Display an HTML receipt for a booking
+    """
+    if "user_id" not in session:
+        flash("Please log in first.", "error")
+        return redirect(url_for("log_in"))
+    
+    booking = Booking.query.get(booking_id)
+    
+    if not booking:
+        flash("Booking not found.", "error")
+        return redirect(url_for("bookings"))
+    
+    if booking.uid != session["user_id"]:
+        flash("You don't have permission to view this receipt.", "error")
+        return redirect(url_for("bookings"))
+    
+    today = datetime.now()
+    
+    num_nights = (booking.check_out - booking.check_in).days
+    if num_nights == 0:
+        num_nights = 1
+    
+    room_rate = booking.room.rate
+    total_room_charges = room_rate * num_nights
+    resort_fee = 30.00 * num_nights
+    tax_amount = total_room_charges * 0.15
+    total_amount = total_room_charges + resort_fee + tax_amount
+    
+    return render_template(
+        "receipt.html", 
+        booking=booking, 
+        today=today,
+        YesNo=YesNo,
+        num_nights=num_nights,
+        room_rate=room_rate,
+        total_room_charges=total_room_charges,
+        resort_fee=resort_fee,
+        tax_amount=tax_amount,
+        total_amount=total_amount
+    )
+
+@app.route("/booking/<int:booking_id>/receipt/download")
+def download_receipt(booking_id):
+    """
+    Generate and download a PDF receipt for a booking
+    """
+    if "user_id" not in session:
+        flash("Please log in first.", "error")
+        return redirect(url_for("log_in"))
+    
+    booking = Booking.query.get(booking_id)
+    
+    if not booking:
+        flash("Booking not found.", "error")
+        return redirect(url_for("bookings"))
+    
+    if booking.uid != session["user_id"]:
+        flash("You don't have permission to download this receipt.", "error")
+        return redirect(url_for("bookings"))
+    
+    today = datetime.now()
+
+    num_nights = (booking.check_out - booking.check_in).days
+    if num_nights == 0:
+        num_nights = 1
+
+    room_rate = booking.room.rate
+    total_room_charges = room_rate * num_nights
+    resort_fee = 30.00 * num_nights
+    tax_amount = total_room_charges * 0.15
+    total_amount = total_room_charges + resort_fee + tax_amount
+    
+    receipt_gen = ReceiptGenerator()
+    
+    pdf_buffer = receipt_gen.generate_receipt(
+        booking=booking, 
+        #num_nights=num_nights, 
+        room_rate=room_rate,
+        total_room_charges=total_room_charges,
+        resort_fee=resort_fee,
+        tax_amount=tax_amount,
+        total_amount=total_amount,
+        return_bytes=True
+    )
+    
+    filename = f"OceanVista_Booking_Receipt_{booking.id}_{datetime.now().strftime('%Y%m%d')}.pdf"
+    
+    return send_file(
+        pdf_buffer,
+        as_attachment=True,
+        download_name=filename,
+        mimetype='application/pdf'
+    )
+
 if __name__ == "__main__":
     app.run(debug=True)

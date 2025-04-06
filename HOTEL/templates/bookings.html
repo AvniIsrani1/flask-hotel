@@ -69,6 +69,7 @@
                             </div>
                         </div>
                         <div class="links ptop">
+                            <a href="{{url_for('view_receipt', booking_id=c.id)}}">View Receipt</a>
                             <a href="">Billing Details</a>
                             <a href="{{url_for('request_services', bid=c.id)}}">Request Services</a>
                             <a href="">View our Dining Menu</a>
@@ -116,6 +117,7 @@
                             </div>                        
                         </div>
                         <div class="links2 ptop">
+                            <a href="{{url_for('view_receipt', booking_id=f.id)}}">View Receipt</a>
                             <a href="{{url_for('modify',bid=f.id )}}">Modify Booking</a>
                         </div>
                     </div>
@@ -163,6 +165,7 @@
                         </div>
                     </div>
                     <div class="links ptop">
+                        <a href="{{url_for('view_receipt', booking_id=pa.id)}}">View Receipt</a>
                         <a href="">Leave a review</a>
                     </div>
                 </div>
@@ -208,6 +211,7 @@
                         </div>
                     </div>
                     <div class="links ptop">
+                        <a href="{{url_for('view_receipt', booking_id=ca.id)}}">View Receipt</a>
                         <p>Cancel Date: {{ca.cancel_date.strftime('%B %d, %Y')}}</p>
                         <p>Refund Type: {{'None' if ca.refund_type==YesNo.N else 'Full'}}</p>                   
                     </div>

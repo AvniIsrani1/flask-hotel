@@ -1,0 +1,151 @@
+{% extends 'base.html' %}
+
+{% block title %} Receipt {% endblock %}
+
+{% block styles %} 
+<link rel="stylesheet" href="{{ url_for('static', filename='css/receipt.css') }}"/>
+{% endblock %}
+
+{% block content %}
+<div class="receipt-container">
+    <div class="receipt-actions">
+        <h1>Booking Receipt</h1>
+        <div class="action-buttons">
+            <a href="{{ url_for('download_receipt', booking_id=booking.id) }}" class="download-btn">
+                <i class="fa-solid fa-download"></i> Download PDF
+            </a>
+        </div>
+    </div>
+
+    <div class="receipt-preview">
+        <div class="receipt-header">
+            <div class="logo">
+                <img src="{{ url_for('static', filename='images/logo2.png') }}" alt="Ocean Vista" width="80" height="80">
+            </div>
+            <div class="hotel-info">
+                <h2>Ocean Vista Hotel</h2>
+                <p>{{ booking.room.hotel.location.value }} Location</p>
+                <p>{{ booking.room.hotel.address }}</p>
+            </div>
+        </div>
+
+        <div class="receipt-body">
+            <div class="receipt-section">
+                <h3>Receipt Information</h3>
+                <div class="info-row">
+                    <span class="label">Receipt Number:</span>
+                    <span class="value">R-{{ booking.id }}-{{ booking.check_in.strftime('%Y%m%d') }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="label">Receipt Date:</span>
+                    <span class="value">{{ today.strftime('%B %d, %Y') }}</span>
+                </div>
+            </div>
+
+            <div class="receipt-section">
+                <h3>Guest Information</h3>
+                <div class="info-row">
+                    <span class="label">Name:</span>
+                    <span class="value">{{ booking.name }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="label">Email:</span>
+                    <span class="value">{{ booking.email }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="label">Phone:</span>
+                    <span class="value">{{ booking.phone }}</span>
+                </div>
+            </div>
+
+            <div class="receipt-section">
+                <h3>Reservation Details</h3>
+                <div class="info-row">
+                    <span class="label">Check-In:</span>
+                    <span class="value">{{ booking.check_in.strftime('%A, %B %d, %Y') }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="label">Check-Out:</span>
+                    <span class="value">{{ booking.check_out.strftime('%A, %B %d, %Y') }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="label">Number of Nights:</span>
+                    <span class="value">{{ num_nights }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="label">Room Type:</span>
+                    <span class="value">{{ booking.room.number_beds }}-Bedroom {{ booking.room.room_type.value }}
+                        {% if booking.room.wheelchair_accessible == YesNo.Y %}
+                            <span> (Wheelchair Accessible) </span>
+                        {% endif %}
+                        {% if booking.room.smoking == YesNo.N %}
+                            <span>| Non-Smoking</span>
+                        {% endif %}
+                    </span>
+                </div>
+                <div class="info-row">
+                    <span class="label">Number of Guests:</span>
+                    <span class="value">{{ booking.num_guests }}</span>
+                </div>
+            </div>
+
+            <div class="receipt-section charges">
+                <h3>Charges</h3>
+                <table class="charges-table">
+                    <thead>
+                        <tr>
+                            <th>Description</th>
+                            <th>Rate</th>
+                            <th>Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>{{ booking.room.number_beds }}-Bedroom {{ booking.room.room_type.value }}</td>
+                            <td>${{ room_rate }}.00</td>
+                            <td>${{ total_room_charges }}.00</td>
+                        </tr>
+                        <tr>
+                            <td>Resort Fee</td>
+                            <td>${{ 30.00 }}</td>
+                            <td>${{ resort_fee }}.00</td>
+                        </tr>
+                        <tr>
+                            <td>Tax (15%)</td>
+                            <td></td>
+                            <td>${{ tax_amount | round(2) }}</td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="2" class="total-label">Total</td>
+                            <td class="total-amount">${{ total_amount | round(2) }}</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+
+            <div class="receipt-section">
+                <h3>Payment Information</h3>
+                <div class="info-row">
+                    <span class="label">Payment Method:</span>
+                    <span class="value">Credit Card</span>
+                </div>
+                <div class="info-row">
+                    <span class="label">Payment Status:</span>
+                    <span class="value">Paid</span>
+                </div>
+                <div class="info-row">
+                    <span class="label">Payment Date:</span>
+                    <span class="value">{{ booking.check_in.strftime('%B %d, %Y') }}</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="receipt-footer">
+            <p>Thank you for choosing Ocean Vista Hotels!</p>
+            <p>This receipt was generated electronically.</p>
+        </div>
+    </div>
+</div>
+{% endblock %}
