@@ -10,6 +10,8 @@ pip install flask
 pip install flask-mysqldb
 pip install flask-sqlalchemy
 pip install flask-admin
+pip install flask-mail     
+
 pip install pymysql
 pip install boto3
 pip install flask-cors 

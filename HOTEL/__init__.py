@@ -1,4 +1,5 @@
 from flask import Flask, jsonify, render_template, request, redirect, url_for, session, flash, get_flashed_messages
+from flask_mail import Mail, Message
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import DateTime, distinct, desc, asc, cast, func, not_, String, Computed
 from datetime import datetime
@@ -21,23 +22,41 @@ app = Flask(__name__,
             template_folder='templates')
 app.secret_key = 'GITGOOD_12345'  # This key keeps your session data safe.
 
-secret_name = "rds!db-d319020b-bb3f-4784-807c-6271ab3293b0"
-client = boto3.client(service_name='secretsmanager', region_name='us-west-1')
+rds_secret_name = "rds!db-d319020b-bb3f-4784-807c-6271ab3293b0"
+ses_secret_name = "oceanvista_ses"
 
-# Retrieve the secret from Secrets Manager
-try:
-    response = client.get_secret_value(SecretId=secret_name)
-except ClientError as e:
-    raise e
-secret = json.loads(response['SecretString'])
-username=secret.get("username")
-pwd = quote(secret.get("password"))
+def get_secrets(secret_name):
+    client = boto3.client(service_name='secretsmanager', region_name='us-west-1')
+    try:
+        response = client.get_secret_value(SecretId=secret_name)
+    except ClientError as e:
+        raise e
+    secret = json.loads(response['SecretString'])
+    username=secret.get("username")
+    pwd = secret.get("password")
+    return username, pwd
+
+rds_username, rds_pwd = get_secrets(rds_secret_name)
+rds_pwd = quote(rds_pwd)
+ses_username, ses_pwd = get_secrets(ses_secret_name)
+#'AKIAZVMTVFXJYB4NK7BH','BLQALd5gKDcpmTq+Fl6nAMZ8hSdGv+gFvgAfaBGrXlwf'
+
+app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql+pymysql://{rds_username}:{rds_pwd}@hotel-db-instance.cvwasiw2g3h6.us-west-1.rds.amazonaws.com:3306/hotel_db'
+
+app.config['MAIL_SERVER'] = 'email-smtp.us-west-1.amazonaws.com'
+app.config['MAIL_PORT'] = 587
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USE_SSL'] = False
+app.config['MAIL_USERNAME'] = ses_username
+app.config['MAIL_PASSWORD'] = ses_pwd
+app.config['MAIL_DEFAULT_SENDER'] = 'ocean.vista.hotels@gmail.com'
 
 ai_model = load_ai_model()
 ai_db = setup_csv_retrieval()
 
-app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql+pymysql://{username}:{pwd}@hotel-db-instance.cvwasiw2g3h6.us-west-1.rds.amazonaws.com:3306/hotel_db'
 db.init_app(app)
+mail = Mail(app)
+
 
 models = [User, Hotel, Floor, Room, Booking, FAQ, YesNo, Locations, RoomType, Availability, Saved]
 admin = Admin(app, name="Admin", template_mode="bootstrap4")
@@ -51,6 +70,31 @@ with app.app_context():
     admin.add_view(ModelView(User, db.session))
 
 # ----- Routes -----
+
+def send_email(subject, recipients, body, body_template, user=None, booking=None, YesNo=YesNo, attachment=None, attachment_type=None):
+    msg = Message(subject,
+                  recipients=['ocean.vista.hotels@gmail.com'], #we are in sandbox mode right now (can only send to verified emails) (need to create a dns record first to move to prod mode)
+                  body=body)
+    try:
+        formatting = render_template(body_template, user=user, booking=booking, YesNo=YesNo)
+        msg.html = formatting
+    except Exception as e:
+        print(f"Unable to format email: {e}")
+    if attachment:
+        with open(attachment, 'rb') as f:
+            content = f.read()
+            name = attachment.split('/')[-1]
+            if attachment_type=='pdf':
+                ft = 'application/pdf'
+            elif attachment_type=='png':
+                ft = 'image/png'
+            elif attachment_type=='jpg':
+                ft = 'image/jpeg'
+            else:
+                ft = 'application/octet-stream'
+            msg.attach(name,ft,content)
+    mail.send(msg)
+    return 'Email sent!'
 
 # Home page route
 @app.route("/")
@@ -90,6 +134,8 @@ def sign_up():
             db.session.add(new_user)
             db.session.commit()
             flash("Account created successfully! Please log in.", "success")
+            send_email(subject='Welcome to Ocean Vista',recipients=[new_user.email], body="Thank you for creating your Ocean Vista account!",
+                       body_template='emails/account_created.html',user=new_user, YesNo=YesNo)
             return redirect(url_for("log_in"))
         except Exception as e:
             # Roll back the session if there is an error
@@ -450,12 +496,17 @@ def modify(bid):
 
 @app.route("/save/<int:bid>", methods=["GET", "POST"])
 def save(bid): #currently not able to add more rooms by modifying existing booking
-    print(bid)
+    if "user_id" not in session:
+        flash("Please log in first.", "error")
+        return redirect(url_for("log_in"))
+    user = User.query.get(session["user_id"])
     b = Booking.query.get(bid)
     if b:
         canceled = request.form.get('canceled', 'false')
         if canceled=='true':
             b.cancel_booking()
+            send_email(subject='Ocean Vista Booking Canceled!',recipients=[user.email], body="Your booking has been canceled!",
+            body_template='emails/canceled.html',user=user, booking=b, YesNo=YesNo)
             flash('Booking canceled!','success')
         else:
             requests = request.form.get('requests', b.special_requests)
@@ -464,6 +515,8 @@ def save(bid): #currently not able to add more rooms by modifying existing booki
             phone = request.form.get('phone', b.phone)
             guests = request.form.get('guests', b.num_guests)
             b.update_booking(special_requests=requests, name=name, email=email, phone=phone, num_guests=guests)
+            send_email(subject='Ocean Vista Booking Updated!',recipients=[user.email], body="Your booking has been updated!",
+                       body_template='emails/updated.html',user=user, booking=b, YesNo=YesNo)
             flash('Booking updated!','success')
     return redirect(url_for('bookings'))
 
@@ -726,6 +779,8 @@ def process_payment():
         flash("Please log in first.", "error")
         return redirect(url_for("log_in"))
     
+    user = User.query.get(session["user_id"])
+    
     # Extract payment information from the form
     credit_card_number = request.form.get("card-number")
     exp_date = request.form.get("expiry")
@@ -807,6 +862,9 @@ def process_payment():
                 #room.available = Availability.B
                 db.session.add(new_booking)
             db.session.commit()
+
+            send_email(subject='Ocean Vista Booking Created!',recipients=[user.email], body="Thank you for creating a new booking!",
+                       body_template='emails/booking_created.html',user=user, YesNo=YesNo)
             
             flash("YOUR CARD HAS BEEN ACCEPTED", "success")
             return redirect(url_for("bookings"))
