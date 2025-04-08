@@ -96,7 +96,12 @@ def send_email(subject, recipients, body, body_template, user=None, booking=None
             else:
                 ft = 'application/octet-stream'
             msg.attach(name,ft,content)
-    mail.send(msg)
+    try:
+        mail.send(msg)
+        print("Message sent successfully")
+    except Exception as e:
+        print(f"Not able to send message:{e}")
+    
     return 'Email sent!'
 
 # Home page route
@@ -518,7 +523,7 @@ def save(bid): #currently not able to add more rooms by modifying existing booki
             phone = request.form.get('phone', b.phone)
             guests = request.form.get('guests', b.num_guests)
             b.update_booking(special_requests=requests, name=name, email=email, phone=phone, num_guests=guests)
-            send_email(subject='Ocean Vista Booking Updated!',recipients=[user.email], body="Your booking has been updated!",
+            send_email(subject=f'Ocean Vista Booking Updated - {b.id}!',recipients=[user.email], body="Your booking has been updated!",
                        body_template='emails/updated.html',user=user, booking=b, YesNo=YesNo)
             flash('Booking updated!','success')
     return redirect(url_for('bookings'))
@@ -864,10 +869,10 @@ def process_payment():
                 # Update room availability
                 #room.available = Availability.B
                 db.session.add(new_booking)
+                send_email(subject='Ocean Vista Booking Created!',recipients=[user.email], body="Thank you for creating a new booking!",
+                           body_template='emails/booking_created.html',user=user, booking=new_booking, YesNo=YesNo)
             db.session.commit()
 
-            send_email(subject='Ocean Vista Booking Created!',recipients=[user.email], body="Thank you for creating a new booking!",
-                       body_template='emails/booking_created.html',user=user, YesNo=YesNo)
             
             flash("YOUR CARD HAS BEEN ACCEPTED", "success")
             return redirect(url_for("bookings"))
