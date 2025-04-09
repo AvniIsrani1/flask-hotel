@@ -28,7 +28,7 @@
       <a href="{{url_for('menu1')}}"><i class="fa-solid fa-utensils"></i><p>Dining</p></a>
       {% if session.get('user_name') %}
       <div class="profile-info">
-        <a href="{{ url_for('profile') }}">
+        <a href="{{ url_for('profile.profile') }}">
           <i class="fa-solid fa-user"></i>
           <p>{{ session['user_name'] | upper }}</p>
         </a>

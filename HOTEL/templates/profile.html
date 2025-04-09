@@ -53,7 +53,7 @@
             <p>About Me</p>
             <i class="fa-solid fa-caret-down"></i>
         </button>
-        <form method="post" action="{{ url_for('profile') }}" id="profile" class="profile">
+        <form method="post" action="{{ url_for('profile.profile') }}" id="profile" class="profile">
             <input type="hidden" name="ptype" value="profile">
             <input type="text" id="name" name="name" placeholder="Name" value="{{ user.name or '' }}" required>
             <input type="text" id="email" name="email" placeholder="Email" value="{{ user.email }}" disabled>
@@ -117,7 +117,7 @@
             <p>Change Password</p>
             <i class="fa-solid fa-caret-down"></i>
         </button>
-        <form method="post" action="{{ url_for('profile') }}" id="privacy" class="privacy">
+        <form method="post" action="{{ url_for('profile.profile') }}" id="privacy" class="privacy">
             <input type="hidden" name="ptype" value="password_change">
             <input type="password" id="cur_pass" name="cur_pass" placeholder="Current Password" required>
             <input type="password" id="new_pass" name="new_pass" placeholder="New Password" required>
@@ -135,7 +135,7 @@
                     <p class="">Are you sure you want to delete your account?</p>
                     <p class="">This action cannot be undone.</p>
                 </div>
-                <form method="post" action="{{ url_for('profile') }}">
+                <form method="post" action="{{ url_for('profile.profile') }}">
                     <input type="hidden" name="ptype" value="account_deletion">
                     <button type="submit" class="sub">Delete</button>
                 </form>

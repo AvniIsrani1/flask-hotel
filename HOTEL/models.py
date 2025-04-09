@@ -2,59 +2,15 @@ from flask_sqlalchemy import SQLAlchemy
 from enum import Enum as PyEnum
 from sqlalchemy import DateTime, distinct, Computed
 from datetime import datetime, timedelta
+from .db import db
+from .model_objects import User, Booking
+from .model_dbs import Locations, YesNo, RoomType, Availability, SType, Assistance
+# from .model_objects.Booking import Booking
+# from .model_objects.User import User
 
-db = SQLAlchemy()
 
-class YesNo(PyEnum):
-    Y = 'Y'
-    N = "N"
-class Locations(PyEnum):
-    MALIBU = "Malibu"
-    SM = "Santa Monica"
-class RoomType(PyEnum):
-    STRD = 'Standard'
-    DLX = 'Deluxe'
-    ST = 'Suite'
-class Availability(PyEnum):
-    A = 'Available'
-    B = 'Booked'
-    M = 'Maintenance'
-class SType(PyEnum):
-    I = 'Items'
-    H = 'Housekeeping'
-    T = 'Trash'
-    C = 'Call'
-    D = 'Dining'
-    A = 'Assistance'
-    O = 'Other'
-class Assistance(PyEnum):
-    L = 'recommendations'
-    B = 'transportation'
-    R = 'maintenance'
-    A = 'accessibility'
 
-class User(db.Model):
-    __tablename__ = 'user'  # Name of the table in the database
-    id = db.Column(db.Integer, primary_key=True)  # Unique id for each user
-    name = db.Column(db.String(150), nullable=False)  # User's name
-    email = db.Column(db.String(150), unique=True, nullable=False)  # User's email (must be unique)
-    password = db.Column(db.String(255), nullable=False)  # Hashed password
-    phone = db.Column(db.String(15))
-    address_line1 = db.Column(db.String(100))
-    address_line2 = db.Column(db.String(100))
-    city = db.Column(db.String(50))
-    state = db.Column(db.String(50))
-    zipcode = db.Column(db.String(10))
-    rewards = db.Column(db.Integer,default=0)
-    room_number = db.Column(db.String(15), default="")
-    first_login = db.Column(db.Enum(YesNo), nullable=False, default=YesNo.Y) 
-    text_notifications = db.Column(db.Enum(YesNo), nullable=False, default=YesNo.N) 
-    email_notifications = db.Column(db.Enum(YesNo), nullable=False, default=YesNo.N) 
-    bookings = db.relationship('Booking', backref='user', lazy=True) #user is keeping track of bookings
 
-    @classmethod
-    def get_user(cls, id):
-        return cls.query.filter(cls.id==id).first()
 
 
 
@@ -106,7 +62,7 @@ class Room(db.Model):
     available = db.Column(db.Enum(Availability),nullable=False,default=Availability.A)
     max_guests = db.Column(db.Integer,default=2,nullable=False)
     wheelchair_accessible = db.Column(db.Enum(YesNo), nullable=False, default=YesNo.N) 
-    bookings = db.relationship('Booking', backref='room', lazy=True, cascade='all, delete-orphan')  
+    bookings = db.relationship('Bookings', backref='room', lazy=True, cascade='all, delete-orphan')  
     
     __table_args__ = (db.UniqueConstraint('hid', 'fid', 'room_number', name='hid_fid_room_number_unique'),)
 
@@ -140,72 +96,6 @@ class Room(db.Model):
         return cls.query.filter(id==id).first()
 
 
-class Booking(db.Model):
-    __tablename__ = 'booking'
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    uid = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    rid = db.Column(db.Integer, db.ForeignKey('room.id'), nullable=False)
-    check_in = db.Column(DateTime, nullable=False)
-    check_out = db.Column(DateTime, nullable=False)
-    fees = db.Column(db.Integer, default=50)
-    cancel_date = db.Column(DateTime)
-    refund_type = db.Column(db.Enum(YesNo)) 
-    special_requests = db.Column(db.String(1000))
-    name = db.Column(db.String(150),nullable=False)
-    email = db.Column(db.String(150),nullable=False)
-    phone = db.Column(db.String(15),nullable=False)
-    num_guests = db.Column(db.Integer, default=1)
-    services = db.relationship('Service', backref='booking', lazy=True)
-
-    @classmethod
-    def add_booking(cls, uid, rid, check_in, check_out, fees, special_requests, name, email, phone, num_guests):
-        booking = cls(uid=uid, rid=rid, check_in=check_in, check_out=check_out, fees=fees, special_requests=special_requests, name=name, email=email, phone=phone, num_guests=num_guests)
-        db.session.add(booking)
-        db.session.commit()
-
-    @classmethod
-    def get_current_bookings(cls):
-        today = datetime.now()
-        return cls.query.filter(cls.check_in<=today,cls.check_out>=today, cls.cancel_date.is_(None))
-    
-    @classmethod
-    def get_future_bookings(cls):
-        today = datetime.now()
-        return cls.query.filter(cls.check_in>today, cls.cancel_date.is_(None))
-    
-    @classmethod
-    def get_past_bookings(cls):
-        today = datetime.now()
-        return cls.query.filter(cls.check_out<today, cls.cancel_date.is_(None))
-    
-    @classmethod
-    def get_canceled_bookings(cls):
-        return cls.query.filter(cls.cancel_date.isnot(None))
-    
-    def update_booking(self, special_requests, name, email, phone, num_guests):
-        self.special_requests = special_requests
-        self.name = name
-        self.email = email
-        self.phone = phone
-        self.num_guests=num_guests
-        db.session.commit()
-
-    def cancel_booking(self):
-        today = datetime.now()
-        if (self.check_in - today).days >=2:
-            self.refund_type = YesNo.Y
-        else:
-            self.refund_type = YesNo.N
-        self.cancel_date = today
-        print('Canceled booking')
-        db.session.commit()
-
-    def full_refund(self):
-        today = datetime.now()
-        if (self.check_in - today).days >=2:
-            return True
-        return False
-    
 class FAQ(db.Model):
     __tablename__ = 'faq'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -225,15 +115,15 @@ class FAQ(db.Model):
 class Saved(db.Model):
     __tablename__ = 'saved'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    uid = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    uid = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     rid = db.Column(db.Integer, db.ForeignKey('room.id'), nullable=False) 
-    user = db.relationship('User', backref=db.backref('saved_u', lazy=True))
+    user = db.relationship('Users', backref=db.backref('saved_u', lazy=True))
     room = db.relationship('Room', backref=db.backref('saved_r', lazy=True)) 
 
 class Service(db.Model):
     __tablename__ = 'service'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    bid = db.Column(db.Integer, db.ForeignKey('booking.id'))
+    bid = db.Column(db.Integer, db.ForeignKey('bookings.id'))
     issued = db.Column(DateTime, nullable=False)
     stype = db.Column(db.Enum(SType), nullable=False)
     robes = db.Column(db.Integer)
@@ -268,11 +158,11 @@ class Service(db.Model):
         housedatetime = datetime.combine(today.date(), housetime)
         if housedatetime < today:
             housedatetime = today
-        check_out = Booking.query.get(bid).check_out
-        if housedatetime <= check_out:
-            housekeeping = cls(bid=bid,issued=today,stype=SType.H,housedatetime=housedatetime)
-            db.session.add(housekeeping)
-            db.session.commit()
+        # check_out = Bookings.query.get(bid).check_out
+        # if housedatetime <= check_out:
+        #     housekeeping = cls(bid=bid,issued=today,stype=SType.H,housedatetime=housedatetime)
+        #     db.session.add(housekeeping)
+        #     db.session.commit()
 
     @classmethod
     def add_trash(cls, bid):
@@ -287,18 +177,18 @@ class Service(db.Model):
         calldatetime = datetime.combine(today.date(), calltime)
         if calldatetime < today:
             calldatetime = calldatetime + timedelta(days=1)
-        check_out = Booking.query.get(bid).check_out
-        if calldatetime <= check_out:
-            if recurrent==YesNo.Y:
-                while(calldatetime <= check_out):
-                    call = cls(bid=bid,issued=today,stype=SType.C,calldatetime=calldatetime)
-                    calls.append(call)
-                    calldatetime = calldatetime + timedelta(days=1)
-            else:
-                call = cls(bid=bid,issued=today,stype=SType.C,calldatetime=calldatetime)
-                calls.append(call)
-            db.session.add_all(calls)
-            db.session.commit()
+        # check_out = Bookings.query.get(bid).check_out
+        # if calldatetime <= check_out:
+        #     if recurrent==YesNo.Y:
+        #         while(calldatetime <= check_out):
+        #             call = cls(bid=bid,issued=today,stype=SType.C,calldatetime=calldatetime)
+        #             calls.append(call)
+        #             calldatetime = calldatetime + timedelta(days=1)
+        #     else:
+        #         call = cls(bid=bid,issued=today,stype=SType.C,calldatetime=calldatetime)
+        #         calls.append(call)
+        #     db.session.add_all(calls)
+        #     db.session.commit()
 
     @classmethod
     def add_dining(cls, bid, restaurant):

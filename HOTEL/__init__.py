@@ -9,7 +9,13 @@ from urllib.parse import quote
 import boto3
 from botocore.exceptions import ClientError
 import json
-from .models import db, User, Hotel, Floor, Room, Booking, FAQ, YesNo, Locations, RoomType, Availability, Assistance, Saved, Service
+from .model_objects import User, Booking
+from .model_dbs import Users, Bookings
+
+from .db import db
+#all will evantually become plural here
+from .models import Hotel, Floor, Room, FAQ, YesNo, Locations, RoomType, Availability, Assistance, Saved, Service
+
 from .adding import add_layout
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
@@ -19,6 +25,7 @@ from .response import format_response
 from io import BytesIO
 from .receipt_generator import ReceiptGenerator
 from flask import send_file
+from .routes import bp_profile
 
 app = Flask(__name__,
             static_folder='static',     # Define the static folder (default is 'static')
@@ -27,6 +34,8 @@ app.secret_key = 'GITGOOD_12345'  # This key keeps your session data safe.
 
 rds_secret_name = "rds!db-d319020b-bb3f-4784-807c-6271ab3293b0"
 ses_secret_name = "oceanvista_ses"
+
+app.register_blueprint(bp_profile)
 
 def get_secrets(secret_name):
     client = boto3.client(service_name='secretsmanager', region_name='us-west-1')
@@ -61,7 +70,7 @@ db.init_app(app)
 mail = Mail(app)
 
 
-models = [User, Hotel, Floor, Room, Booking, FAQ, YesNo, Locations, RoomType, Availability, Saved]
+model = [Users, Hotel, Floor, Room, Bookings, FAQ, YesNo, Locations, RoomType, Availability, Saved]
 admin = Admin(app, name="Admin", template_mode="bootstrap4")
 
 
@@ -70,7 +79,7 @@ admin = Admin(app, name="Admin", template_mode="bootstrap4")
 with app.app_context():
     db.create_all()
 
-    admin.add_view(ModelView(User, db.session))
+    # admin.add_view(ModelView(Users, db.session))
 
 # ----- Routes -----
 
@@ -126,7 +135,7 @@ def sign_up():
             return redirect(url_for("sign_up"))
         
         # Check if email already exists
-        existing_user = User.query.filter_by(email=email).first()
+        existing_user = Users.query.filter_by(email=email).first()
         if existing_user:
             flash("Email already registered. Please use a different email or login.", "error")
             return redirect(url_for("sign_up"))
@@ -135,7 +144,7 @@ def sign_up():
         hashed_pw = generate_password_hash(password)
         
         # Create a new user instance
-        new_user = User(name=name, email=email, password=hashed_pw)
+        new_user = Users(name=name, email=email, password=hashed_pw)
         
         try:
             # Save the new user to the database
@@ -161,7 +170,7 @@ def log_in():
         password = request.form.get("password")
         
         # Find user by email
-        user = User.query.filter_by(email=email).first()
+        user = Users.query.filter_by(email=email).first()
         
         # Check if user exists and if the password is correct
         if user and check_password_hash(user.password, password):
@@ -169,7 +178,7 @@ def log_in():
             session["user_id"] = user.id
             session["user_name"] = user.name
             if user.first_login == YesNo.Y:
-                return redirect(url_for('profile'))
+                return redirect(url_for('profile.profile'))
             else:
                 flash("Logged in successfully!", "success")
                 return redirect(url_for("home"))
@@ -186,83 +195,18 @@ def logout():
     flash("You have been logged out.", "info")
     return redirect(url_for("home"))
 
-# Profile route: Only accessible if the user is logged in
-@app.route("/profile",methods=["GET", "POST"])
-def profile():
-    if "user_id" not in session:
-        flash("Please log in first.", "error")
-        return redirect(url_for("log_in"))
-    
-    user = User.query.get(session["user_id"])
-    if user.first_login is YesNo.Y:
-        flash("Please update your profile information!", "action")
-    message = ''
-    status = ''
-    if request.method == "POST":
-        ptype = request.form.get('ptype')
-        if ptype == 'profile':
-            user.name = request.form.get("name")
-            user.phone = request.form.get("phone")
-            user.address_line1 = request.form.get("address")
-            user.address_line2 = request.form.get("address2")
-            user.city = request.form.get("city")
-            user.state = request.form.get("state")
-            user.zipcode = request.form.get("zipcode")
-            user.first_login = YesNo.N
-            message = 'Profile has been updated!'
-            status = 'success'
-        elif ptype=='notifications':
-            tremind = request.form.get('tremind')
-            eremind = request.form.get('eremind')
-            if tremind:
-                user.text_notifications = YesNo.Y
-            else:
-                user.text_notifications = YesNo.N
-            if eremind:
-                user.email_notifications = YesNo.Y
-            else:
-                user.email_notifications = YesNo.N
-            print('update notfi')
-        elif ptype=='password_change':
-            print('change pass')
-            cur_password = request.form.get("cur_pass")
-            if check_password_hash(user.password, cur_password):
-                new_password = request.form.get("new_pass")
-                user.password = generate_password_hash(new_password)
-                message = 'Password has been changed.'
-                status = 'success'
-            else:
-                message = 'Unable to update password.'
-                status = 'error'
-        elif ptype=='account_deletion':
-            db.session.delete(user)
-            session.clear()
-            db.session.commit()
-            return render_template("home.html")
-        try:
-            db.session.commit()
-            flash(message, status)
-        except Exception as e:
-            # Roll back the session if there is an error
-            db.session.rollback()
-            flash(f"An error occurred: {str(e)}. Please try again later.", "error")
-        finally:
-            return redirect(url_for("profile"))
-    # Retrieve the logged-in user's information from the database
-    user = User.query.get(session["user_id"])
-    return render_template("profile.html", user=user, YesNo = YesNo)
 
 @app.route("/bookings", methods=["GET", "POST"])
 def bookings():
     if "user_id" not in session:
         flash("Please log in first.", "error")
         return redirect(url_for("log_in"))
-    user = User.query.get(session["user_id"])
+    user = Users.query.get(session["user_id"])
 
-    current = Booking.get_current_bookings().join(Room).join(Hotel).filter(Booking.uid==user.id).all()
-    future = Booking.get_future_bookings().filter(Booking.uid==user.id).all()
-    past = Booking.get_past_bookings().filter(Booking.uid==user.id).all()
-    canceled = Booking.get_canceled_bookings().filter(Booking.uid==user.id).all()
+    current = Bookings.get_current_bookings().join(Room).join(Hotel).filter(Bookings.uid==user.id).all()
+    future = Bookings.get_future_bookings().filter(Bookings.uid==user.id).all()
+    past = Bookings.get_past_bookings().filter(Bookings.uid==user.id).all()
+    canceled = Bookings.get_canceled_bookings().filter(Bookings.uid==user.id).all()
 
     return render_template('bookings.html', current=current, future=future, past=past, canceled=canceled, YesNo=YesNo)
 
@@ -271,10 +215,10 @@ def request_services(bid):
     if "user_id" not in session:
         flash("Please log in first.", "error")
         return redirect(url_for("log_in"))
-    user = User.query.get(session["user_id"])
+    user = Users.query.get(session["user_id"])
     if request.method == 'POST':
         #making sure user has active bid
-        booking = Booking.get_current_bookings().filter(Booking.id==bid, Booking.uid==user.id).first()
+        booking = Bookings.get_current_bookings().filter(Bookings.id==bid, Bookings.uid==user.id).first()
         if not booking:
             flash("You do not have an active booking for this request.",'error')
             return redirect(url_for('bookings'))
@@ -360,7 +304,7 @@ def search():
             ending = datetime.strptime(str(end), "%B %d, %Y").replace(hour=11,minute=0,second=0) #check out is at 11:00 AM
             if not start: #impossible to have only end (must have at least start) (will never reach this condition)
                 starting = (ending - timedelta(days=1)).replace(hour=15,minute=0,second=0)
-        query = query.filter(not_(db.exists().where(Booking.rid == Room.id).where(Booking.check_in < ending).where(Booking.check_out>starting)))
+        query = query.filter(not_(db.exists().where(Bookings.rid == Room.id).where(Bookings.check_in < ending).where(Bookings.check_out>starting)))
         if stype=='apply_filters':
             room_type = request.args.get('room_type')
             bed_type = request.args.get('bed_type')
@@ -425,7 +369,7 @@ def get_similar_rooms(rid, starting, ending, status): #status refers to if room 
         Room.ocean_view==room.ocean_view, Room.smoking==room.smoking, Room.max_guests==room.max_guests, Room.wheelchair_accessible==room.wheelchair_accessible
     )
     if status=='open':
-        similar_rooms = similar_rooms.filter(not_(db.exists().where(Booking.rid == Room.id).where(Booking.check_in < ending).where(Booking.check_out>starting))).order_by(asc(Room.room_number))
+        similar_rooms = similar_rooms.filter(not_(db.exists().where(Bookings.rid == Room.id).where(Bookings.check_in < ending).where(Bookings.check_out>starting))).order_by(asc(Room.room_number))
     return similar_rooms
 
 def get_similar_quantities(rid, starting, ending, status):
@@ -445,7 +389,7 @@ def reserve():
     if "user_id" not in session:
         flash("Please log in first.", "error")
         return redirect(url_for("log_in"))
-    user = User.query.get(session["user_id"])
+    user = Users.query.get(session["user_id"])
     if request.method=='GET' or request.method=='POST':
         rid = request.args.get('rid')
         location_type = request.args.get('location_type')
@@ -483,8 +427,8 @@ def modify(bid):
     if "user_id" not in session:
         flash("Please log in first.", "error")
         return redirect(url_for("log_in"))
-    user = User.query.get(session["user_id"])
-    booking = Booking.query.get(bid)
+    user = Users.query.get(session["user_id"])
+    booking = Bookings.query.get(bid)
     if not booking:
         flash('Unable to modify booking. Please try again later', 'error')
         return redirect(url_for('bookings'))
@@ -507,8 +451,8 @@ def save(bid): #currently not able to add more rooms by modifying existing booki
     if "user_id" not in session:
         flash("Please log in first.", "error")
         return redirect(url_for("log_in"))
-    user = User.query.get(session["user_id"])
-    b = Booking.query.get(bid)
+    user = Users.query.get(session["user_id"])
+    b = Bookings.query.get(bid)
     if b:
         canceled = request.form.get('canceled', 'false')
         if canceled=='true':
@@ -634,23 +578,23 @@ def add_sample_data():
         print("Sample rooms added")
 
         users = []
-        avni = User(name="avni",email="avni@gmail.com",password=generate_password_hash("avni"))
-        devansh = User(name="devansh",email="devansh@gmail.com",password=generate_password_hash("devansh"))
-        elijah = User(name="elijah",email="elijah@gmail.com",password=generate_password_hash("elijah"))
-        andrew = User(name="andrew",email="andrew@gmail.com",password=generate_password_hash("andrew"))
+        avni = Users(name="avni",email="avni@gmail.com",password=generate_password_hash("avni"))
+        devansh = Users(name="devansh",email="devansh@gmail.com",password=generate_password_hash("devansh"))
+        elijah = Users(name="elijah",email="elijah@gmail.com",password=generate_password_hash("elijah"))
+        andrew = Users(name="andrew",email="andrew@gmail.com",password=generate_password_hash("andrew"))
         users.extend([avni, devansh, elijah, andrew])
         db.session.add_all(users)
         db.session.commit()
 
-        avni_id = User.query.filter_by(email="avni@gmail.com").first().id
+        avni_id = Users.query.filter_by(email="avni@gmail.com").first().id
         malibu_room_1 = Room.query.filter_by(hid=malibu_id).first().id
         sm_room_1 = Room.query.filter_by(hid=sm_id).first().id
-        Booking.add_booking(uid=avni_id, rid=malibu_room_1, check_in=datetime.now(), check_out=datetime.now()+timedelta(5), fees=500, special_requests=None, name=User.get_user(avni_id).name, email=User.get_user(avni_id).email, phone="818", num_guests=1)
-        Booking.add_booking(uid=avni_id, rid=sm_room_1, check_in=datetime.now()+timedelta(5), check_out=datetime.now()+timedelta(days=10),fees=600, special_requests=None, name=User.get_user(avni_id).name, email=User.get_user(avni_id).email, phone="818", num_guests=1)
-        Booking.add_booking(uid=avni_id, rid=malibu_room_1, check_in=datetime.now()-timedelta(2), check_out=datetime.now()-timedelta(days=1), fees=400, special_requests=None, name=User.get_user(avni_id).name, email=User.get_user(avni_id).email, phone="818", num_guests=1)
-        Booking.add_booking(uid=avni_id, rid=sm_room_1, check_in=datetime.now()-timedelta(3), check_out=datetime.now()-timedelta(days=1), fees=300, special_requests=None, name=User.get_user(avni_id).name, email=User.get_user(avni_id).email, phone="818", num_guests=1)
-        Booking.add_booking(uid=avni_id, rid=malibu_room_1, check_in=datetime.now(), check_out=datetime.now()+timedelta(days=1), fees=300, special_requests=None, name=User.get_user(avni_id).name, email=User.get_user(avni_id).email, phone="818", num_guests=1)
-        b = Booking.query.get(1)
+        Bookings.add_booking(uid=avni_id, rid=malibu_room_1, check_in=datetime.now(), check_out=datetime.now()+timedelta(5), fees=500, special_requests=None, name=Users.get_user(avni_id).name, email=Users.get_user(avni_id).email, phone="818", num_guests=1)
+        Bookings.add_booking(uid=avni_id, rid=sm_room_1, check_in=datetime.now()+timedelta(5), check_out=datetime.now()+timedelta(days=10),fees=600, special_requests=None, name=Users.get_user(avni_id).name, email=Users.get_user(avni_id).email, phone="818", num_guests=1)
+        Bookings.add_booking(uid=avni_id, rid=malibu_room_1, check_in=datetime.now()-timedelta(2), check_out=datetime.now()-timedelta(days=1), fees=400, special_requests=None, name=Users.get_user(avni_id).name, email=Users.get_user(avni_id).email, phone="818", num_guests=1)
+        Bookings.add_booking(uid=avni_id, rid=sm_room_1, check_in=datetime.now()-timedelta(3), check_out=datetime.now()-timedelta(days=1), fees=300, special_requests=None, name=Users.get_user(avni_id).name, email=Users.get_user(avni_id).email, phone="818", num_guests=1)
+        Bookings.add_booking(uid=avni_id, rid=malibu_room_1, check_in=datetime.now(), check_out=datetime.now()+timedelta(days=1), fees=300, special_requests=None, name=Users.get_user(avni_id).name, email=Users.get_user(avni_id).email, phone="818", num_guests=1)
+        b = Bookings.query.get(1)
         if b:
             b.cancel_booking()
 
@@ -787,7 +731,7 @@ def process_payment():
         flash("Please log in first.", "error")
         return redirect(url_for("log_in"))
     
-    user = User.query.get(session["user_id"])
+    user = Users.query.get(session["user_id"])
     
     # Extract payment information from the form
     credit_card_number = request.form.get("card-number")
@@ -902,7 +846,7 @@ def view_receipt(booking_id):
         flash("Please log in first.", "error")
         return redirect(url_for("log_in"))
     
-    booking = Booking.query.get(booking_id)
+    booking = Bookings.query.get(booking_id)
     
     if not booking:
         flash("Booking not found.", "error")
@@ -946,7 +890,7 @@ def download_receipt(booking_id):
         flash("Please log in first.", "error")
         return redirect(url_for("log_in"))
     
-    booking = Booking.query.get(booking_id)
+    booking = Bookings.query.get(booking_id)
     
     if not booking:
         flash("Booking not found.", "error")
