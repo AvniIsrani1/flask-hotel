@@ -16,6 +16,8 @@ from .db import db
 #all will evantually become plural here
 from .models import Hotel, Floor, Room, FAQ, YesNo, Locations, RoomType, Availability, Assistance, Saved, Service
 
+from .utility.RoomAvailability import RoomAvailability #will remove this line once payment is moved to routes.py
+
 from .adding import add_layout
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
@@ -25,7 +27,7 @@ from .response import format_response
 from io import BytesIO
 from .receipt_generator import ReceiptGenerator
 from flask import send_file
-from .routes import bp_profile
+from .routes import bp_profile, bp_bookings, bp_reserve
 
 app = Flask(__name__,
             static_folder='static',     # Define the static folder (default is 'static')
@@ -36,6 +38,8 @@ rds_secret_name = "rds!db-d319020b-bb3f-4784-807c-6271ab3293b0"
 ses_secret_name = "oceanvista_ses"
 
 app.register_blueprint(bp_profile)
+app.register_blueprint(bp_bookings)
+app.register_blueprint(bp_reserve)
 
 def get_secrets(secret_name):
     client = boto3.client(service_name='secretsmanager', region_name='us-west-1')
@@ -196,19 +200,6 @@ def logout():
     return redirect(url_for("home"))
 
 
-@app.route("/bookings", methods=["GET", "POST"])
-def bookings():
-    if "user_id" not in session:
-        flash("Please log in first.", "error")
-        return redirect(url_for("log_in"))
-    user = Users.query.get(session["user_id"])
-
-    current = Bookings.get_current_bookings().join(Room).join(Hotel).filter(Bookings.uid==user.id).all()
-    future = Bookings.get_future_bookings().filter(Bookings.uid==user.id).all()
-    past = Bookings.get_past_bookings().filter(Bookings.uid==user.id).all()
-    canceled = Bookings.get_canceled_bookings().filter(Bookings.uid==user.id).all()
-
-    return render_template('bookings.html', current=current, future=future, past=past, canceled=canceled, YesNo=YesNo)
 
 @app.route("/request-services/<int:bid>", methods=["GET","POST"])
 def request_services(bid):
@@ -221,7 +212,7 @@ def request_services(bid):
         booking = Bookings.get_current_bookings().filter(Bookings.id==bid, Bookings.uid==user.id).first()
         if not booking:
             flash("You do not have an active booking for this request.",'error')
-            return redirect(url_for('bookings'))
+            return redirect(url_for('bookings.bookings'))
         robes = int(request.form.get('robes','') or 0)
         btowels = int(request.form.get('btowels','') or 0)
         htowels = int(request.form.get('htowels','') or 0)
@@ -355,95 +346,8 @@ def search():
     return render_template('search.html', locations=locations, roomtypes=roomtypes, rooms=rooms, YesNo = YesNo)
 
 
-def get_start_end_duration(startdate, enddate):
-    starting = datetime.strptime(str(startdate), "%B %d, %Y").replace(hour=15,minute=0,second=0)
-    ending = datetime.strptime(str(enddate), "%B %d, %Y").replace(hour=11,minute=0,second=0)
-    duration = (ending - starting).days + 1
-    return starting, ending, duration
-
-def get_similar_rooms(rid, starting, ending, status): #status refers to if room is available within starting and ending periods
-    query = Room.query.join(Hotel).filter(Room.available==Availability.A)
-    room = query.filter(Room.id==rid).first()
-    similar_rooms = Room.query.join(Hotel).filter(
-        Room.hid==room.hid, Room.room_type==room.room_type, Room.number_beds==room.number_beds, Room.rate==room.rate, Room.balcony==room.balcony, Room.city_view==room.city_view,
-        Room.ocean_view==room.ocean_view, Room.smoking==room.smoking, Room.max_guests==room.max_guests, Room.wheelchair_accessible==room.wheelchair_accessible
-    )
-    if status=='open':
-        similar_rooms = similar_rooms.filter(not_(db.exists().where(Bookings.rid == Room.id).where(Bookings.check_in < ending).where(Bookings.check_out>starting))).order_by(asc(Room.room_number))
-    return similar_rooms
-
-def get_similar_quantities(rid, starting, ending, status):
-    if status=='open':
-        similar_rooms = get_similar_rooms(rid=rid, starting=starting, ending=ending, status='open')
-    else:
-        similar_rooms = get_similar_rooms(rid=rid, starting=starting, ending=ending, status='any')
-    similar_rooms = similar_rooms.group_by(
-        Room.hid, Room.room_type, Room.number_beds, Room.rate, Room.balcony, Room.city_view, Room.ocean_view, 
-        Room.smoking, Room.max_guests, Room.wheelchair_accessible
-    )
-    similar_rooms = similar_rooms.with_entities(Room, Hotel.address, func.count(distinct(Room.id)).label('number_rooms'), func.min(Room.id).label('min_rid'))
-    return similar_rooms
-
-@app.route("/reserve", methods=["GET", "POST"])
-def reserve():
-    if "user_id" not in session:
-        flash("Please log in first.", "error")
-        return redirect(url_for("log_in"))
-    user = Users.query.get(session["user_id"])
-    if request.method=='GET' or request.method=='POST':
-        rid = request.args.get('rid')
-        location_type = request.args.get('location_type')
-        startdate = request.args.get('startdate')
-        enddate = request.args.get('enddate')
-        if not startdate or not enddate:
-            if not rid:
-                flash("Reservation details are missing. Please search for a room again.", "error")
-            else:
-                flash('Please enter both the start and end dates',"error")
-            return redirect(url_for('search'))
-        print(f"Received rid: {rid}, location_type: {location_type}, startdate: {startdate}, enddate: {enddate}") 
-        starting, ending, duration = get_start_end_duration(startdate, enddate)
-        room = get_similar_quantities(rid=rid, starting=starting, ending=ending, status='open').first()
-
-        if not room:
-            flash('Room not found',"error")
-            return redirect(url_for('search'))
-        if request.method=='POST':
-            name=request.form.get('name', user.name)
-            phone=request.form.get('phone', user.phone)
-            email=request.form.get('email', user.email)
-            guests=request.form.get('guests',1)
-            rooms=request.form.get('rooms',1)
-            requests=request.form.get('requests','')
-            return render_template('reserve.html', user=user, room=room, YesNo=YesNo, rid=rid, location_type=location_type, duration=duration, startdate=startdate, enddate=enddate,
-                                   name=name, phone=phone,email=email,guests=guests,rooms=rooms,requests=requests)
-        
-        return render_template('reserve.html', user=user, room=room, YesNo=YesNo, rid=rid, location_type=location_type, duration=duration, startdate=startdate, enddate=enddate)
 
 
-@app.route("/modify/<int:bid>", methods=["GET", "POST"])
-def modify(bid):
-    modifying = True
-    if "user_id" not in session:
-        flash("Please log in first.", "error")
-        return redirect(url_for("log_in"))
-    user = Users.query.get(session["user_id"])
-    booking = Bookings.query.get(bid)
-    if not booking:
-        flash('Unable to modify booking. Please try again later', 'error')
-        return redirect(url_for('bookings'))
-    
-    startdate = booking.check_in.strftime("%B %d, %Y")
-    enddate = booking.check_out.strftime("%B %d, %Y")
-    starting, ending, duration = get_start_end_duration(startdate, enddate)
-    room = get_similar_quantities(rid=booking.rid, starting=starting, ending=ending, status="any").first()
-    print(room)
-    rid = booking.rid
-    rooms = 1 #user is able to modify 1 room at a time
-    location_type = None
-    return render_template('reserve.html', user=user, room=room, YesNo=YesNo, rid=rid, location_type=location_type, duration=duration, startdate=startdate, enddate=enddate,
-                            name=booking.name, phone=booking.phone,email=booking.email,guests=booking.num_guests,rooms=rooms,requests=booking.special_requests, 
-                            modifying=modifying, bid=bid)
 
 
 @app.route("/save/<int:bid>", methods=["GET", "POST"])
@@ -470,7 +374,7 @@ def save(bid): #currently not able to add more rooms by modifying existing booki
             send_email(subject=f'Ocean Vista Booking Updated - {b.id}!',recipients=[user.email], body="Your booking has been updated!",
                        body_template='emails/updated.html',user=user, booking=b, YesNo=YesNo)
             flash('Booking updated!','success')
-    return redirect(url_for('bookings'))
+    return redirect(url_for('bookings.bookings'))
 
 @app.route("/terms")
 def terms():
@@ -708,8 +612,8 @@ def payment():
         phone = request.form.get('phone')
         guests = request.form.get('guests')
 
-        starting, ending, duration = get_start_end_duration(startdate, enddate)
-        similar_rooms = get_similar_rooms(rid=rid,starting=starting,ending=ending,status='open')
+        starting, ending, duration = RoomAvailability.get_start_end_duration(startdate, enddate)
+        similar_rooms = RoomAvailability.get_similar_rooms(rid=rid,starting=starting,ending=ending,status='open')
 
         rooms_to_book = similar_rooms.limit(int(rooms))
         rooms_to_book_count = rooms_to_book.count()
@@ -727,6 +631,7 @@ def payment():
 # Process payment route (form submission handling)
 @app.route("/process-payment", methods=["POST"])
 def process_payment():
+    print("processing payment...")
     if "user_id" not in session:
         flash("Please log in first.", "error")
         return redirect(url_for("log_in"))
@@ -751,8 +656,8 @@ def process_payment():
     guests = request.form.get('guests')
 
     # Find a valid room to book 
-    starting, ending, duration = get_start_end_duration(startdate, enddate)
-    similar_rooms = get_similar_rooms(rid=rid,starting=starting,ending=ending,status='open')
+    starting, ending, duration = RoomAvailability.get_start_end_duration(startdate, enddate)
+    similar_rooms = RoomAvailability.get_similar_rooms(rid=rid,starting=starting,ending=ending,status='open')
     rooms_to_book = similar_rooms.limit(int(rooms))
     rooms_to_book_count = rooms_to_book.count()
     one_room = rooms_to_book.first()
@@ -780,6 +685,7 @@ def process_payment():
 
     if validation_passed:
         # Card is valid, process the payment
+        print("card validation passed...")
         try:
             user_id = session.get("user_id")
             
@@ -798,7 +704,7 @@ def process_payment():
             
             # Create a new booking record
             for room in rooms_to_book:
-                new_booking = Booking(
+                new_booking = Bookings(
                     uid=user_id,
                     rid=room.id,  # Use a valid room ID
                     check_in=check_in_date,
@@ -817,12 +723,13 @@ def process_payment():
                            body_template='emails/booking_created.html',user=user, booking=new_booking, YesNo=YesNo)
             db.session.commit()
 
-            
+            print("Card accepted...")
             flash("YOUR CARD HAS BEEN ACCEPTED", "success")
-            return redirect(url_for("bookings"))
+            return redirect(url_for("bookings.bookings"))
             
         except Exception as e:
             db.session.rollback()
+            print(f"Database error: {str(e)}", "database_error")
             flash(f"Database error: {str(e)}", "database_error")
             return redirect(url_for('search'))
             # return render_template('payment.html', rid=rid, location_type=location_type, startdate=startdate, enddate=enddate,duration=duration,

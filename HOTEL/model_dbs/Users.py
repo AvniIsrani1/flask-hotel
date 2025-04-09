@@ -18,7 +18,7 @@ class Users(db.Model):
     first_login = db.Column(db.Enum(YesNo), nullable=False, default=YesNo.Y) 
     text_notifications = db.Column(db.Enum(YesNo), nullable=False, default=YesNo.N) 
     email_notifications = db.Column(db.Enum(YesNo), nullable=False, default=YesNo.N) 
-    bookings = db.relationship('Bookings', backref='users', lazy=True) #user is keeping track of bookings
+    bookings = db.relationship('Bookings', backref='users', lazy=True, cascade='all, delete-orphan') #user is keeping track of bookings
 
     @classmethod
     def get_user(cls, id):

@@ -138,7 +138,7 @@
 
 {% if modifying %}
 <div id='returned-room' class="returned-room">
-    <a href="{{url_for('bookings')}}" class="submit-room-button">Cancel and Return to Bookings</a>
+    <a href="{{url_for('bookings.bookings')}}" class="submit-room-button">Cancel and Return to Bookings</a>
 </div>
 {% else %}
 <form method="get" action="{{url_for('search')}}" id='returned-room' class="returned-room">
