@@ -91,7 +91,9 @@ def modify(bid):
         flash("Please log in first.", "error")
         return redirect(url_for("log_in"))
     user = Users.query.get(session["user_id"])
-    booking = Bookings.query.get(bid)
+    booking_db = Bookings.query.get(bid)
+    booking = booking_db.create_booking_object()
+
     if not booking:
         flash('Unable to modify booking. Please try again later', 'error')
         return redirect(url_for('bookings'))
@@ -105,8 +107,46 @@ def modify(bid):
     rooms = 1 #user is able to modify 1 room at a time
     location_type = None
     return render_template('reserve.html', user=user, room=room, YesNo=YesNo, rid=rid, location_type=location_type, duration=duration, startdate=startdate, enddate=enddate,
-                            name=booking.name, phone=booking.phone,email=booking.email,guests=booking.num_guests,rooms=rooms,requests=booking.special_requests, 
+                            name=booking_db.name, phone=booking_db.phone,email=booking_db.email,guests=booking_db.num_guests,rooms=rooms,requests=booking_db.special_requests, 
                             modifying=modifying, bid=bid)
+
+@bp_bookings.route("/save/<int:bid>", methods=["GET", "POST"])
+def save(bid): #currently not able to add more rooms by modifying existing booking
+    if "user_id" not in session:
+        flash("Please log in first.", "error")
+        return redirect(url_for("log_in"))
+    user = Users.query.get(session["user_id"])
+    booking_db = Bookings.query.get(bid)
+    booking = booking_db.create_booking_object()
+    message = status = ''
+    if booking:
+        canceled = request.form.get('canceled', 'false')
+        if canceled=='true':
+            booking.cancel()
+            # send_email(subject='Ocean Vista Booking Canceled!',recipients=[user.email], body="Your booking has been canceled!",
+            #            body_template='emails/canceled.html',user=user, booking=b, YesNo=YesNo)
+            message='Booking canceled!'
+            status = 'success'
+        else:
+            booking.update_booking(special_requests=request.form.get('requests'), 
+                             name=request.form.get('name', booking.name), 
+                             email = request.form.get('email', booking.email), 
+                             phone=request.form.get('phone', booking.phone), 
+                             num_guests=request.form.get('guests'))
+            # send_email(subject=f'Ocean Vista Booking Updated - {b.id}!',recipients=[user.email], body="Your booking has been updated!",
+            #            body_template='emails/updated.html',user=user, booking=b, YesNo=YesNo)
+            message='Booking updated!'
+            status='success'
+        try:
+            result = Bookings.update_bookings_db(booking)
+            print(f'Update result: {result}')
+            db.session.commit()
+            print('Successful commit')
+            flash(message, status)
+        except Exception as e:
+            db.session.rollback()
+            flash(f"An error occurred: {str(e)}. Please try again later.", "error")
+    return redirect(url_for('bookings.bookings'))
 
 bp_reserve = Blueprint('reserve',__name__)
 @bp_reserve.route("/reserve", methods=["GET", "POST"])

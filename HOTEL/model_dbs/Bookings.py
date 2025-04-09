@@ -1,4 +1,4 @@
-from sqlalchemy import DateTime, distinct, Computed
+from sqlalchemy import DateTime, distinct, Computed, asc, desc
 from datetime import datetime
 from ..model_objects import Booking, User
 from .Enums import YesNo
@@ -29,6 +29,20 @@ class Bookings(db.Model):
         )
 
     @classmethod
+    def update_bookings_db(cls, booking):
+        model=cls.query.get(booking.id)
+        if model:
+            model.cancel_date = booking.cancel_date
+            model.refund_type = YesNo.Y if booking.refund_type else YesNo.N
+            model.special_requests = booking.special_requests
+            model.name = booking.name
+            model.email = booking.email
+            model.phone = booking.phone
+            model.num_guests = booking.num_guests
+            return True
+        return False
+
+    @classmethod
     def add_booking(cls, uid, rid, check_in, check_out, fees, special_requests, name, email, phone, num_guests):
         booking = cls(uid=uid, rid=rid, check_in=check_in, check_out=check_out, fees=fees, special_requests=special_requests, name=name, email=email, phone=phone, num_guests=num_guests)
         db.session.add(booking)
@@ -37,43 +51,21 @@ class Bookings(db.Model):
     @classmethod
     def get_current_bookings(cls):
         today = datetime.now()
-        return cls.query.filter(cls.check_in<=today,cls.check_out>=today, cls.cancel_date.is_(None))
+        return cls.query.filter(cls.check_in<=today,cls.check_out>=today, cls.cancel_date.is_(None)).order_by(asc(cls.check_in), asc(cls.check_out))
     
     @classmethod
     def get_future_bookings(cls):
         today = datetime.now()
-        return cls.query.filter(cls.check_in>today, cls.cancel_date.is_(None))
+        return cls.query.filter(cls.check_in>today, cls.cancel_date.is_(None)).order_by(asc(cls.check_in), asc(cls.check_out))
     
     @classmethod
     def get_past_bookings(cls):
         today = datetime.now()
-        return cls.query.filter(cls.check_out<today, cls.cancel_date.is_(None))
+        return cls.query.filter(cls.check_out<today, cls.cancel_date.is_(None)).order_by(asc(cls.check_in), asc(cls.check_out))
     
     @classmethod
     def get_canceled_bookings(cls):
-        return cls.query.filter(cls.cancel_date.isnot(None))
+        return cls.query.filter(cls.cancel_date.isnot(None)).order_by(desc(cls.check_in), asc(cls.check_out))
     
-    def update_booking(self, special_requests, name, email, phone, num_guests):
-        self.special_requests = special_requests
-        self.name = name
-        self.email = email
-        self.phone = phone
-        self.num_guests=num_guests
-        db.session.commit()
 
-    def cancel_booking(self):
-        today = datetime.now()
-        if (self.check_in - today).days >=2:
-            self.refund_type = YesNo.Y
-        else:
-            self.refund_type = YesNo.N
-        self.cancel_date = today
-        print('Canceled booking')
-        db.session.commit()
-
-    def full_refund(self):
-        today = datetime.now()
-        if (self.check_in - today).days >=2:
-            return True
-        return False
     

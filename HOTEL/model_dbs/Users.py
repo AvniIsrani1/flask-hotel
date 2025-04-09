@@ -57,3 +57,5 @@ class Users(db.Model):
             # model.bookings = user.bookings #not correct for bookings
             return True
         return False
+    
+    

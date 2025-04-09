@@ -27,3 +27,7 @@ class Assistance(PyEnum):
     B = 'transportation'
     R = 'maintenance'
     A = 'accessibility'
+class Status(PyEnum):
+    N = 'Not Started'
+    I = 'In-Progress'
+    C = 'Complete'

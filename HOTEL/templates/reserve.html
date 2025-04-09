@@ -28,7 +28,7 @@
 </div>
 
 <div class="all-sections">
- <form method='post' action="{% if modifying %}{{url_for('save',bid=bid)}} {% else %} {{url_for('payment')}} {% endif %}" id="reservation-details">
+ <form method='post' action="{% if modifying %}{{url_for('bookings.save',bid=bid)}} {% else %} {{url_for('payment')}} {% endif %}" id="reservation-details">
     <input type="hidden" name="rid" value="{{rid}}">
     <input type="hidden" name="location_type" value="{{location_type}}">
     <input type="hidden" name="startdate" value="{{startdate}}">

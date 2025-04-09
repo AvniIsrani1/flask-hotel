@@ -9,8 +9,8 @@ from urllib.parse import quote
 import boto3
 from botocore.exceptions import ClientError
 import json
-from .model_objects import User, Booking
-from .model_dbs import Users, Bookings
+from .model_objects import User, Booking, Service
+from .model_dbs import Users, Bookings, Services
 
 from .db import db
 #all will evantually become plural here
@@ -350,31 +350,6 @@ def search():
 
 
 
-@app.route("/save/<int:bid>", methods=["GET", "POST"])
-def save(bid): #currently not able to add more rooms by modifying existing booking
-    if "user_id" not in session:
-        flash("Please log in first.", "error")
-        return redirect(url_for("log_in"))
-    user = Users.query.get(session["user_id"])
-    b = Bookings.query.get(bid)
-    if b:
-        canceled = request.form.get('canceled', 'false')
-        if canceled=='true':
-            b.cancel_booking()
-            send_email(subject='Ocean Vista Booking Canceled!',recipients=[user.email], body="Your booking has been canceled!",
-            body_template='emails/canceled.html',user=user, booking=b, YesNo=YesNo)
-            flash('Booking canceled!','success')
-        else:
-            requests = request.form.get('requests', b.special_requests)
-            name = request.form.get('name', b.name)
-            email = request.form.get('email', b.email)
-            phone = request.form.get('phone', b.phone)
-            guests = request.form.get('guests', b.num_guests)
-            b.update_booking(special_requests=requests, name=name, email=email, phone=phone, num_guests=guests)
-            send_email(subject=f'Ocean Vista Booking Updated - {b.id}!',recipients=[user.email], body="Your booking has been updated!",
-                       body_template='emails/updated.html',user=user, booking=b, YesNo=YesNo)
-            flash('Booking updated!','success')
-    return redirect(url_for('bookings.bookings'))
 
 @app.route("/terms")
 def terms():

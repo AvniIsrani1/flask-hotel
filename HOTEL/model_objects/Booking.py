@@ -36,3 +36,4 @@ class Booking:
         self.refund_type = self.full_refund()
         self.cancel_date = today
         
+    
