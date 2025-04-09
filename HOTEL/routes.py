@@ -1,8 +1,10 @@
 from flask import Flask, Blueprint, jsonify, render_template, request, redirect, url_for, session, flash, get_flashed_messages
 from .db import db
-from .model_dbs import Users, Bookings, YesNo
+from .model_dbs import Users, Bookings, Services, YesNo, Assistance
+from .model_objects import Service
 from .models import Room, Hotel
 from .utility.RoomAvailability import RoomAvailability
+from datetime import datetime
 
 bp_profile = Blueprint('profile',__name__)
 @bp_profile.route("/profile",methods=["GET", "POST"])
@@ -77,8 +79,10 @@ def bookings():
         return redirect(url_for("log_in"))
     user = Users.query.get(session["user_id"])
 
-    current = Bookings.get_current_bookings().join(Room).join(Hotel).filter(Bookings.uid==user.id).all()
+    current = Bookings.get_current_bookings().filter(Bookings.uid==user.id).all()
+    print(current)
     future = Bookings.get_future_bookings().filter(Bookings.uid==user.id).all()
+    print(future)
     past = Bookings.get_past_bookings().filter(Bookings.uid==user.id).all()
     canceled = Bookings.get_canceled_bookings().filter(Bookings.uid==user.id).all()
 
@@ -96,7 +100,7 @@ def modify(bid):
 
     if not booking:
         flash('Unable to modify booking. Please try again later', 'error')
-        return redirect(url_for('bookings'))
+        return redirect(url_for('bookings.bookings'))
     
     startdate = booking.check_in.strftime("%B %d, %Y")
     enddate = booking.check_out.strftime("%B %d, %Y")
@@ -185,3 +189,75 @@ def reserve():
         
         return render_template('reserve.html', user=user, room=room, YesNo=YesNo, rid=rid, location_type=location_type, duration=duration, startdate=startdate, enddate=enddate)
 
+bp_request_services = Blueprint('request_services',__name__)
+@bp_request_services.route("/request-services/<int:bid>", methods=["GET","POST"])
+def request_services(bid):
+    if "user_id" not in session:
+        flash("Please log in first.", "error")
+        return redirect(url_for("log_in"))
+    user = Users.query.get(session["user_id"])
+    if request.method == 'POST':
+        #making sure user has active bid
+        booking = Bookings.get_current_user_bookings(uid=user.id).filter(Bookings.id==bid).first()
+        if not booking:
+            flash("You do not have an active booking for this request.",'error')
+            return redirect(url_for('bookings.bookings'))
+        robes = int(request.form.get('robes','') or 0)
+        btowels = int(request.form.get('btowels','') or 0)
+        htowels = int(request.form.get('htowels','') or 0)
+        soap = int(request.form.get('soap','') or 0)
+        shampoo = int(request.form.get('shampoo','') or 0)
+        conditioner = int(request.form.get('conditioner','') or 0)
+        wash = int(request.form.get('wash','') or 0)
+        lotion = int(request.form.get('lotion','') or 0)
+        hdryer = int(request.form.get('hdryer','') or 0)
+        pillows = int(request.form.get('pillows','') or 0)
+        blankets = int(request.form.get('blankets','') or 0)
+        sheets = int(request.form.get('sheets','') or 0)
+        print(robes,btowels,htowels,soap,shampoo,conditioner,wash,lotion,hdryer,pillows,blankets,sheets)
+        service_objects = []
+        if robes or btowels or htowels or soap or shampoo or conditioner or wash or lotion or hdryer or pillows or blankets or sheets:
+            service_objects.append(Service.add_item(bid=bid,robes=robes,btowels=btowels,htowels=htowels,soap=soap,shampoo=shampoo,
+                                                    conditioner=conditioner,wash=wash,lotion=lotion,hdryer=hdryer,pillows=pillows,
+                                                    blankets=blankets,sheets=sheets))
+        housetime = request.form.get('housetime')
+        if housetime:
+            print('before',housetime)
+            housetime = datetime.strptime(housetime,"%H:%M").time()
+            print('after',housetime)
+            service_objects.append(Service.add_housekeeping(bid=bid,housetime=housetime,validate_check_out=booking.check_out))
+        trash = request.form.get('trash')
+        if trash:
+            service_objects.append(Service.add_trash(bid=bid))
+        calltime = request.form.get('calltime')
+        recurrent = request.form.get('recurrent')
+        if calltime:
+            print('before',calltime)
+            calltime = datetime.strptime(calltime, "%H:%M").time()
+            print('after',calltime)
+            if recurrent:
+                service_objects.extend(Service.add_call(bid=bid,calltime=calltime,recurrent=True,validate_check_out=booking.check_out))
+            else:
+                service_objects.extend(Service.add_call(bid=bid,calltime=calltime,recurrent=False,validate_check_out=booking.check_out))
+        # restaurant = request.form.get('restaurant')
+        # if restaurant:
+        #     service_objects.append(Service.add_re(bid=bid,housetime=housetime,validate_check_out=booking.check_out))
+        assistance = request.form.get('assistance')
+        if assistance:
+            assistance = Assistance(assistance)
+            service_objects.append(Service.add_assistance(bid=bid,assistance=assistance))
+        other = request.form.get('other')
+        if other:
+            service_objects.append(Service.add_other(bid=bid,other=other))
+        try:
+            results=Services.create_services_db(service_objects)
+            print(f'Update result: {results}')
+            db.session.add_all(results)
+            db.session.commit()
+            print('Successful commit')
+            flash('Your request has been receieved. We will do our best to meet your needs as quickly as possible. Thank you!', 'success')
+        except Exception as e:
+            db.session.rollback()
+            flash(f"An error occurred: {str(e)}. Please try again later.", "error")
+        return redirect(url_for('bookings.bookings'))
+    return render_template('request_services.html')

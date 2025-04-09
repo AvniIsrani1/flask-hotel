@@ -70,9 +70,9 @@
                             </div>
                         </div>
                         <div class="links ptop">
-                            <a href="{{url_for('bookings.modify',bid=f.id )}}">Modify Booking</a>
+                            <a href="{{url_for('bookings.modify',bid=c.id )}}">Modify Booking</a>
                             <a href="{{url_for('view_receipt', booking_id=c.id)}}">View Receipt</a>
-                            <a href="{{url_for('request_services', bid=c.id)}}">Request Services</a>
+                            <a href="{{url_for('request_services.request_services', bid=c.id)}}">Request Services</a>
                             <a href="">View our Dining Menu</a>
                             <a href="">Speak to a representative</a>
                         </div>

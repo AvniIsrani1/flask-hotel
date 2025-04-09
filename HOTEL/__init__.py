@@ -27,7 +27,7 @@ from .response import format_response
 from io import BytesIO
 from .receipt_generator import ReceiptGenerator
 from flask import send_file
-from .routes import bp_profile, bp_bookings, bp_reserve
+from .routes import bp_profile, bp_bookings, bp_reserve, bp_request_services
 
 app = Flask(__name__,
             static_folder='static',     # Define the static folder (default is 'static')
@@ -40,6 +40,7 @@ ses_secret_name = "oceanvista_ses"
 app.register_blueprint(bp_profile)
 app.register_blueprint(bp_bookings)
 app.register_blueprint(bp_reserve)
+app.register_blueprint(bp_request_services)
 
 def get_secrets(secret_name):
     client = boto3.client(service_name='secretsmanager', region_name='us-west-1')
@@ -200,70 +201,9 @@ def logout():
     return redirect(url_for("home"))
 
 
-
-@app.route("/request-services/<int:bid>", methods=["GET","POST"])
-def request_services(bid):
-    if "user_id" not in session:
-        flash("Please log in first.", "error")
-        return redirect(url_for("log_in"))
-    user = Users.query.get(session["user_id"])
-    if request.method == 'POST':
-        #making sure user has active bid
-        booking = Bookings.get_current_bookings().filter(Bookings.id==bid, Bookings.uid==user.id).first()
-        if not booking:
-            flash("You do not have an active booking for this request.",'error')
-            return redirect(url_for('bookings.bookings'))
-        robes = int(request.form.get('robes','') or 0)
-        btowels = int(request.form.get('btowels','') or 0)
-        htowels = int(request.form.get('htowels','') or 0)
-        soap = int(request.form.get('soap','') or 0)
-        shampoo = int(request.form.get('shampoo','') or 0)
-        conditioner = int(request.form.get('conditioner','') or 0)
-        wash = int(request.form.get('wash','') or 0)
-        lotion = int(request.form.get('lotion','') or 0)
-        hdryer = int(request.form.get('hdryer','') or 0)
-        pillows = int(request.form.get('pillows','') or 0)
-        blankets = int(request.form.get('blankets','') or 0)
-        sheets = int(request.form.get('sheets','') or 0)
-        print(robes,btowels,htowels,soap,shampoo,conditioner,wash,lotion,hdryer,pillows,blankets,sheets)
-        if robes or btowels or htowels or soap or shampoo or conditioner or wash or lotion or hdryer or pillows or blankets or sheets:
-            Service.add_item(bid=bid,robes=robes,btowels=btowels,htowels=htowels,soap=soap,shampoo=shampoo,conditioner=conditioner,wash=wash,lotion=lotion,hdryer=hdryer,pillows=pillows,blankets=blankets,sheets=sheets)
-        housetime = request.form.get('housetime')
-        if housetime:
-            print('before',housetime)
-            housetime = datetime.strptime(housetime,"%H:%M").time()
-            print('after',housetime)
-            Service.add_housekeeping(bid=bid,housetime=housetime)
-        trash = request.form.get('trash')
-        if trash:
-            Service.add_trash(bid=bid)
-        calltime = request.form.get('calltime')
-        recurrent = request.form.get('recurrent')
-        if calltime:
-            print('before',calltime)
-            calltime = datetime.strptime(calltime, "%H:%M").time()
-            print('after',calltime)
-            if recurrent:
-                Service.add_call(bid=bid,calltime=calltime,recurrent=YesNo.Y)
-            else:
-                Service.add_call(bid=bid,calltime=calltime,recurrent=YesNo.N)
-        restaurant = request.form.get('restaurant')
-        if restaurant:
-            Service.add_dining(bid=bid,restaurant=restaurant)
-        assistance = request.form.get('assistance')
-        if assistance:
-            assistance = Assistance(assistance)
-            Service.add_assistance(bid=bid,assistance=assistance)
-        other = request.form.get('other')
-        if other:
-            Service.add_other(bid=bid,other=other)
-        return render_template("success.html")
-    return render_template('request_services.html')
-
 @app.route("/success")
 def success():
     return render_template('success.html')
-
 
 
 @app.route("/search", methods=["GET", "POST"])
@@ -468,14 +408,16 @@ def add_sample_data():
         avni_id = Users.query.filter_by(email="avni@gmail.com").first().id
         malibu_room_1 = Room.query.filter_by(hid=malibu_id).first().id
         sm_room_1 = Room.query.filter_by(hid=sm_id).first().id
-        Bookings.add_booking(uid=avni_id, rid=malibu_room_1, check_in=datetime.now(), check_out=datetime.now()+timedelta(5), fees=500, special_requests=None, name=Users.get_user(avni_id).name, email=Users.get_user(avni_id).email, phone="818", num_guests=1)
-        Bookings.add_booking(uid=avni_id, rid=sm_room_1, check_in=datetime.now()+timedelta(5), check_out=datetime.now()+timedelta(days=10),fees=600, special_requests=None, name=Users.get_user(avni_id).name, email=Users.get_user(avni_id).email, phone="818", num_guests=1)
-        Bookings.add_booking(uid=avni_id, rid=malibu_room_1, check_in=datetime.now()-timedelta(2), check_out=datetime.now()-timedelta(days=1), fees=400, special_requests=None, name=Users.get_user(avni_id).name, email=Users.get_user(avni_id).email, phone="818", num_guests=1)
-        Bookings.add_booking(uid=avni_id, rid=sm_room_1, check_in=datetime.now()-timedelta(3), check_out=datetime.now()-timedelta(days=1), fees=300, special_requests=None, name=Users.get_user(avni_id).name, email=Users.get_user(avni_id).email, phone="818", num_guests=1)
-        Bookings.add_booking(uid=avni_id, rid=malibu_room_1, check_in=datetime.now(), check_out=datetime.now()+timedelta(days=1), fees=300, special_requests=None, name=Users.get_user(avni_id).name, email=Users.get_user(avni_id).email, phone="818", num_guests=1)
-        b = Bookings.query.get(1)
-        if b:
-            b.cancel_booking()
+        sample_bookings = []
+        sample_bookings.append(Booking(uid=avni_id, rid=malibu_room_1, check_in=datetime.now(), check_out=datetime.now()+timedelta(5), fees=500, name="avni", email="avni@gmail.com", phone="123"))
+        sample_bookings.append(Booking(uid=avni_id, rid=sm_room_1, check_in=datetime.now()+timedelta(5), check_out=datetime.now()+timedelta(days=10), fees=600, name="avni", email="avni@gmail.com", phone="123"))
+        sample_bookings.append(Booking(uid=avni_id, rid=malibu_room_1, check_in=datetime.now()-timedelta(2), check_out=datetime.now()-timedelta(days=1), fees=600, name="avni", email="avni@gmail.com", phone="123"))
+        sample_bookings.append(Booking(uid=avni_id, rid=sm_room_1, check_in=datetime.now()-timedelta(3), check_out=datetime.now()-timedelta(days=1), fees=600, name="avni", email="avni@gmail.com", phone="123"))
+        sample_bookings.append(Booking(uid=avni_id, rid=malibu_room_1, check_in=datetime.now()-timedelta(1), check_out=datetime.now()+timedelta(days=1), fees=600, name="avni", email="avni@gmail.com", phone="123"))
+        sample_bookings[0].cancel()
+        results = Bookings.create_bookings_db(sample_bookings)
+        db.session.add_all(results)
+        db.session.commit()
 
 def add_sample_faq():
     faqs = [

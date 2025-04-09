@@ -2,7 +2,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 class User:
 
-    def __init__(self, id, name, email, password, phone=None, address_line1=None, address_line2=None, city=None, state=None, zipcode=None, 
+    def __init__(self, name, email, password, id=None, phone=None, address_line1=None, address_line2=None, city=None, state=None, zipcode=None, 
                  rewards=None, first_login=True, text_notifications=False, email_notifications=False, bookings=None):
         self.id = id
         self.name = name
@@ -41,8 +41,9 @@ class User:
     def change_password(self, new_password):
         self.password = generate_password_hash(new_password)
 
-    def add_booking(self, booking):
-        self.bookings.append(booking)
+    # def add_booking(self, booking):
+    #     self.bookings.append(booking)
     
-    def cancel_booking(self, booking): #booking is a Booking object
-        self.bookings.remove(booking)
+    # def cancel_booking(self, booking): #booking is a Booking object
+    #     self.bookings.remove(booking)
+

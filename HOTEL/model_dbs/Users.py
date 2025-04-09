@@ -19,7 +19,7 @@ class Users(db.Model):
     text_notifications = db.Column(db.Enum(YesNo), nullable=False, default=YesNo.N) 
     email_notifications = db.Column(db.Enum(YesNo), nullable=False, default=YesNo.N) 
     bookings = db.relationship('Bookings', backref='users', lazy=True, cascade='all, delete-orphan') #user is keeping track of bookings
-
+    
     @classmethod
     def get_user(cls, id):
         return cls.query.filter(cls.id==id).first()
@@ -58,4 +58,15 @@ class Users(db.Model):
             return True
         return False
     
+    @classmethod
+    def create_user_db(cls, user): #create a SINGLE user at a time
+        return cls(
+            name=user.name,email=user.email,password=user.password,phone=user.phone,
+            address_line1=user.address_line1,address_line2=user.address_line2,city=user.city,
+            state=user.state,zipcode=user.zipcode,rewards=user.rewards,
+            first_login=YesNo.Y if user.first_login else YesNo.N,
+            text_notifications=YesNo.Y if user.text_notifications else YesNo.N,
+            email_notifications=YesNo.Y if user.email_notifications else YesNo.N
+        )
+
     

@@ -7,7 +7,7 @@ from ..db import db
 
 class Bookings(db.Model):
     __tablename__ = 'bookings'
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    id = db.Column(db.Integer, primary_key=True) 
     uid = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     rid = db.Column(db.Integer, db.ForeignKey('room.id'), nullable=False)
     check_in = db.Column(DateTime, nullable=False)
@@ -20,13 +20,31 @@ class Bookings(db.Model):
     email = db.Column(db.String(150),nullable=False)
     phone = db.Column(db.String(15),nullable=False)
     num_guests = db.Column(db.Integer, default=1)
+    services = db.relationship('Services', backref='users', lazy=True, cascade='all, delete-orphan')
+
 
     def create_booking_object(self):
-        return Booking(id=self.id, uid=self.uid, rid=self.rid, check_in=self.check_in,
+        return Booking(id=self.id,uid=self.uid, rid=self.rid, check_in=self.check_in,
                        check_out=self.check_out, fees=self.fees, cancel_date=self.cancel_date,
                        refund_type=self.refund_type,special_requests=self.special_requests,name=self.name,
                        email=self.email,phone=self.phone,num_guests=self.num_guests
         )
+    
+    @classmethod
+    def create_bookings_db(cls, bookings):
+        booking_rows = []
+        for booking in bookings:
+            booking_rows.append(
+                cls(
+                    uid=booking.uid,rid=booking.rid,check_in=booking.check_in,check_out=booking.check_out,fees=booking.fees,
+                    cancel_date=booking.cancel_date,
+                    refund_type=YesNo.Y if booking.refund_type else YesNo.N,
+                    special_requests=booking.special_requests,
+                    name=booking.name,email=booking.email,phone=booking.phone,num_guests=booking.num_guests
+                )
+            )
+        return booking_rows
+
 
     @classmethod
     def update_bookings_db(cls, booking):
@@ -52,7 +70,13 @@ class Bookings(db.Model):
     def get_current_bookings(cls):
         today = datetime.now()
         return cls.query.filter(cls.check_in<=today,cls.check_out>=today, cls.cancel_date.is_(None)).order_by(asc(cls.check_in), asc(cls.check_out))
-    
+
+    @classmethod
+    def get_current_user_bookings(cls,uid):
+        today = datetime.now()
+        return cls.query.filter(cls.uid==uid, cls.check_in<=today,cls.check_out>=today, cls.cancel_date.is_(None)).order_by(asc(cls.check_in), asc(cls.check_out))
+
+
     @classmethod
     def get_future_bookings(cls):
         today = datetime.now()

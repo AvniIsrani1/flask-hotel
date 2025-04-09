@@ -2,8 +2,8 @@ from datetime import datetime, timedelta
 
 
 class Booking:
-    def __init__(self, id, uid, rid, check_in, check_out, fees, name, email, phone, num_guests=1, cancel_date=None, refund_type=None, special_requests=None, services=None):
-        self.id = id 
+    def __init__(self, uid, rid, check_in, check_out, fees, name, email, phone, id=None,num_guests=1, cancel_date=None, refund_type=None, special_requests=None, services=None):
+        self.id=id
         self.uid = uid
         self.rid = rid 
         self.check_in = check_in 
