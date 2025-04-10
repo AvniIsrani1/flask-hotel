@@ -20,4 +20,3 @@ class Ro:
         self.max_guests = max_guests
         self.wheelchair_accessible = wheelchair_accessible
         self.bookings = []
-    

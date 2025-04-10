@@ -11,4 +11,3 @@ class Ho:
         self.golf = golf
         self.floors = []
         self.rooms = []
-    

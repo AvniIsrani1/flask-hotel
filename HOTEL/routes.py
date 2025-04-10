@@ -123,6 +123,7 @@ def modify(bid):
 
 @bp_bookings.route("/save/<int:bid>", methods=["GET", "POST"])
 def save(bid): #currently not able to add more rooms by modifying existing booking
+    from . import email_controller
     if "user_id" not in session:
         flash("Please log in first.", "error")
         return redirect(url_for("log_in"))
@@ -134,8 +135,7 @@ def save(bid): #currently not able to add more rooms by modifying existing booki
         canceled = request.form.get('canceled', 'false')
         if canceled=='true':
             booking.cancel()
-            # send_email(subject='Ocean Vista Booking Canceled!',recipients=[user.email], body="Your booking has been canceled!",
-            #            body_template='emails/canceled.html',user=user, booking=b, YesNo=YesNo)
+            email_controller.send_booking_canceled(user=user,booking=booking,YesNo=YesNo)
             message='Booking canceled!'
             status = 'success'
         else:
@@ -144,8 +144,7 @@ def save(bid): #currently not able to add more rooms by modifying existing booki
                              email = request.form.get('email', booking.email), 
                              phone=request.form.get('phone', booking.phone), 
                              num_guests=request.form.get('guests'))
-            # send_email(subject=f'Ocean Vista Booking Updated - {b.id}!',recipients=[user.email], body="Your booking has been updated!",
-            #            body_template='emails/updated.html',user=user, booking=b, YesNo=YesNo)
+            email_controller.send_booking_updated(user=user,booking=booking,YesNo=YesNo)
             message='Booking updated!'
             status='success'
         try:

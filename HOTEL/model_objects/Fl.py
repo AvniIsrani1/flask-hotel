@@ -4,4 +4,3 @@ class Fl:
         self.hotel = hotel
         self.floor_number = floor_number
         self.rooms = []
-    

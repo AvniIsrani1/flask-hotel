@@ -12,9 +12,12 @@
     
     <p>Your reservation at <span style="font-weight:bold;">Ocean Vista</span> has been successfully created!</p>
     <p>Here are your reservation details: </p>
+    <p>Number of Rooms Booked: {{bookings | length}}</p>
 
     <p style="font-weight:bold;">Room Information: </p>
-    <ul>
+    {% for booking in bookings %}
+    <p style="padding-left:50px;">Room #{{loop.index}}</p>
+    <ul style="padding-left:100px;">
         <li><span style="text-decoration:underline;">Room Description</span>: 
             {{booking.room.number_beds}}-Bedroom {{booking.room.room_type.value}}
                 {% if booking.room.wheelchair_accessible==YesNo.Y %}
@@ -38,6 +41,7 @@
         <li><span style="text-decoration:underline;">Check-Out Date</span>: {{booking.check_out.strftime('%B %d, %Y')}} </li>
         <li><span style="text-decoration:underline;">Special Requests</span>: {{booking.special_requests or 'N/A'}}</li>
     </ul>
+    {% endfor %}
     <p style="font-weight:bold;">Guest Information:</p>
     <ul>
         <li><span style="text-decoration:underline;">Guest Name</span>: {{booking.name}}</li>

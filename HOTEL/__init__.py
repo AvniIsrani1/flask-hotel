@@ -11,7 +11,7 @@ from botocore.exceptions import ClientError
 import json
 from .model_objects import User, Booking, Service
 from .model_dbs import Users, Bookings, Services, Hotel, Floor, Room, YesNo, Locations, RoomType, Availability, Assistance
-
+from .model_general import EmailController
 from .db import db
 #all will evantually become plural here
 from .models import FAQ, Saved
@@ -26,8 +26,8 @@ from .response import format_response
 from io import BytesIO
 from .receipt_generator import ReceiptGenerator
 from flask import send_file
-from .routes import bp_profile, bp_bookings, bp_reserve, bp_request_services, bp_search
-
+# from .routes import bp_profile, bp_bookings, bp_reserve, bp_request_services, bp_search
+from .blueprints import register_blueprints
 app = Flask(__name__,
             static_folder='static',     # Define the static folder (default is 'static')
             template_folder='templates')
@@ -36,11 +36,12 @@ app.secret_key = 'GITGOOD_12345'  # This key keeps your session data safe.
 rds_secret_name = "rds!db-d319020b-bb3f-4784-807c-6271ab3293b0"
 ses_secret_name = "oceanvista_ses"
 
-app.register_blueprint(bp_profile)
-app.register_blueprint(bp_bookings)
-app.register_blueprint(bp_reserve)
-app.register_blueprint(bp_request_services)
-app.register_blueprint(bp_search)
+# app.register_blueprint(bp_profile)
+# app.register_blueprint(bp_bookings)
+# app.register_blueprint(bp_reserve)
+# app.register_blueprint(bp_request_services)
+# app.register_blueprint(bp_search)
+register_blueprints(app)
 
 def get_secrets(secret_name):
     client = boto3.client(service_name='secretsmanager', region_name='us-west-1')
@@ -73,6 +74,7 @@ ai_db = setup_csv_retrieval()
 
 db.init_app(app)
 mail = Mail(app)
+email_controller = EmailController(mail)
 
 
 model = [Users, Hotel, Floor, Room, Bookings, FAQ, YesNo, Locations, RoomType, Availability, Saved]
@@ -88,35 +90,7 @@ with app.app_context():
 
 # ----- Routes -----
 
-def send_email(subject, recipients, body, body_template, user=None, booking=None, YesNo=YesNo, attachment=None, attachment_type=None):
-    msg = Message(subject,
-                  recipients=['ocean.vista.hotels@gmail.com'], #we are in sandbox mode right now (can only send to verified emails) (need to create a dns record first to move to prod mode)
-                  body=body)
-    try:
-        formatting = render_template(body_template, user=user, booking=booking, YesNo=YesNo)
-        msg.html = formatting
-    except Exception as e:
-        print(f"Unable to format email: {e}")
-    if attachment:
-        with open(attachment, 'rb') as f:
-            content = f.read()
-            name = attachment.split('/')[-1]
-            if attachment_type=='pdf':
-                ft = 'application/pdf'
-            elif attachment_type=='png':
-                ft = 'image/png'
-            elif attachment_type=='jpg':
-                ft = 'image/jpeg'
-            else:
-                ft = 'application/octet-stream'
-            msg.attach(name,ft,content)
-    try:
-        mail.send(msg)
-        print("Message sent successfully")
-    except Exception as e:
-        print(f"Not able to send message:{e}")
-    
-    return 'Email sent!'
+
 
 # Home page route
 @app.route("/")
@@ -156,8 +130,7 @@ def sign_up():
             db.session.add(new_user)
             db.session.commit()
             flash("Account created successfully! Please log in.", "success")
-            send_email(subject='Welcome to Ocean Vista',recipients=[new_user.email], body="Thank you for creating your Ocean Vista account!",
-                       body_template='emails/account_created.html',user=new_user, YesNo=YesNo)
+            email_controller.send_welcome_email(user=new_user)
             return redirect(url_for("log_in"))
         except Exception as e:
             # Roll back the session if there is an error
@@ -547,7 +520,7 @@ def process_payment():
                 new_bookings.append(
                     Booking(
                         uid=user_id,
-                        rid=room.id,  # Use a valid room ID
+                        rid=room.id, 
                         check_in=check_in_date,
                         check_out=check_out_date,
                         fees=Room.get_room(id==room.id).rate, #might need to update fees
@@ -566,7 +539,9 @@ def process_payment():
             new_booking_rows = Bookings.create_bookings_db(new_bookings)
             db.session.add_all(new_booking_rows)
             db.session.commit()
-
+            print("sending email...")
+            email_controller.send_booking_created(user=user,bookings=new_bookings,YesNo=YesNo)
+            print("Done sending email")
             print("Card accepted...")
             flash("YOUR CARD HAS BEEN ACCEPTED", "success")
             return redirect(url_for("bookings.bookings"))

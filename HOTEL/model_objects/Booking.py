@@ -36,13 +36,3 @@ class Booking:
         self.refund_type = self.full_refund()
         self.cancel_date = today
         
-    
-    def to_dict(self):
-        """Convert to dictionary for serialization"""
-        return {
-            'id': self.id,
-            'rid': self.rid,
-            'guest_id': self.guest_id,
-            'check_in': self.check_in.strftime("%B %d, %Y %H:%M") if self.check_in else None,
-            'check_out': self.check_out.strftime("%B %d, %Y %H:%M") if self.check_out else None
-        }
