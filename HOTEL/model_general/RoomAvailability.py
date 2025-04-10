@@ -20,14 +20,12 @@ class RoomAvailability:
         self.duration = (self.ending - self.starting).days + 1
 
     def set_rid_room(self,rid):
-        from ..models import Room,Hotel
-        from ..model_dbs import Availability
+        from ..model_dbs import Availability, Room,Hotel
         self.rid=rid
         self.room=Room.query.join(Hotel).filter(Room.available==Availability.A).filter(Room.id==rid).first()
     
     def get_similar_rooms(self,status): #status refers to if room is available within starting and ending periods
-        from ..models import Room, Hotel #need to update this when move Room/Hotel to model_dbs
-        from ..model_dbs import Availability, Bookings
+        from ..model_dbs import Availability, Bookings, Room, Hotel
         if not self.room:
             print("MUST SET ROOM ID!!!!!")
             return None
@@ -40,7 +38,7 @@ class RoomAvailability:
         return similar_rooms
 
     def get_similar_quantities(self, status):
-        from ..models import Room, Hotel #need to update this when move Room/Hotel to model_dbs
+        from ..model_dbs import Room, Hotel #need to update this when move Room/Hotel to model_dbs
         similar_rooms = self.get_similar_rooms(status=status)
         if not similar_rooms:
             print("DID NOT GET ANY SIMILAR ROOMS!!")

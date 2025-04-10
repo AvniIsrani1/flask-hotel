@@ -1,7 +1,6 @@
 from sqlalchemy import DateTime, distinct, desc, asc, cast, func, not_, String, Computed
 from datetime import datetime, timedelta
-from ..models import Hotel, Room
-from ..model_dbs import Bookings, Locations, YesNo, RoomType,Availability
+from ..model_dbs import Hotel, Floor, Room, Bookings, Locations, YesNo, RoomType,Availability
 from ..db import db
 
 class SearchController:

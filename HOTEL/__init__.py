@@ -10,11 +10,11 @@ import boto3
 from botocore.exceptions import ClientError
 import json
 from .model_objects import User, Booking, Service
-from .model_dbs import Users, Bookings, Services
+from .model_dbs import Users, Bookings, Services, Hotel, Floor, Room, YesNo, Locations, RoomType, Availability, Assistance
 
 from .db import db
 #all will evantually become plural here
-from .models import Hotel, Floor, Room, FAQ, YesNo, Locations, RoomType, Availability, Assistance, Saved, Service
+from .models import FAQ, Saved
 
 from .model_general import RoomAvailability #will remove this line once payment is moved to routes.py
 from .adding import add_layout
@@ -542,24 +542,29 @@ def process_payment():
             check_out_date = room_availability.get_ending()
             
             # Create a new booking record
+            new_bookings = []
             for room in rooms_to_book:
-                new_booking = Bookings(
-                    uid=user_id,
-                    rid=room.id,  # Use a valid room ID
-                    check_in=check_in_date,
-                    check_out=check_out_date,
-                    fees=Room.get_room(id==room.id).rate, #might need to update fees
-                    special_requests=requests,
-                    name=name, 
-                    email=email,
-                    phone=phone, 
-                    num_guests=guests
+                new_bookings.append(
+                    Booking(
+                        uid=user_id,
+                        rid=room.id,  # Use a valid room ID
+                        check_in=check_in_date,
+                        check_out=check_out_date,
+                        fees=Room.get_room(id==room.id).rate, #might need to update fees
+                        special_requests=requests,
+                        name=name, 
+                        email=email,
+                        phone=phone, 
+                        num_guests=guests
+                    )
                 )
                 # Update room availability
                 #room.available = Availability.B
-                db.session.add(new_booking)
-                send_email(subject='Ocean Vista Booking Created!',recipients=[user.email], body="Thank you for creating a new booking!",
-                           body_template='emails/booking_created.html',user=user, booking=new_booking, YesNo=YesNo)
+                # db.session.add(new_booking)
+                # send_email(subject='Ocean Vista Booking Created!',recipients=[user.email], body="Thank you for creating a new booking!",
+                #            body_template='emails/booking_created.html',user=user, booking=new_booking, YesNo=YesNo)
+            new_booking_rows = Bookings.create_bookings_db(new_bookings)
+            db.session.add_all(new_booking_rows)
             db.session.commit()
 
             print("Card accepted...")

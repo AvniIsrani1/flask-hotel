@@ -2,9 +2,8 @@ from flask import Flask, Blueprint, jsonify, render_template, request, redirect,
 from .db import db
 from sqlalchemy import DateTime, distinct, desc, asc, cast, func, not_, String, Computed
 from datetime import datetime, timedelta
-from .model_dbs import Users, Bookings, Services, YesNo, Assistance, Locations, Availability, RoomType
+from .model_dbs import Users, Bookings, Services, Hotel, Floor, Room, YesNo, Assistance, Locations, Availability, RoomType
 from .model_objects import Service
-from .models import Room, Hotel
 from .model_general import SearchController
 from .model_general import RoomAvailability
 from datetime import datetime
