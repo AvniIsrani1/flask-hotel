@@ -4,7 +4,7 @@ from ..db import db
 
 class Users(db.Model):
     __tablename__ = 'users'  # Name of the table in the database
-    id = db.Column(db.Integer, primary_key=True)  # Unique id for each user
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)  # Unique id for each user
     name = db.Column(db.String(150), nullable=False)  # User's name
     email = db.Column(db.String(150), unique=True, nullable=False)  # User's email (must be unique)
     password = db.Column(db.String(255), nullable=False)  # Hashed password

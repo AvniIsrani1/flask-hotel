@@ -1,9 +1,12 @@
 from flask import Flask, Blueprint, jsonify, render_template, request, redirect, url_for, session, flash, get_flashed_messages
 from .db import db
-from .model_dbs import Users, Bookings, Services, YesNo, Assistance
+from sqlalchemy import DateTime, distinct, desc, asc, cast, func, not_, String, Computed
+from datetime import datetime, timedelta
+from .model_dbs import Users, Bookings, Services, YesNo, Assistance, Locations, Availability, RoomType
 from .model_objects import Service
 from .models import Room, Hotel
-from .utility.RoomAvailability import RoomAvailability
+from .model_general import SearchController
+from .model_general import RoomAvailability
 from datetime import datetime
 
 bp_profile = Blueprint('profile',__name__)
@@ -104,13 +107,18 @@ def modify(bid):
     
     startdate = booking.check_in.strftime("%B %d, %Y")
     enddate = booking.check_out.strftime("%B %d, %Y")
-    starting, ending, duration = RoomAvailability.get_start_end_duration(startdate, enddate)
-    room = RoomAvailability.get_similar_quantities(rid=booking.rid, starting=starting, ending=ending, status="any").first()
+
+    room_availability = RoomAvailability(startdate=startdate,enddate=enddate)
+    room_availability.set_rid_room(rid=booking.rid)
+    room=room_availability.get_similar_quantities(status='any').first() #any because just trying to pull up the room details again (not doing any actual booking)
     print(room)
+    if not room:
+        flash('An error occured. Please try again later','error')
+        return redirect(url_for('bookings.bookings'))
     rid = booking.rid
     rooms = 1 #user is able to modify 1 room at a time
     location_type = None
-    return render_template('reserve.html', user=user, room=room, YesNo=YesNo, rid=rid, location_type=location_type, duration=duration, startdate=startdate, enddate=enddate,
+    return render_template('reserve.html', user=user, room=room, YesNo=YesNo, rid=rid, location_type=location_type, duration=room_availability.get_duration(), startdate=startdate, enddate=enddate,
                             name=booking_db.name, phone=booking_db.phone,email=booking_db.email,guests=booking_db.num_guests,rooms=rooms,requests=booking_db.special_requests, 
                             modifying=modifying, bid=bid)
 
@@ -169,14 +177,14 @@ def reserve():
                 flash("Reservation details are missing. Please search for a room again.", "error")
             else:
                 flash('Please enter both the start and end dates',"error")
-            return redirect(url_for('search'))
+            return redirect(url_for('search.search'))
         print(f"Received rid: {rid}, location_type: {location_type}, startdate: {startdate}, enddate: {enddate}") 
-        starting, ending, duration = RoomAvailability.get_start_end_duration(startdate, enddate)
-        room = RoomAvailability.get_similar_quantities(rid=rid, starting=starting, ending=ending, status='open').first()
-
+        room_availability = RoomAvailability(startdate=startdate,enddate=enddate)
+        room_availability.set_rid_room(rid=rid)
+        room=room_availability.get_similar_quantities(status='open').first()
         if not room:
             flash('Room not found',"error")
-            return redirect(url_for('search'))
+            return redirect(url_for('search.search'))
         if request.method=='POST':
             name=request.form.get('name', user.name)
             phone=request.form.get('phone', user.phone)
@@ -184,10 +192,10 @@ def reserve():
             guests=request.form.get('guests',1)
             rooms=request.form.get('rooms',1)
             requests=request.form.get('requests','')
-            return render_template('reserve.html', user=user, room=room, YesNo=YesNo, rid=rid, location_type=location_type, duration=duration, startdate=startdate, enddate=enddate,
+            return render_template('reserve.html', user=user, room=room, YesNo=YesNo, rid=rid, location_type=location_type, duration=room_availability.get_duration(), startdate=startdate, enddate=enddate,
                                    name=name, phone=phone,email=email,guests=guests,rooms=rooms,requests=requests)
         
-        return render_template('reserve.html', user=user, room=room, YesNo=YesNo, rid=rid, location_type=location_type, duration=duration, startdate=startdate, enddate=enddate)
+        return render_template('reserve.html', user=user, room=room, YesNo=YesNo, rid=rid, location_type=location_type, duration=room_availability.get_duration(), startdate=startdate, enddate=enddate)
 
 bp_request_services = Blueprint('request_services',__name__)
 @bp_request_services.route("/request-services/<int:bid>", methods=["GET","POST"])
@@ -261,3 +269,42 @@ def request_services(bid):
             flash(f"An error occurred: {str(e)}. Please try again later.", "error")
         return redirect(url_for('bookings.bookings'))
     return render_template('request_services.html')
+
+
+
+
+
+bp_search = Blueprint('search',__name__)
+@bp_search.route("/search", methods=["GET", "POST"])
+def search():
+    locations = db.session.query(distinct(Hotel.location)).all()
+    roomtypes = db.session.query(distinct(cast(Room.room_type, String))).order_by(desc(cast(Room.room_type, String))).all()
+    
+    search_controller = SearchController()
+    if request.method == "GET":
+        stype = request.args.get('stype')
+        # if stype == 'apply_search':
+        location = request.args.get('location_type')
+        start = request.args.get('startdate') 
+        end = request.args.get('enddate') 
+        starting, ending,result = search_controller.main_search(location=location,start=start,end=end)
+        if(not result):
+            flash('Please enter both the start and end dates',"error")
+            return redirect(url_for('search.search', startdate=starting, enddate=ending))
+        if stype=='apply_filters':
+            room_type = request.args.get('room_type')
+            bed_type = request.args.get('bed_type')
+            view = request.args.get('view')
+            balcony = request.args.get('balcony')
+            smoking_preference = request.args.get('smoking_preference')
+            accessibility = request.args.get('accessibility')
+            price_range = request.args.get('price_range')
+            search_controller.filter_search(room_type=room_type,bed_type=bed_type,view=view,balcony=balcony,
+                           smoking_preference=smoking_preference,accessibility=accessibility,
+                           price_range=price_range)
+    sort = request.args.get('sort-by')
+    search_controller.sort_search(sort=sort)
+    search_controller.get_quantities()
+    rooms = search_controller.get_search()
+    print(rooms)
+    return render_template('search.html', locations=locations, roomtypes=roomtypes, rooms=rooms, YesNo = YesNo)

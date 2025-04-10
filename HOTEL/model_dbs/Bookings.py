@@ -7,7 +7,7 @@ from ..db import db
 
 class Bookings(db.Model):
     __tablename__ = 'bookings'
-    id = db.Column(db.Integer, primary_key=True) 
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True) 
     uid = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     rid = db.Column(db.Integer, db.ForeignKey('room.id'), nullable=False)
     check_in = db.Column(DateTime, nullable=False)

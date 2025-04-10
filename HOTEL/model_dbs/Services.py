@@ -67,60 +67,6 @@ class Services(db.Model):
                 )
             )
         return service_rows
-
-    # @classmethod
-    # def create_services_items_db(cls, service):
-    #     return cls(
-    #         bid=service.bid,issued=service.issued,modified=service.modified,stype=SType.I, 
-    #         robes=service.robes,btowels=service.btowels,htowels=service.htowels,
-    #         soap=service.soap,shampoo=service.shampoo,conditioner=service.conditioner,wash=service.wash,
-    #         lotion=service.lotion,hdryer=service.hdryer,pillows=service.pillows,
-    #         blankets=service.blankets,sheets=service.sheets
-    #     )
-
-    
-    # @classmethod
-    # def create_services_housekeeping_db(cls, service):
-    #     return cls(
-    #         bid=service.bid,issued=service.issued,modified=service.modified,stype=SType.H,
-    #         housedatetime=service.housedatetime
-    #     )
-    
-    # @classmethod
-    # def create_services_call_db(cls, service):
-    #     return cls(
-    #         bid=service.bid,issued=service.issued,modified=service.modified,stype=SType.C,
-    #         calldatetime=service.calldatetime
-    #     )
-    
-    # @classmethod
-    # def create_services_trash_db(cls, service):
-    #     return cls(
-    #         bid=service.bid,issued=service.issued,modified=service.modified,stype=SType.T,
-    #         trash=service.trash==YesNo.Y
-    #     )
-    
-    # @classmethod
-    # def create_services_dining_db(cls, service):
-    #     return cls(
-    #         bid=service.bid,issued=service.issued,modified=service.modified,stype=SType.D,
-    #         restaurant=service.restuarant
-    #     )
-    
-    # @classmethod
-    # def create_services_assistance_db(cls, service):
-    #     return cls(
-    #         bid=service.bid,issued=service.issued,modified=service.modified,stype=SType.A,
-    #         assistance=service.assistance
-    #     )
-    
-    # @classmethod
-    # def create_services_other_db(cls, service):
-    #     return cls(
-    #         bid=service.bid,issued=service.issued,modified=service.modified,stype=SType.O,
-    #         other=service.other
-    #     )
-    
     
     @classmethod
     def update_services_db(cls,service):

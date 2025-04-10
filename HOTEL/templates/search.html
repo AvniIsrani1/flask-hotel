@@ -35,7 +35,7 @@
             <br>
         </div>
         <div class="options">
-            <form method="get" action={{url_for('search')}} id="searchbar" class="searchbar">
+            <form method="get" action={{url_for('search.search')}} id="searchbar" class="searchbar">
                 <input type="hidden" name="stype" value="apply_search">
                 <div class="locations">
                     <div class="search-description">
@@ -78,7 +78,7 @@
                     <p>Filters</p>
                 </button>
             </div>
-            <form method="get" action={{url_for('search')}} id="filter-selection">
+            <form method="get" action={{url_for('search.search')}} id="filter-selection">
                 <input type="hidden" name="stype" value="apply_filters">
                 <input type="hidden" name="location_type" value="{{ request.args.get('location_type', '')}}">
                 <input type="hidden" name="startdate" value="{{ request.args.get('startdate', '') }}">

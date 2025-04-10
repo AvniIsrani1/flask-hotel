@@ -16,8 +16,7 @@ from .db import db
 #all will evantually become plural here
 from .models import Hotel, Floor, Room, FAQ, YesNo, Locations, RoomType, Availability, Assistance, Saved, Service
 
-from .utility.RoomAvailability import RoomAvailability #will remove this line once payment is moved to routes.py
-
+from .model_general import RoomAvailability #will remove this line once payment is moved to routes.py
 from .adding import add_layout
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
@@ -27,7 +26,7 @@ from .response import format_response
 from io import BytesIO
 from .receipt_generator import ReceiptGenerator
 from flask import send_file
-from .routes import bp_profile, bp_bookings, bp_reserve, bp_request_services
+from .routes import bp_profile, bp_bookings, bp_reserve, bp_request_services, bp_search
 
 app = Flask(__name__,
             static_folder='static',     # Define the static folder (default is 'static')
@@ -41,6 +40,7 @@ app.register_blueprint(bp_profile)
 app.register_blueprint(bp_bookings)
 app.register_blueprint(bp_reserve)
 app.register_blueprint(bp_request_services)
+app.register_blueprint(bp_search)
 
 def get_secrets(secret_name):
     client = boto3.client(service_name='secretsmanager', region_name='us-west-1')
@@ -206,84 +206,6 @@ def success():
     return render_template('success.html')
 
 
-@app.route("/search", methods=["GET", "POST"])
-def search():
-    locations = db.session.query(distinct(Hotel.location)).all()
-    roomtypes = db.session.query(distinct(cast(Room.room_type, String))).order_by(desc(cast(Room.room_type, String))).all()
-    
-    rooms = Room.query.all()
-    query = Room.query.join(Hotel).filter(Room.available==Availability.A)
-
-    if request.method == "GET":
-        stype = request.args.get('stype')
-        # if stype == 'apply_search':
-        location = request.args.get('location_type')
-        start = request.args.get('startdate') 
-        end = request.args.get('enddate') 
-        if not start and not end: #only time this can happen is when user clicks to search page via home search bar or search button (otherwise always have at least start)
-            starting = datetime.now().strftime("%B %d, %Y")
-            ending = (datetime.now() + timedelta(days=1)).strftime("%B %d, %Y")
-            flash('Please enter both the start and end dates',"error")
-            return redirect(url_for('search', startdate=starting, enddate=ending))
-        if location:
-            location = Locations(location)
-            query = query.filter(Hotel.location == location)
-        if start:
-            starting = datetime.strptime(str(start), "%B %d, %Y").replace(hour=15,minute=0,second=0) #check in is at 3:00 PM
-            ending = (starting + timedelta(days=1)).replace(hour=11,minute=0,second=0)
-        if end: 
-            ending = datetime.strptime(str(end), "%B %d, %Y").replace(hour=11,minute=0,second=0) #check out is at 11:00 AM
-            if not start: #impossible to have only end (must have at least start) (will never reach this condition)
-                starting = (ending - timedelta(days=1)).replace(hour=15,minute=0,second=0)
-        query = query.filter(not_(db.exists().where(Bookings.rid == Room.id).where(Bookings.check_in < ending).where(Bookings.check_out>starting)))
-        if stype=='apply_filters':
-            room_type = request.args.get('room_type')
-            bed_type = request.args.get('bed_type')
-            view = request.args.get('view')
-            balcony = request.args.get('balcony')
-            smoking_preference = request.args.get('smoking_preference')
-            accessibility = request.args.get('accessibility')
-            price_range = request.args.get('price_range')
-            if room_type:
-                room_type = RoomType(room_type)
-                query = query.filter(Room.room_type == room_type)
-            if bed_type:
-                query = query.filter(Room.number_beds == bed_type)
-            if view:
-                if view=='ocean':
-                    query = query.filter(Room.ocean_view==YesNo.Y)
-                elif view=='city':
-                    query = query.filter(Room.city_view==YesNo.Y)
-            if balcony:
-                if balcony=='balcony':
-                    query = query.filter(Room.balcony==YesNo.Y)
-                elif balcony=='no_balcony':
-                    query = query.filter(Room.balcony==YesNo.N)
-            if smoking_preference:
-                if smoking_preference == 'Smoking':
-                    smoking_preference = YesNo.Y
-                else:
-                    smoking_preference = YesNo.N
-                query = query.filter(Room.smoking == smoking_preference)
-            if accessibility:
-                accessibility = YesNo.Y
-                query = query.filter(Room.wheelchair_accessible == accessibility)
-            if price_range:
-                price_range = int(price_range)
-                query = query.filter(Room.rate <= price_range)
-    sort = request.args.get('sort-by')
-    if sort=='priceL':
-        query = query.order_by(Room.rate.asc())
-    elif sort=='priceH':
-        query = query.order_by(Room.rate.desc())
-    query = query.group_by(
-        Room.hid, Room.room_type, Room.number_beds, Room.rate, Room.balcony, Room.city_view, Room.ocean_view, 
-        Room.smoking, Room.max_guests, Room.wheelchair_accessible
-    )
-    query = query.with_entities(Room, func.count(distinct(Room.id)).label('number_rooms'), func.min(Room.id).label('min_rid'))
-    rooms = query.all()
-    print(rooms)
-    return render_template('search.html', locations=locations, roomtypes=roomtypes, rooms=rooms, YesNo = YesNo)
 
 
 
@@ -529,18 +451,19 @@ def payment():
         phone = request.form.get('phone')
         guests = request.form.get('guests')
 
-        starting, ending, duration = RoomAvailability.get_start_end_duration(startdate, enddate)
-        similar_rooms = RoomAvailability.get_similar_rooms(rid=rid,starting=starting,ending=ending,status='open')
+        room_availability = RoomAvailability(startdate=startdate,enddate=enddate)
+        room_availability.set_rid_room(rid=rid)
+        similar_rooms=room_availability.get_similar_rooms(status='open')
+        if not similar_rooms:
+            flash('This room no longer available. Please search for a new room.','error')
+            return redirect(url_for('search.search'))
 
         rooms_to_book = similar_rooms.limit(int(rooms))
         rooms_to_book_count = rooms_to_book.count()
-        if rooms_to_book_count==0:
-            flash('Room no longer available. Please search for a new room.','error')
-            return redirect(url_for('search'))
-        elif rooms_to_book_count < int(rooms):
+        if rooms_to_book_count < int(rooms):
             flash('Not able to book ' + rooms + ' rooms. ' + str(rooms_to_book_count) + ' rooms available.', 'error') 
         one_room = rooms_to_book.first()
-        return render_template('payment.html', rid=rid, location_type=location_type, startdate=startdate, enddate=enddate,duration=duration,
+        return render_template('payment.html', rid=rid, location_type=location_type, startdate=startdate, enddate=enddate,duration=room_availability.get_duration(),
                                YesNo=YesNo, one_room=one_room, 
                                guests=guests, rooms=rooms_to_book_count, name=name, email=email, phone=phone,
                                requests=requests)
@@ -573,8 +496,13 @@ def process_payment():
     guests = request.form.get('guests')
 
     # Find a valid room to book 
-    starting, ending, duration = RoomAvailability.get_start_end_duration(startdate, enddate)
-    similar_rooms = RoomAvailability.get_similar_rooms(rid=rid,starting=starting,ending=ending,status='open')
+
+    room_availability = RoomAvailability(startdate=startdate,enddate=enddate)
+    room_availability.set_rid_room(rid=rid)
+    similar_rooms=room_availability.get_similar_rooms(status='open')
+    if not similar_rooms:
+        flash('Room no longer available. Please search for a new room.','error')
+        return redirect(url_for('search.search'))
     rooms_to_book = similar_rooms.limit(int(rooms))
     rooms_to_book_count = rooms_to_book.count()
     one_room = rooms_to_book.first()
@@ -608,16 +536,16 @@ def process_payment():
             
             if not rooms_to_book:
                 flash('Room no longer available. Please search for a new room.','error')
-                return redirect(url_for('search'))
+                return redirect(url_for('search.search'))
             elif rooms_to_book_count < int(rooms):
                 flash('Not able to book ' + rooms + ' rooms. ' + str(rooms_to_book_count) + ' rooms available.', 'error') 
-                return render_template('payment.html', rid=rid, location_type=location_type, startdate=startdate, enddate=enddate,duration=duration,
+                return render_template('payment.html', rid=rid, location_type=location_type, startdate=startdate, enddate=enddate,duration=room_availability.get_duration(),
                                     YesNo=YesNo, one_room=one_room, 
                                     guests=guests, rooms=rooms_to_book_count, name=name, email=email, phone=phone,
                                     requests=requests)                
             # Set check-in and check-out dates
-            check_in_date = starting
-            check_out_date = ending
+            check_in_date = room_availability.get_starting()
+            check_out_date = room_availability.get_ending()
             
             # Create a new booking record
             for room in rooms_to_book:
@@ -648,7 +576,7 @@ def process_payment():
             db.session.rollback()
             print(f"Database error: {str(e)}", "database_error")
             flash(f"Database error: {str(e)}", "database_error")
-            return redirect(url_for('search'))
+            return redirect(url_for('search.search'))
             # return render_template('payment.html', rid=rid, location_type=location_type, startdate=startdate, enddate=enddate,duration=duration,
             #             YesNo=YesNo, one_room=one_room, 
             #             guests=guests, rooms=rooms_to_book_count, name=name, email=email, phone=phone,
@@ -656,7 +584,7 @@ def process_payment():
     else:
         # Card is invalid, display appropriate error messages
         flash("INVALID CREDIT CARD DETAILS", "error")
-        return render_template('payment.html', rid=rid, location_type=location_type, startdate=startdate, enddate=enddate,duration=duration,
+        return render_template('payment.html', rid=rid, location_type=location_type, startdate=startdate, enddate=enddate,duration=room_availability.get_duration(),
                                YesNo=YesNo, one_room=one_room, 
                                guests=guests, rooms=rooms_to_book_count, name=name, email=email, phone=phone,
                                requests=requests)
