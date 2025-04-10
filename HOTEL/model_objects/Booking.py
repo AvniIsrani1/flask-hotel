@@ -5,7 +5,7 @@ class Booking:
     def __init__(self, uid, rid, check_in, check_out, fees, name, email, phone, id=None,num_guests=1, cancel_date=None, refund_type=None, special_requests=None, services=None):
         self.id=id
         self.uid = uid
-        self.rid = rid 
+        self.rid = rid
         self.check_in = check_in 
         self.check_out = check_out 
         self.fees = fees 

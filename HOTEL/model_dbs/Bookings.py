@@ -67,29 +67,23 @@ class Bookings(db.Model):
         db.session.commit()
 
     @classmethod
-    def get_current_bookings(cls):
-        today = datetime.now()
-        return cls.query.filter(cls.check_in<=today,cls.check_out>=today, cls.cancel_date.is_(None)).order_by(asc(cls.check_in), asc(cls.check_out))
-
-    @classmethod
     def get_current_user_bookings(cls,uid):
         today = datetime.now()
         return cls.query.filter(cls.uid==uid, cls.check_in<=today,cls.check_out>=today, cls.cancel_date.is_(None)).order_by(asc(cls.check_in), asc(cls.check_out))
 
-
     @classmethod
-    def get_future_bookings(cls):
+    def get_future_user_bookings(cls,uid):
         today = datetime.now()
-        return cls.query.filter(cls.check_in>today, cls.cancel_date.is_(None)).order_by(asc(cls.check_in), asc(cls.check_out))
+        return cls.query.filter(cls.uid==uid,cls.check_in>today, cls.cancel_date.is_(None)).order_by(asc(cls.check_in), asc(cls.check_out))
     
     @classmethod
-    def get_past_bookings(cls):
+    def get_past_user_bookings(cls,uid):
         today = datetime.now()
-        return cls.query.filter(cls.check_out<today, cls.cancel_date.is_(None)).order_by(asc(cls.check_in), asc(cls.check_out))
+        return cls.query.filter(cls.uid==uid,cls.check_out<today, cls.cancel_date.is_(None)).order_by(asc(cls.check_in), asc(cls.check_out))
     
     @classmethod
-    def get_canceled_bookings(cls):
-        return cls.query.filter(cls.cancel_date.isnot(None)).order_by(desc(cls.check_in), asc(cls.check_out))
+    def get_canceled_user_bookings(cls,uid):
+        return cls.query.filter(cls.uid==uid,cls.cancel_date.isnot(None)).order_by(desc(cls.check_in), asc(cls.check_out))
     
 
     

@@ -205,14 +205,6 @@ def logout():
 def success():
     return render_template('success.html')
 
-
-
-
-
-
-
-
-
 @app.route("/terms")
 def terms():
     return render_template('terms.html')
@@ -326,6 +318,7 @@ def add_sample_data():
         users.extend([avni, devansh, elijah, andrew])
         db.session.add_all(users)
         db.session.commit()
+        print('sample users added')
 
         avni_id = Users.query.filter_by(email="avni@gmail.com").first().id
         malibu_room_1 = Room.query.filter_by(hid=malibu_id).first().id
@@ -340,6 +333,7 @@ def add_sample_data():
         results = Bookings.create_bookings_db(sample_bookings)
         db.session.add_all(results)
         db.session.commit()
+        print("sample bookings")
 
 def add_sample_faq():
     faqs = [

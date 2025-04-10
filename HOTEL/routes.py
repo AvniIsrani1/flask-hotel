@@ -82,12 +82,12 @@ def bookings():
         return redirect(url_for("log_in"))
     user = Users.query.get(session["user_id"])
 
-    current = Bookings.get_current_bookings().filter(Bookings.uid==user.id).all()
+    current = Bookings.get_current_user_bookings(Bookings.uid==user.id).all()
     print(current)
-    future = Bookings.get_future_bookings().filter(Bookings.uid==user.id).all()
+    future = Bookings.get_future_user_bookings(Bookings.uid==user.id).all()
     print(future)
-    past = Bookings.get_past_bookings().filter(Bookings.uid==user.id).all()
-    canceled = Bookings.get_canceled_bookings().filter(Bookings.uid==user.id).all()
+    past = Bookings.get_past_user_bookings(Bookings.uid==user.id).all()
+    canceled = Bookings.get_canceled_user_bookings(Bookings.uid==user.id).all()
 
     return render_template('bookings.html', current=current, future=future, past=past, canceled=canceled, YesNo=YesNo)
 
