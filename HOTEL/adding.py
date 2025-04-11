@@ -1,4 +1,4 @@
-from .model_dbs import Hotel, Floor, Room, YesNo, RoomType, Availability
+from .entities import Hotel, Floor, Room, YesNo, RoomType, Availability
 
 
 

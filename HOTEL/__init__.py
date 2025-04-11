@@ -9,14 +9,12 @@ from urllib.parse import quote
 import boto3
 from botocore.exceptions import ClientError
 import json
-from .model_objects import User, Booking, Service
-from .model_dbs import Users, Bookings, Services, Hotel, Floor, Room, YesNo, Locations, RoomType, Availability, Assistance
-from .model_general import EmailController
+from .entities import Users, Bookings, Services, Hotel, Floor, Room, FAQ, Saved, YesNo, Locations, RoomType, Availability, Assistance
+from .controllers import EmailController
 from .db import db
 #all will evantually become plural here
-from .models import FAQ, Saved
 
-from .model_general import RoomAvailability #will remove this line once payment is moved to routes.py
+from .controllers import RoomAvailability #will remove this line once payment is moved to routes.py
 from .adding import add_layout
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
@@ -36,11 +34,6 @@ app.secret_key = 'GITGOOD_12345'  # This key keeps your session data safe.
 rds_secret_name = "rds!db-d319020b-bb3f-4784-807c-6271ab3293b0"
 ses_secret_name = "oceanvista_ses"
 
-# app.register_blueprint(bp_profile)
-# app.register_blueprint(bp_bookings)
-# app.register_blueprint(bp_reserve)
-# app.register_blueprint(bp_request_services)
-# app.register_blueprint(bp_search)
 
 def get_secrets(secret_name):
     client = boto3.client(service_name='secretsmanager', region_name='us-west-1')
@@ -120,16 +113,15 @@ def sign_up():
             return redirect(url_for("sign_up"))
         
         # Hash the password before storing for security
-        user = User.create_initial_user(name,email,password)
+        user = Users.create_initial_user(name,email,password)
 
         
         try:
             # Save the new user to the database
-            user_db = Users.create_user_db(user)
-            db.session.add(user_db)
+            db.session.add(user)
             db.session.commit()
             flash("Account created successfully! Please log in.", "success")
-            email_controller.send_welcome_email(user=user_db)
+            email_controller.send_welcome_email(user=user)
             return redirect(url_for("log_in"))
         except Exception as e:
             # Roll back the session if there is an error
@@ -147,9 +139,7 @@ def log_in():
         password = request.form.get("password")
         
         # Find user by email
-        user_db = Users.get_user_by_email(email)
-        user = user_db.create_user_object()
-        print(user)
+        user = Users.get_user_by_email(email)
 
         # Check if user exists and if the password is correct
         if user and user.verify_password(password):
@@ -277,11 +267,13 @@ def add_sample_data():
             db.session.commit()
 
         # Get hotel IDs
-        malibu_id = Hotel.query.filter_by(location=Locations.MALIBU).first().id
-        sm_id = Hotel.query.filter_by(location=Locations.SM).first().id
+        malibu_hotel = Hotel.get_hotels_by_location("Malibu")[0]
+        sm_hotel = Hotel.get_hotels_by_location("Santa Monica")[0]
         
-        add_layout(hid=malibu_id,base_floor_number=1,num_floors=4)
-        add_layout(hid=sm_id,base_floor_number=1,num_floors=4)
+        with open('sample_layout.json','r') as f:
+            add_room_params = json.load(f)
+        malibu_hotel.add_layout(base_floor_number=1, number_floors=4, add_room_params=add_room_params)
+        sm_hotel.add_layout(base_floor_number=1, number_floors=4, add_room_params=add_room_params)
         print("Sample rooms added")
 
         users = []
@@ -294,19 +286,19 @@ def add_sample_data():
         db.session.commit()
         print('sample users added')
 
-        avni_id = Users.query.filter_by(email="avni@gmail.com").first().id
-        malibu_room_1 = Room.query.filter_by(hid=malibu_id).first().id
-        sm_room_1 = Room.query.filter_by(hid=sm_id).first().id
-        sample_bookings = []
-        sample_bookings.append(Booking(uid=avni_id, rid=malibu_room_1, check_in=datetime.now(), check_out=datetime.now()+timedelta(5), fees=500, name="avni", email="avni@gmail.com", phone="123"))
-        sample_bookings.append(Booking(uid=avni_id, rid=sm_room_1, check_in=datetime.now()+timedelta(5), check_out=datetime.now()+timedelta(days=10), fees=600, name="avni", email="avni@gmail.com", phone="123"))
-        sample_bookings.append(Booking(uid=avni_id, rid=malibu_room_1, check_in=datetime.now()-timedelta(2), check_out=datetime.now()-timedelta(days=1), fees=600, name="avni", email="avni@gmail.com", phone="123"))
-        sample_bookings.append(Booking(uid=avni_id, rid=sm_room_1, check_in=datetime.now()-timedelta(3), check_out=datetime.now()-timedelta(days=1), fees=600, name="avni", email="avni@gmail.com", phone="123"))
-        sample_bookings.append(Booking(uid=avni_id, rid=malibu_room_1, check_in=datetime.now()-timedelta(1), check_out=datetime.now()+timedelta(days=1), fees=600, name="avni", email="avni@gmail.com", phone="123"))
-        sample_bookings[0].cancel()
-        results = Bookings.create_bookings_db(sample_bookings)
-        db.session.add_all(results)
-        db.session.commit()
+        # avni_id = Users.query.filter_by(email="avni@gmail.com").first().id
+        # malibu_room_1 = Room.query.filter_by(hid=malibu_id).first().id
+        # sm_room_1 = Room.query.filter_by(hid=sm_id).first().id
+        # sample_bookings = []
+        # sample_bookings.append(Booking(uid=avni_id, rid=malibu_room_1, check_in=datetime.now(), check_out=datetime.now()+timedelta(5), fees=500, name="avni", email="avni@gmail.com", phone="123"))
+        # sample_bookings.append(Booking(uid=avni_id, rid=sm_room_1, check_in=datetime.now()+timedelta(5), check_out=datetime.now()+timedelta(days=10), fees=600, name="avni", email="avni@gmail.com", phone="123"))
+        # sample_bookings.append(Booking(uid=avni_id, rid=malibu_room_1, check_in=datetime.now()-timedelta(2), check_out=datetime.now()-timedelta(days=1), fees=600, name="avni", email="avni@gmail.com", phone="123"))
+        # sample_bookings.append(Booking(uid=avni_id, rid=sm_room_1, check_in=datetime.now()-timedelta(3), check_out=datetime.now()-timedelta(days=1), fees=600, name="avni", email="avni@gmail.com", phone="123"))
+        # sample_bookings.append(Booking(uid=avni_id, rid=malibu_room_1, check_in=datetime.now()-timedelta(1), check_out=datetime.now()+timedelta(days=1), fees=600, name="avni", email="avni@gmail.com", phone="123"))
+        # sample_bookings[0].cancel()
+        # results = Bookings.create_bookings_db(sample_bookings)
+        # db.session.add_all(results)
+        # db.session.commit()
         print("sample bookings")
 
 def add_sample_faq():
@@ -519,7 +511,7 @@ def process_payment():
             new_bookings = []
             for room in rooms_to_book:
                 new_bookings.append(
-                    Booking(
+                    Bookings(
                         uid=user_id,
                         rid=room.id, 
                         check_in=check_in_date,
@@ -537,8 +529,7 @@ def process_payment():
                 # db.session.add(new_booking)
                 # send_email(subject='Ocean Vista Booking Created!',recipients=[user.email], body="Thank you for creating a new booking!",
                 #            body_template='emails/booking_created.html',user=user, booking=new_booking, YesNo=YesNo)
-            new_booking_rows = Bookings.create_bookings_db(new_bookings)
-            db.session.add_all(new_booking_rows)
+            db.session.add_all(new_bookings)
             db.session.commit()
             print("sending email...")
             email_controller.send_booking_created(user=user,bookings=new_bookings,YesNo=YesNo)

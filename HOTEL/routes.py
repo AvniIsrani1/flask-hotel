@@ -2,10 +2,9 @@ from flask import Flask, Blueprint, jsonify, render_template, request, redirect,
 from .db import db
 from sqlalchemy import DateTime, distinct, desc, asc, cast, func, not_, String, Computed
 from datetime import datetime, timedelta
-from .model_dbs import Users, Bookings, Services, Hotel, Floor, Room, YesNo, Assistance, Locations, Availability, RoomType
-from .model_objects import Service
-from .model_general import SearchController
-from .model_general import RoomAvailability
+from .entities import Users, Bookings, Services, Hotel, Floor, Room, YesNo, Assistance, Locations, Availability, RoomType
+from .controllers import SearchController
+from .controllers import RoomAvailability
 from datetime import datetime
 
 bp_profile = Blueprint('profile',__name__)
@@ -15,13 +14,12 @@ def profile():
         flash("Please log in first.", "error")
         return redirect(url_for("log_in"))
     
-    user_db = Users.query.get(session["user_id"])
-    if not user_db:
+    user = Users.query.get(session["user_id"])
+    if not user:
         flash('Account not found','error')
         session.clear()
         return redirect(url_for("log_in"))
-    user = user_db.create_user_object()
-    if user.first_login:
+    if user.first_login is YesNo.Y:
         flash("Please update your profile information!", "action")
     message = status = ''
     if request.method == "POST":
@@ -39,8 +37,8 @@ def profile():
             message = 'Profile has been updated!'
             status = 'success'
         elif ptype=='notifications':
-            tremind = request.form.get('tremind') is not None
-            eremind = request.form.get('eremind') is not None
+            tremind = YesNo.Y if request.form.get('tremind') is not None else YesNo.N
+            eremind = YesNo.Y if request.form.get('eremind') is not None else YesNo.N
             user.update_notifications(tremind,eremind)
             message = 'Notification preferences have been updated!'
             status = 'success'
@@ -55,22 +53,19 @@ def profile():
                 message = 'Unable to update password.'
                 status = 'error'
         elif ptype=='account_deletion': 
-            db.session.delete(user_db)
+            db.session.delete(user)
             session.clear()
             db.session.commit()
             return render_template("home.html")
         try:
-            result = Users.update_users_db(user)
-            print(f'Update result: {result}')
             db.session.commit()
-            print('Successful commit')
             flash(message, status)
         except Exception as e:
             db.session.rollback()
             flash(f"An error occurred: {str(e)}. Please try again later.", "error")
         finally:
             return redirect(url_for("profile.profile"))
-    return render_template("profile.html", user=user_db, YesNo = YesNo)
+    return render_template("profile.html", user=user, YesNo = YesNo)
 
 
 def booking_routes(email_controller):
@@ -81,14 +76,15 @@ def booking_routes(email_controller):
         if "user_id" not in session:
             flash("Please log in first.", "error")
             return redirect(url_for("log_in"))
-        user = Users.query.get(session["user_id"])
+        user_id = session["user_id"]
+        user = Users.get_user(user_id)
 
-        current = Bookings.get_current_user_bookings(Bookings.uid==user.id).all()
+        current = Bookings.get_current_user_bookings(user_id)
         print(current)
-        future = Bookings.get_future_user_bookings(Bookings.uid==user.id).all()
+        future = Bookings.get_future_user_bookings(user_id)
         print(future)
-        past = Bookings.get_past_user_bookings(Bookings.uid==user.id).all()
-        canceled = Bookings.get_canceled_user_bookings(Bookings.uid==user.id).all()
+        past = Bookings.get_past_user_bookings(user_id)
+        canceled = Bookings.get_canceled_user_bookings(user_id)
 
         return render_template('bookings.html', current=current, future=future, past=past, canceled=canceled, YesNo=YesNo)
 
@@ -98,9 +94,9 @@ def booking_routes(email_controller):
         if "user_id" not in session:
             flash("Please log in first.", "error")
             return redirect(url_for("log_in"))
-        user = Users.query.get(session["user_id"])
-        booking_db = Bookings.query.get(bid)
-        booking = booking_db.create_booking_object()
+        user_id = session["user_id"]
+        user = Users.get_user(user_id)
+        booking = Bookings.get_booking(bid)
 
         if not booking:
             flash('Unable to modify booking. Please try again later', 'error')
@@ -109,7 +105,7 @@ def booking_routes(email_controller):
         startdate = booking.check_in.strftime("%B %d, %Y")
         enddate = booking.check_out.strftime("%B %d, %Y")
 
-        room_availability = RoomAvailability(startdate=startdate,enddate=enddate)
+        room_availability = RoomAvailability(startdate=startdate, enddate=enddate)
         room_availability.set_rid_room(rid=booking.rid)
         room=room_availability.get_similar_quantities(status='any').first() #any because just trying to pull up the room details again (not doing any actual booking)
         print(room)
@@ -120,18 +116,16 @@ def booking_routes(email_controller):
         rooms = 1 #user is able to modify 1 room at a time
         location_type = None
         return render_template('reserve.html', user=user, room=room, YesNo=YesNo, rid=rid, location_type=location_type, duration=room_availability.get_duration(), startdate=startdate, enddate=enddate,
-                                name=booking_db.name, phone=booking_db.phone,email=booking_db.email,guests=booking_db.num_guests,rooms=rooms,requests=booking_db.special_requests, 
+                                name=booking.name, phone=booking.phone,email=booking.email,guests=booking.num_guests,rooms=rooms,requests=booking.special_requests, 
                                 modifying=modifying, bid=bid)
 
     @bp_bookings.route("/save/<int:bid>", methods=["GET", "POST"])
     def save(bid): #currently not able to add more rooms by modifying existing booking
-        # from . import email_controller
         if "user_id" not in session:
             flash("Please log in first.", "error")
             return redirect(url_for("log_in"))
         user = Users.query.get(session["user_id"])
-        booking_db = Bookings.query.get(bid)
-        booking = booking_db.create_booking_object()
+        booking = Bookings.query.get(bid)
         message = status = ''
         if booking:
             canceled = request.form.get('canceled', 'false')
@@ -150,10 +144,7 @@ def booking_routes(email_controller):
                 message='Booking updated!'
                 status='success'
             try:
-                result = Bookings.update_bookings_db(booking)
-                print(f'Update result: {result}')
                 db.session.commit()
-                print('Successful commit')
                 flash(message, status)
             except Exception as e:
                 db.session.rollback()
@@ -207,7 +198,7 @@ def request_services(bid):
     user = Users.query.get(session["user_id"])
     if request.method == 'POST':
         #making sure user has active bid
-        booking = Bookings.get_current_user_bookings(uid=user.id).filter(Bookings.id==bid).first()
+        booking = Bookings.get_specific_current_user_bookings(uid=user.id, bid=bid)
         if not booking:
             flash("You do not have an active booking for this request.",'error')
             return redirect(url_for('bookings.bookings'))
@@ -224,20 +215,20 @@ def request_services(bid):
         blankets = int(request.form.get('blankets','') or 0)
         sheets = int(request.form.get('sheets','') or 0)
         print(robes,btowels,htowels,soap,shampoo,conditioner,wash,lotion,hdryer,pillows,blankets,sheets)
-        service_objects = []
+        services = []
         if robes or btowels or htowels or soap or shampoo or conditioner or wash or lotion or hdryer or pillows or blankets or sheets:
-            service_objects.append(Service.add_item(bid=bid,robes=robes,btowels=btowels,htowels=htowels,soap=soap,shampoo=shampoo,
-                                                    conditioner=conditioner,wash=wash,lotion=lotion,hdryer=hdryer,pillows=pillows,
-                                                    blankets=blankets,sheets=sheets))
+            services.append(Services.add_item(bid=bid, robes=robes, btowels=btowels, htowels=htowels, soap=soap, shampoo=shampoo,
+                                                    conditioner=conditioner, wash=wash, lotion=lotion, hdryer=hdryer, pillows=pillows,
+                                                    blankets=blankets, sheets=sheets))
         housetime = request.form.get('housetime')
         if housetime:
             print('before',housetime)
             housetime = datetime.strptime(housetime,"%H:%M").time()
             print('after',housetime)
-            service_objects.append(Service.add_housekeeping(bid=bid,housetime=housetime,validate_check_out=booking.check_out))
+            services.append(Services.add_housekeeping(bid=bid, housetime=housetime, validate_check_out=booking.check_out))
         trash = request.form.get('trash')
         if trash:
-            service_objects.append(Service.add_trash(bid=bid))
+            services.append(Services.add_trash(bid=bid))
         calltime = request.form.get('calltime')
         recurrent = request.form.get('recurrent')
         if calltime:
@@ -245,23 +236,21 @@ def request_services(bid):
             calltime = datetime.strptime(calltime, "%H:%M").time()
             print('after',calltime)
             if recurrent:
-                service_objects.extend(Service.add_call(bid=bid,calltime=calltime,recurrent=True,validate_check_out=booking.check_out))
+                services.extend(Services.add_call(bid=bid, calltime=calltime, recurrent=True, validate_check_out=booking.check_out))
             else:
-                service_objects.extend(Service.add_call(bid=bid,calltime=calltime,recurrent=False,validate_check_out=booking.check_out))
-        # restaurant = request.form.get('restaurant')
-        # if restaurant:
-        #     service_objects.append(Service.add_re(bid=bid,housetime=housetime,validate_check_out=booking.check_out))
+                services.extend(Services.add_call(bid=bid, calltime=calltime, recurrent=False, validate_check_out=booking.check_out))
+        restaurant = request.form.get('restaurant')
+        if restaurant:
+            services.append(Services.add_dining(bid=bid, restaurant=restaurant))
         assistance = request.form.get('assistance')
         if assistance:
             assistance = Assistance(assistance)
-            service_objects.append(Service.add_assistance(bid=bid,assistance=assistance))
+            services.append(Services.add_assistance(bid=bid, assistance=assistance))
         other = request.form.get('other')
         if other:
-            service_objects.append(Service.add_other(bid=bid,other=other))
+            services.append(Services.add_other(bid=bid, other=other))
         try:
-            results=Services.create_services_db(service_objects)
-            print(f'Update result: {results}')
-            db.session.add_all(results)
+            db.session.add_all(services)
             db.session.commit()
             print('Successful commit')
             flash('Your request has been receieved. We will do our best to meet your needs as quickly as possible. Thank you!', 'success')
