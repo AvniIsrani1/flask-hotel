@@ -1,0 +1,178 @@
+/* Receipt Page styling */
+.receipt-container {
+    max-width: 1000px;
+    margin: 50px auto;
+    background-color: #ffffff;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    font-family: "Noto Sans Khmer", sans-serif;
+    overflow: hidden;
+}
+
+.receipt-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 30px;
+    background-color: #002B5A;
+    color: #F1DF75;
+}
+
+.receipt-actions h1 {
+    font-family: "Lusitana", serif;
+    margin: 0;
+    font-size: 1.8rem;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 15px;
+}
+
+.download-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 15px;
+    border-radius: 8px;
+    color: #002B5A;
+    background-color: #F1DF75;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 0.9rem;
+    transition: background-color 0.3s;
+}
+
+.download-btn:hover {
+    background-color: #ffffff;
+}
+
+.receipt-preview {
+    padding: 30px;
+    background-color: #ffffff;
+}
+
+.receipt-header {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid #F1DF75;
+    margin-bottom: 20px;
+}
+
+.logo img {
+    border-radius: 50%;
+}
+
+.hotel-info h2 {
+    margin: 0 0 5px 0;
+    color: #002B5A;
+    font-family: "Lusitana", serif;
+}
+
+.hotel-info p {
+    margin: 0;
+    color: #555;
+}
+
+.receipt-section {
+    margin-bottom: 25px;
+}
+
+.receipt-section h3 {
+    color: #002B5A;
+    font-family: "Lusitana", serif;
+    margin-bottom: 10px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid #eee;
+}
+
+.info-row {
+    display: flex;
+    margin-bottom: 8px;
+}
+
+.label {
+    width: 180px;
+    font-weight: bold;
+    color: #555;
+}
+
+.value {
+    flex-grow: 1;
+}
+
+.charges-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+}
+
+.charges-table th, .charges-table td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: left;
+}
+
+.charges-table th {
+    background-color: #f5f5f5;
+    font-weight: bold;
+    color: #002B5A;
+}
+
+.charges-table tfoot tr {
+    background-color: #f5f5f5;
+    font-weight: bold;
+}
+
+.total-label {
+    text-align: right;
+}
+
+.total-amount {
+    color: #002B5A;
+    font-weight: bold;
+}
+
+.receipt-footer {
+    text-align: center;
+    padding-top: 20px;
+    border-top: 1px solid #eee;
+    margin-top: 30px;
+    color: #555;
+    font-style: italic;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .receipt-container {
+        margin: 20px;
+    }
+    
+    .receipt-actions {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .receipt-header {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .info-row {
+        flex-direction: column;
+    }
+    
+    .label {
+        width: 100%;
+    }
+    
+    .charges-table {
+        font-size: 0.9rem;
+    }
+    
+    .charges-table th, .charges-table td {
+        padding: 8px 5px;
+    }
+}

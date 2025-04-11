@@ -1,4 +1,4 @@
-from .models import db, User, Hotel, Floor, Room, Booking, FAQ, YesNo, Locations, RoomType, Availability, Saved
+from .entities import Hotel, Floor, Room, YesNo, RoomType, Availability
 
 
 

@@ -2,9 +2,9 @@
     display:flex;
     flex-direction:column;
     margin-block:50px;
-    justify-content:center;
     align-items:center;
     width:100%;
+    min-height:80vh;
 }
 
 p {
@@ -74,6 +74,11 @@ p {
     display:flex;
     flex-direction:column;
     width:55%;
+}
+
+.nothing {
+    margin-bottom:200px;
+    color:#757575;
 }
 
 .placards {

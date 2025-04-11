@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booking Canceled</title>
+    <link rel="stylesheet" href="./emails.css"> 
+</head>
+<body>
+<div class="content">
+    <p>Hi {{user.name or 'Guest'}},</p>
+    
+    <p>Your reservation at <span style="font-weight:bold;">Ocean Vista</span> has been successfully canceled!</p>
+    <p>Room Details: </p>
+    <ul>
+        <li><span style="text-decoration:underline;">Room Description</span>: 
+            {{booking.room.number_beds}}-Bedroom {{booking.room.room_type.value}}
+                {% if booking.room.wheelchair_accessible==YesNo.Y %}
+                    <span> (Wheelchair Accessible) </span>
+                {% endif %}
+                {% if booking.room.balcony==YesNo.Y %}
+                    <span> with Balcony</span>
+                {% endif %}
+                {% if booking.room.ocean_view==YesNo.Y and booking.room.city_view==YesNo.Y %}
+                    <span> - Ocean View, City View</span>
+                {% elif booking.room.ocean_view==YesNo.Y %}
+                    <span> - Ocean View</span>
+                {% elif booking.room.city_view==YesNo.Y %}
+                    <span> - City View</span>
+                {% endif %}
+                {% if booking.room.smoking==YesNo.N %}
+                    <span>| Non-Smoking</span>
+                {% endif %}
+        </li>
+        <li><span style="text-decoration:underline;">Check-In Date</span>: {{booking.check_in.strftime('%B %d, %Y')}}</li>
+        <li><span style="text-decoration:underline;">Check-Out Date</span>: {{booking.check_out.strftime('%B %d, %Y')}} </li>
+        <li><span style="text-decoration:underline;font-weight:bold;">Cancel Date</span>: {{booking.cancel_date.strftime('%B %d, %Y')}}</li>
+        <li><span style="text-decoration:underline;font-weight:bold;">Refund Type</span>: {{'None' if booking.refund_type==YesNo.N else 'Full'}}</li>
+    </ul>
+
+    <p>If you didn’t make this change or if anything doesn’t look right, feel free to contact us or call us at (123) 456-7890 — we’re happy to help.</p>
+
+    <p>Warm regards,</p>
+    <p>The Ocean Vista Team</p>
+</div>
+</body>
+</html>

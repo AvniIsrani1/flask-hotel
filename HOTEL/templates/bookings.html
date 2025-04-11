@@ -37,6 +37,7 @@
             <br>
             <p class="subtitle">My Current Stay</p>
             <div class="placards">
+                {% if current %}
                 {% for c in current %}
                 <div class="placard">
                     <i class="fa-solid fa-circle-info placard-information" onclick='openModal(event, {{ {
@@ -69,14 +70,18 @@
                             </div>
                         </div>
                         <div class="links ptop">
-                            <a href="">Billing Details</a>
-                            <a href="{{url_for('request_services', bid=c.id)}}">Request Services</a>
+                            <a href="{{url_for('bookings.modify',bid=c.id )}}">Modify Booking</a>
+                            <a href="{{url_for('view_receipt', booking_id=c.id)}}">View Receipt</a>
+                            <a href="{{url_for('request_services.request_services', bid=c.id)}}">Request Services</a>
                             <a href="">View our Dining Menu</a>
                             <a href="">Speak to a representative</a>
                         </div>
                     </div>
                 </div>
                 {% endfor %}
+                {% else %}
+                <p class="nothing">Nothing booked for today. Time to plan your next trip?</p>
+                {% endif %}
             </div>
         </div>
         <br>
@@ -84,6 +89,7 @@
         <div class="section1">
             <p class="subtitle">My Upcoming Bookings</p>
             <div class="placards">
+                {% if future %}
                 {% for f in future %}
                 <div class="placard">
                     <i class="fa-solid fa-circle-info placard-information" onclick='openModal(event, {{ {
@@ -116,11 +122,15 @@
                             </div>                        
                         </div>
                         <div class="links2 ptop">
-                            <a href="{{url_for('modify',bid=f.id )}}">Modify Booking</a>
+                            <a href="{{url_for('view_receipt', booking_id=f.id)}}">View Receipt</a>
+                            <a href="{{url_for('bookings.modify',bid=f.id )}}">Modify Booking</a>
                         </div>
                     </div>
                 </div>
                 {% endfor %}
+                {% else %}
+                <p class="nothing">No trips planned&mdash;yet!</p>
+                {% endif %}
             </div>
         </div>
     </div>
@@ -131,6 +141,7 @@
         <br>
         <p class="subtitle">Past Bookings</p>
         <div class="placards">
+            {% if past %}
             {% for pa in past %}
             <div class="placard">
                 <i class="fa-solid fa-circle-info placard-information" onclick='openModal(event, {{ {
@@ -163,11 +174,15 @@
                         </div>
                     </div>
                     <div class="links ptop">
+                        <a href="{{url_for('view_receipt', booking_id=pa.id)}}">View Receipt</a>
                         <a href="">Leave a review</a>
                     </div>
                 </div>
             </div>
             {% endfor %}
+            {% else %}
+            <p class="nothing">Your travel history will appear here after you have booked your first trip.</p>
+            {% endif %}
         </div>
     </div>
     <br>
@@ -176,6 +191,7 @@
         <br>
         <p class="subtitle">Canceled Bookings</p>
         <div class="placards">
+            {% if canceled %}
             {% for ca in canceled %}
             <div class="placard">
                 <i class="fa-solid fa-circle-info placard-information" onclick='openModal(event, {{ {
@@ -208,12 +224,16 @@
                         </div>
                     </div>
                     <div class="links ptop">
+                        <a href="{{url_for('view_receipt', booking_id=ca.id)}}">View Receipt</a>
                         <p>Cancel Date: {{ca.cancel_date.strftime('%B %d, %Y')}}</p>
                         <p>Refund Type: {{'None' if ca.refund_type==YesNo.N else 'Full'}}</p>                   
                     </div>
                 </div>
             </div>
             {% endfor %}
+            {% else %}
+            <p class="nothing">No cancellations here&mdash;smooth sailing so far!</p>
+            {% endif %}
         </div>
     </div>
 </div>

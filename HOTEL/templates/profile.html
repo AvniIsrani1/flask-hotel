@@ -21,16 +21,6 @@
 
 {% block content %}
 
-<!-- Flash Message Display -->
-<!-- {% with messages = get_flashed_messages(with_categories=true) %}
-  {% if messages %}
-    {% for category, message in messages %}
-      <div class="flash-message {{ category }}">
-        {{ message }}
-      </div>
-    {% endfor %}
-  {% endif %}
-{% endwith %} -->
 {% with messages = get_flashed_messages(with_categories=true) %}
 {% if messages %}
   <div class="flash-message {{ messages[-1][0] }}">
@@ -53,7 +43,7 @@
             <p>About Me</p>
             <i class="fa-solid fa-caret-down"></i>
         </button>
-        <form method="post" action="{{ url_for('profile') }}" id="profile" class="profile">
+        <form method="post" action="{{ url_for('profile.profile') }}" id="profile" class="profile">
             <input type="hidden" name="ptype" value="profile">
             <input type="text" id="name" name="name" placeholder="Name" value="{{ user.name or '' }}" required>
             <input type="text" id="email" name="email" placeholder="Email" value="{{ user.email }}" disabled>
@@ -117,7 +107,7 @@
             <p>Change Password</p>
             <i class="fa-solid fa-caret-down"></i>
         </button>
-        <form method="post" action="{{ url_for('profile') }}" id="privacy" class="privacy">
+        <form method="post" action="{{ url_for('profile.profile') }}" id="privacy" class="privacy">
             <input type="hidden" name="ptype" value="password_change">
             <input type="password" id="cur_pass" name="cur_pass" placeholder="Current Password" required>
             <input type="password" id="new_pass" name="new_pass" placeholder="New Password" required>
@@ -135,9 +125,9 @@
                     <p class="">Are you sure you want to delete your account?</p>
                     <p class="">This action cannot be undone.</p>
                 </div>
-                <form method="post" action="{{ url_for('profile') }}">
-                    <input type="hidden" name="ptype" value="account_deletion">
-                    <button type="submit" class="sub">Delete</button>
+                <form method="post" action="{{ url_for('profile.profile') }}" id="form-delete-account">
+                    <input type="hidden" name="ptype" value="account_deletion" id="account_deletion">
+                    <input type="button" onclick="deleteAccount()" class="sub" value="Delete">
                 </form>
             </div>
         </div>
@@ -192,6 +182,13 @@
             })
         })
     });
+
+    function deleteAccount(){
+        var d = confirm('Are you sure you want to delete your account? This action cannot be undone.');
+        if(d){
+            document.getElementById('form-delete-account').submit();
+        }
+    }
 </script>
 
 <style>

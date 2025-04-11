@@ -35,7 +35,7 @@
             <br>
         </div>
         <div class="options">
-            <form method="get" action={{url_for('search')}} id="searchbar" class="searchbar">
+            <form method="get" action={{url_for('search.search')}} id="searchbar" class="searchbar">
                 <input type="hidden" name="stype" value="apply_search">
                 <div class="locations">
                     <div class="search-description">
@@ -78,7 +78,7 @@
                     <p>Filters</p>
                 </button>
             </div>
-            <form method="get" action={{url_for('search')}} id="filter-selection">
+            <form method="get" action={{url_for('search.search')}} id="filter-selection">
                 <input type="hidden" name="stype" value="apply_filters">
                 <input type="hidden" name="location_type" value="{{ request.args.get('location_type', '')}}">
                 <input type="hidden" name="startdate" value="{{ request.args.get('startdate', '') }}">
@@ -211,7 +211,7 @@
             {% set location_type = request.args.get('location_type', '') %}
             {% set startdate = request.args.get('startdate', '') %}
             {% set enddate = request.args.get('enddate', '') %}
-            <form method="get" action="{{url_for('reserve')}}" id='submit-room' class="submit-room">
+            <form method="get" action="{{url_for('reserve.reserve')}}" id='submit-room' class="submit-room">
                 <input type="hidden" name="rid" id="submitted-rid" value="{{ min_rid }}">
                 <input type="hidden" name="location_type" id="submitted-location" value="{{ request.args.get('location_type', '')}}">
                 <input type="hidden" name="startdate" id="submitted-startdate" value="{{ request.args.get('startdate', '') }}">

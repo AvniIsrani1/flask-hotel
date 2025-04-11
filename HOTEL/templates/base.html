@@ -22,18 +22,18 @@
       </a>
     </div>
     <nav class="base-links">
-      <a href="{{url_for('search')}}"><i class="fa-solid fa-hotel"></i><p>Reserve</p></a>
+      <a href="{{url_for('search.search')}}"><i class="fa-solid fa-hotel"></i><p>Reserve</p></a>
       <a href=""><i class="fa-solid fa-bell-concierge"></i><p>Amenities</p></a>
       <a href="{{url_for('events')}}"><i class="fa-regular fa-calendar-days"></i><p>Events</p></a>
       <a href="{{url_for('menu1')}}"><i class="fa-solid fa-utensils"></i><p>Dining</p></a>
       {% if session.get('user_name') %}
       <div class="profile-info">
-        <a href="{{ url_for('profile') }}">
+        <a href="{{ url_for('profile.profile') }}">
           <i class="fa-solid fa-user"></i>
           <p>{{ session['user_name'] | upper }}</p>
         </a>
         <nav>
-          <a href="{{ url_for('bookings') }}">
+          <a href="{{ url_for('bookings.bookings') }}">
             <i class="fa-solid fa-calendar-check"></i>
             <p>My Reservations</p>
           </a>
@@ -67,7 +67,7 @@
       <p>QUICK LINKS</p>
       <div class="inner">
         <a href="{{ url_for('home') }}" class="indent">Home</a>
-        <a href="{{url_for('search')}}" class="indent">Reserve</a>
+        <a href="{{url_for('search.search')}}" class="indent">Reserve</a>
         <a href="" class="indent">Amenities</a>
         <a href="{{url_for('events')}}" class="indent">Events</a>
         <a href="{{url_for('menu1')}}" class="indent">Dining</a>

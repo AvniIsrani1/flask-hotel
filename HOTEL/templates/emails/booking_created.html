@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booking Created</title>
+
+</head>
+<body>
+<div class="content">
+    <p>Hi {{user.name or 'Guest'}},</p>
+    
+    <p>Your reservation at <span style="font-weight:bold;">Ocean Vista</span> has been successfully created!</p>
+    <p>Here are your reservation details: </p>
+    <p>Number of Rooms Booked: {{bookings | length}}</p>
+
+    <p style="font-weight:bold;">Room Information: </p>
+    {% for booking in bookings %}
+    <p style="padding-left:50px;">Room #{{loop.index}}</p>
+    <ul style="padding-left:100px;">
+        <li><span style="text-decoration:underline;">Room Description</span>: 
+            {{booking.room.number_beds}}-Bedroom {{booking.room.room_type.value}}
+                {% if booking.room.wheelchair_accessible==YesNo.Y %}
+                    <span> (Wheelchair Accessible) </span>
+                {% endif %}
+                {% if booking.room.balcony==YesNo.Y %}
+                    <span> with Balcony</span>
+                {% endif %}
+                {% if booking.room.ocean_view==YesNo.Y and booking.room.city_view==YesNo.Y %}
+                    <span> - Ocean View, City View</span>
+                {% elif booking.room.ocean_view==YesNo.Y %}
+                    <span> - Ocean View</span>
+                {% elif booking.room.city_view==YesNo.Y %}
+                    <span> - City View</span>
+                {% endif %}
+                {% if booking.room.smoking==YesNo.N %}
+                    <span>| Non-Smoking</span>
+                {% endif %}
+        </li>
+        <li><span style="text-decoration:underline;">Check-In Date</span>: {{booking.check_in.strftime('%B %d, %Y')}}</li>
+        <li><span style="text-decoration:underline;">Check-Out Date</span>: {{booking.check_out.strftime('%B %d, %Y')}} </li>
+        <li><span style="text-decoration:underline;">Special Requests</span>: {{booking.special_requests or 'N/A'}}</li>
+    </ul>
+    {% endfor %}
+    <p style="font-weight:bold;">Guest Information:</p>
+    <ul>
+        <li><span style="text-decoration:underline;">Guest Name</span>: {{booking.name}}</li>
+        <li><span style="text-decoration:underline;">Guest Email</span>: {{booking.email}}</li>
+        <li><span style="text-decoration:underline;">Guest Phone Number</span>: {{booking.phone}}</li>
+        <li><span style="text-decoration:underline;">Number of Guests</span>: {{booking.num_guests}}</li>
+    </ul>
+
+    <p>If you didn’t make this change or if anything doesn’t look right, feel free to contact us or call us at (123) 456-7890 — we’re happy to help.</p>
+    <p>We’re looking forward to welcoming you to Ocean Vista, where relaxation meets the sea.</p>
+
+    <p>Warm regards,</p>
+    <p>The Ocean Vista Team</p>
+</div>
+</body>
+</html>
