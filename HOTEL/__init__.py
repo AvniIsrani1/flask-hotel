@@ -41,7 +41,6 @@ ses_secret_name = "oceanvista_ses"
 # app.register_blueprint(bp_reserve)
 # app.register_blueprint(bp_request_services)
 # app.register_blueprint(bp_search)
-register_blueprints(app)
 
 def get_secrets(secret_name):
     client = boto3.client(service_name='secretsmanager', region_name='us-west-1')
@@ -75,6 +74,8 @@ ai_db = setup_csv_retrieval()
 db.init_app(app)
 mail = Mail(app)
 email_controller = EmailController(mail)
+register_blueprints(app, email_controller)
+
 
 
 model = [Users, Hotel, Floor, Room, Bookings, FAQ, YesNo, Locations, RoomType, Availability, Saved]
@@ -114,23 +115,21 @@ def sign_up():
             return redirect(url_for("sign_up"))
         
         # Check if email already exists
-        existing_user = Users.query.filter_by(email=email).first()
-        if existing_user:
+        if not Users.unique_email(email):
             flash("Email already registered. Please use a different email or login.", "error")
             return redirect(url_for("sign_up"))
         
         # Hash the password before storing for security
-        hashed_pw = generate_password_hash(password)
-        
-        # Create a new user instance
-        new_user = Users(name=name, email=email, password=hashed_pw)
+        user = User.create_initial_user(name,email,password)
+
         
         try:
             # Save the new user to the database
-            db.session.add(new_user)
+            user_db = Users.create_user_db(user)
+            db.session.add(user_db)
             db.session.commit()
             flash("Account created successfully! Please log in.", "success")
-            email_controller.send_welcome_email(user=new_user)
+            email_controller.send_welcome_email(user=user_db)
             return redirect(url_for("log_in"))
         except Exception as e:
             # Roll back the session if there is an error
@@ -148,10 +147,12 @@ def log_in():
         password = request.form.get("password")
         
         # Find user by email
-        user = Users.query.filter_by(email=email).first()
-        
+        user_db = Users.get_user_by_email(email)
+        user = user_db.create_user_object()
+        print(user)
+
         # Check if user exists and if the password is correct
-        if user and check_password_hash(user.password, password):
+        if user and user.verify_password(password):
             # Save user's id and name in session so we know they are logged in
             session["user_id"] = user.id
             session["user_name"] = user.name

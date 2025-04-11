@@ -24,6 +24,14 @@ class Users(db.Model):
     def get_user(cls, id):
         return cls.query.filter(cls.id==id).first()
     
+    @classmethod
+    def get_user_by_email(cls,email):
+        return cls.query.filter(cls.email==email).first()
+    
+    @classmethod
+    def unique_email(cls,email):
+        return cls.get_user_by_email(email) is None
+    
     def create_user_object(self):
         from .Bookings import Bookings 
         booking_objs = db.session.query(Bookings).filter_by(uid=self.id).all()

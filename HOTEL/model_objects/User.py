@@ -20,6 +20,10 @@ class User:
         self.email_notifications = email_notifications
         self.bookings = bookings or []
 
+    @classmethod
+    def create_initial_user(cls,name,email,password):
+        return cls(name=name,email=email,password=generate_password_hash(password))
+
     def update_profile(self, name=None, phone=None, address_line1=None, address_line2=None, city=None, state=None, zipcode=None):
         self.name = name
         self.phone = phone

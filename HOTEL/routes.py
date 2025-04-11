@@ -73,90 +73,93 @@ def profile():
     return render_template("profile.html", user=user_db, YesNo = YesNo)
 
 
-bp_bookings = Blueprint('bookings',__name__)
-@bp_bookings.route("/bookings", methods=["GET", "POST"])
-def bookings():
-    if "user_id" not in session:
-        flash("Please log in first.", "error")
-        return redirect(url_for("log_in"))
-    user = Users.query.get(session["user_id"])
+def booking_routes(email_controller):
+    bp_bookings = Blueprint('bookings',__name__)
 
-    current = Bookings.get_current_user_bookings(Bookings.uid==user.id).all()
-    print(current)
-    future = Bookings.get_future_user_bookings(Bookings.uid==user.id).all()
-    print(future)
-    past = Bookings.get_past_user_bookings(Bookings.uid==user.id).all()
-    canceled = Bookings.get_canceled_user_bookings(Bookings.uid==user.id).all()
+    @bp_bookings.route("/bookings", methods=["GET", "POST"])
+    def bookings():
+        if "user_id" not in session:
+            flash("Please log in first.", "error")
+            return redirect(url_for("log_in"))
+        user = Users.query.get(session["user_id"])
 
-    return render_template('bookings.html', current=current, future=future, past=past, canceled=canceled, YesNo=YesNo)
+        current = Bookings.get_current_user_bookings(Bookings.uid==user.id).all()
+        print(current)
+        future = Bookings.get_future_user_bookings(Bookings.uid==user.id).all()
+        print(future)
+        past = Bookings.get_past_user_bookings(Bookings.uid==user.id).all()
+        canceled = Bookings.get_canceled_user_bookings(Bookings.uid==user.id).all()
 
-@bp_bookings.route("/modify/<int:bid>", methods=["GET", "POST"])
-def modify(bid):
-    modifying = True
-    if "user_id" not in session:
-        flash("Please log in first.", "error")
-        return redirect(url_for("log_in"))
-    user = Users.query.get(session["user_id"])
-    booking_db = Bookings.query.get(bid)
-    booking = booking_db.create_booking_object()
+        return render_template('bookings.html', current=current, future=future, past=past, canceled=canceled, YesNo=YesNo)
 
-    if not booking:
-        flash('Unable to modify booking. Please try again later', 'error')
+    @bp_bookings.route("/modify/<int:bid>", methods=["GET", "POST"])
+    def modify(bid):
+        modifying = True
+        if "user_id" not in session:
+            flash("Please log in first.", "error")
+            return redirect(url_for("log_in"))
+        user = Users.query.get(session["user_id"])
+        booking_db = Bookings.query.get(bid)
+        booking = booking_db.create_booking_object()
+
+        if not booking:
+            flash('Unable to modify booking. Please try again later', 'error')
+            return redirect(url_for('bookings.bookings'))
+        
+        startdate = booking.check_in.strftime("%B %d, %Y")
+        enddate = booking.check_out.strftime("%B %d, %Y")
+
+        room_availability = RoomAvailability(startdate=startdate,enddate=enddate)
+        room_availability.set_rid_room(rid=booking.rid)
+        room=room_availability.get_similar_quantities(status='any').first() #any because just trying to pull up the room details again (not doing any actual booking)
+        print(room)
+        if not room:
+            flash('An error occured. Please try again later','error')
+            return redirect(url_for('bookings.bookings'))
+        rid = booking.rid
+        rooms = 1 #user is able to modify 1 room at a time
+        location_type = None
+        return render_template('reserve.html', user=user, room=room, YesNo=YesNo, rid=rid, location_type=location_type, duration=room_availability.get_duration(), startdate=startdate, enddate=enddate,
+                                name=booking_db.name, phone=booking_db.phone,email=booking_db.email,guests=booking_db.num_guests,rooms=rooms,requests=booking_db.special_requests, 
+                                modifying=modifying, bid=bid)
+
+    @bp_bookings.route("/save/<int:bid>", methods=["GET", "POST"])
+    def save(bid): #currently not able to add more rooms by modifying existing booking
+        # from . import email_controller
+        if "user_id" not in session:
+            flash("Please log in first.", "error")
+            return redirect(url_for("log_in"))
+        user = Users.query.get(session["user_id"])
+        booking_db = Bookings.query.get(bid)
+        booking = booking_db.create_booking_object()
+        message = status = ''
+        if booking:
+            canceled = request.form.get('canceled', 'false')
+            if canceled=='true':
+                booking.cancel()
+                email_controller.send_booking_canceled(user=user,booking=booking,YesNo=YesNo)
+                message='Booking canceled!'
+                status = 'success'
+            else:
+                booking.update_booking(special_requests=request.form.get('requests'), 
+                                name=request.form.get('name', booking.name), 
+                                email = request.form.get('email', booking.email), 
+                                phone=request.form.get('phone', booking.phone), 
+                                num_guests=request.form.get('guests'))
+                email_controller.send_booking_updated(user=user,booking=booking,YesNo=YesNo)
+                message='Booking updated!'
+                status='success'
+            try:
+                result = Bookings.update_bookings_db(booking)
+                print(f'Update result: {result}')
+                db.session.commit()
+                print('Successful commit')
+                flash(message, status)
+            except Exception as e:
+                db.session.rollback()
+                flash(f"An error occurred: {str(e)}. Please try again later.", "error")
         return redirect(url_for('bookings.bookings'))
-    
-    startdate = booking.check_in.strftime("%B %d, %Y")
-    enddate = booking.check_out.strftime("%B %d, %Y")
-
-    room_availability = RoomAvailability(startdate=startdate,enddate=enddate)
-    room_availability.set_rid_room(rid=booking.rid)
-    room=room_availability.get_similar_quantities(status='any').first() #any because just trying to pull up the room details again (not doing any actual booking)
-    print(room)
-    if not room:
-        flash('An error occured. Please try again later','error')
-        return redirect(url_for('bookings.bookings'))
-    rid = booking.rid
-    rooms = 1 #user is able to modify 1 room at a time
-    location_type = None
-    return render_template('reserve.html', user=user, room=room, YesNo=YesNo, rid=rid, location_type=location_type, duration=room_availability.get_duration(), startdate=startdate, enddate=enddate,
-                            name=booking_db.name, phone=booking_db.phone,email=booking_db.email,guests=booking_db.num_guests,rooms=rooms,requests=booking_db.special_requests, 
-                            modifying=modifying, bid=bid)
-
-@bp_bookings.route("/save/<int:bid>", methods=["GET", "POST"])
-def save(bid): #currently not able to add more rooms by modifying existing booking
-    from . import email_controller
-    if "user_id" not in session:
-        flash("Please log in first.", "error")
-        return redirect(url_for("log_in"))
-    user = Users.query.get(session["user_id"])
-    booking_db = Bookings.query.get(bid)
-    booking = booking_db.create_booking_object()
-    message = status = ''
-    if booking:
-        canceled = request.form.get('canceled', 'false')
-        if canceled=='true':
-            booking.cancel()
-            email_controller.send_booking_canceled(user=user,booking=booking,YesNo=YesNo)
-            message='Booking canceled!'
-            status = 'success'
-        else:
-            booking.update_booking(special_requests=request.form.get('requests'), 
-                             name=request.form.get('name', booking.name), 
-                             email = request.form.get('email', booking.email), 
-                             phone=request.form.get('phone', booking.phone), 
-                             num_guests=request.form.get('guests'))
-            email_controller.send_booking_updated(user=user,booking=booking,YesNo=YesNo)
-            message='Booking updated!'
-            status='success'
-        try:
-            result = Bookings.update_bookings_db(booking)
-            print(f'Update result: {result}')
-            db.session.commit()
-            print('Successful commit')
-            flash(message, status)
-        except Exception as e:
-            db.session.rollback()
-            flash(f"An error occurred: {str(e)}. Please try again later.", "error")
-    return redirect(url_for('bookings.bookings'))
+    return bp_bookings
 
 bp_reserve = Blueprint('reserve',__name__)
 @bp_reserve.route("/reserve", methods=["GET", "POST"])
