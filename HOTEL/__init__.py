@@ -177,9 +177,9 @@ def terms():
 def events():
     return render_template('events.html')
 
-@app.route("/menu1")
-def menu1():
-    return render_template('menu1.html')
+@app.route("/menu")
+def menu():
+    return render_template('menus2.html')
 
 @app.route("/faq")
 def faq():
