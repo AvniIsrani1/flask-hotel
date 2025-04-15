@@ -1,0 +1,501 @@
+{% extends 'base.html' %}
+
+{% block title %} Menus {% endblock %}
+
+{% block styles %} 
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/menu_styles.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="content">
+
+    <div class="menu-header">
+        <h1>Menus</h1>
+    </div>
+    
+    <div class="announcements-container">
+        <div class="menu-announcement">
+            <h2 class="announcement-title">Room Service / Custom Requests</h2>
+            <div class="announcement-details">
+                <p>* Available from 5 am - 11:30 pm. Order from your room phone. By dialling your room number + '#' + '8' on the keypad to order room service directly to your room.
+                    Customs ordering from the kicken or orders past open kichen hours will result in an additional $30 fee.
+                </p>
+            </div>
+        </div>
+        <div class="menu-announcement">
+            <h2 class="announcement-title">Food Alergies</h2>
+            <div class="announcement-details">
+                <!-- Icons for Allergies -->
+                <p>* Each Icon will represent if the disk is prepared with this specific of ingrediant.</p>
+                <li>Dairy - <img src="../static/images/imgMenu/Icon_dairy.png" width="20px"></li>
+                <li>Eggs - <img src="../static/images/imgMenu/Icon_eggs.png" width="20px"></li>
+                <li>Wheat - <img src="../static/images/imgMenu/Icon_wheats.png" width="21px"></li>
+                <li>Soy - <img src="../static/images/imgMenu/Icon_soys.png" width="20px"></li>
+                <li>Fish - <img src="../static/images/imgMenu/Icon_fishs.png" width="20px"></li>
+                <li>ShellFish - <img src="../static/images/imgMenu/Icon_shell.png" width="20px"></li>
+                <li>Sesame - <img src="../static/images/imgMenu/Icon_sesame.png" width="20px"></li>
+            </div>
+        </div>
+    </div>
+
+    <!-- header for the menu resterant  -->
+    <div class="menu-header">
+        <h1>Ocean Vista Restaurant</h1>
+    </div>
+
+    <div class="menu-container" id="menu-container" > </div>
+
+    <script>
+        
+        const menuData = {
+        breakfast: {
+        title: "Breakfast",
+        items: [
+        {
+            name: "French Toast " ,
+            price: "$12.50",
+            image: "../static/images/imgMenu/FrenchToast.webp",
+            info: "<p>(5 pieces of toast per serving)</p>Ingredients: Bread challah, eggs, milk, vanilla, cinnamon, butter, maple syrup, strawberries, blueberries.",
+            nutrition: "Calories: 450 | Protein: 10g | Carbs: 20g"
+        },
+        {
+            name: "Eggs Benedict",
+            price: "$10",
+            image: "../static/images/imgMenu/eggsBenedict.webp",
+            info: "Ingredients: English muffins, Canadian bacon/ham, eggs, butter, lemon juice, salt, cayenne pepper.",
+            nutrition: "Calories: 550 | Protein: 33g | Carbs: 25g"
+        },
+        {
+            name: "Banana and Waffles",
+            price: "$17.25",
+            image: "../static/images/imgMenu/bananaWaffles.webp",
+            info: "<p>(2 waffles per serving)</p>Ingredients: Flour, eggs, milk, baking powder, sugar, butter, bananas, walnuts, maple syrup, whipped cream.",
+            nutrition: "Calories: 700 | Protein: 15g | Carbs: 90g"
+        },
+        {
+            name: "Fiddle Head and Bacon Omelette",
+            price: "$15.50",
+            image: "../static/images/imgMenu/FiddleheadandBaconOmelette.webp",
+            info: "Ingredients: Eggs, butter, cheese, tomatoes, onions, celantro, chives, salt, pepper, bacon.",
+            nutrition: "Calories: 450 | Protein: 10g | Carbs: 20g"
+        },
+        {
+            name: "Yogurt Parfait",
+            price: "$8",
+            image: "../static/images/imgMenu/YogurtParfait.webp",
+            info: "Ingredients: Greek yogurt, granola, fresh strawberries, mangoes, banana, peaches, honey as a sweetener.",
+            nutrition: "Calories: 270 | Protein: 40g | Carbs: 15g"
+        },
+        {
+            name: "Banana Pancakes",
+            price: "$13.25",
+            image: "../static/images/imgMenu/BananaPancakes.webp",
+            info: "<p>(3 pancakes per serving)</p>A layered yogurt parfait served in a clear glass. Contains layers of white yogurt, fresh fruit (strawberries, mango, peach, banana), and granola.",
+            nutrition: "Calories: 600 | Protein: 90g | Carbs: 15g"
+        },
+        {
+            name: "SouthWest BreakFast Burritos",
+            price: "$12",
+            image: "../static/images/imgMenu/SouthwestBreakFastBurritos.webp",
+            info: "Ingredients: Flour tortilla, eggs, ground beef or sausage, beans (likely pinto or black), cheddar cheese, tomatoes, green bell peppers, onions, spices like cumin and chili powder, possibly sour cream.",
+            nutrition: "Calories: 550 | Protein: 30g | Carbs: 50g"
+        }
+        ]
+        },
+            // Dining menu
+        dinner: {
+        title: "Dinner",
+        items: [
+        {
+            name: "French Pork Rillettes",
+            price: "$18.70",
+            image: "../static/images/imgMenu/FrenchPorkRillettes.webp",
+            info: "Ingredients: Pork, herbs, spices, garlic, shallots, butter or fat, baguette, olive oil.",
+            nutrition: "Calories: 400 | Protein: 15g | Carbs: 30g"
+        },
+        {
+            name: "Crab Cakes",
+            price: "$17",
+            image: "../static/images/imgMenu/CrabCakes.webp",
+            info: "Ingredients: Lump crab meat, breadcrumbs, mayonnaise, Dijon mustard, egg, bell peppers, green onions, Old Bay seasoning, lemon.",
+            nutrition: "Calories: 325 | Protein: 25g | Carbs: 15g"
+        },
+        {
+            name: "Steamed Mussels in White Wine",
+            price: "$18",
+            image: "../static/images/imgMenu/SteamedMusselsInWhiteWine.webp",
+            info: "Ingredients: Fresh mussels, white wine, garlic, shallots, butter, fresh herbs (parsley, thyme), lemon, black pepper, crusty bread.",
+            nutrition: "Calories: 200 | Protein: 20g | Carbs: 8g"
+        },
+        {
+            name: "Crispy Fried Oyster",
+            price: "$20",
+            image: "../static/images/imgMenu/CrispyFriedOyster.webp",
+            info: "(Per serving of 6 oysters) Ingredients: Fresh oysters, cornmeal, flour, eggs, seasoning (likely cayenne, salt, pepper), vegetable oil for frying.",
+            nutrition: "Calories: 400 | Protein: 25g | Carbs: 30g"
+        },
+        {
+            name: "Shrimp Ceviche",
+            price: "$15",
+            image: "../static/images/imgMenu/ShrimpCeviche.webp",
+            info: "Ingredients: Shrimp, lime juice, lemon juice, tomatoes, red onion, jalapeño and serrano peppers, avocado, cilantro, salt, black pepper, corn tortilla chips.",
+            nutrition: "Calories: 225 | Protein: 25g | Carbs: 15g"
+        },
+        {
+            name: "Salmon with Potatoes Spinach CiderCream",
+            price: "$20",
+            image: "../static/images/imgMenu/SalmonwithPotatoesSpinachCiderCream.webp",
+            info: "Ingredients: Salmon fillet, olive oil, salt, pepper, potatoes, leafy greens, garlic, lemon.",
+            nutrition: "Calories: 450 | Protein: 35g | Carbs: 25g"
+        },
+        {
+            name: "Beef Wellington",
+            price: "$22",
+            image: "../static/images/imgMenu/BeefWellington.webp",
+            info: "Ingredients: Beef tenderloin, puff pastry, mushrooms, shallots, herbs (thyme, parsley), prosciutto or ham, Dijon mustard, egg wash.",
+            nutrition: "Calories: 700 | Protein: 45g | Carbs: 30g"
+        },
+        {
+            name: "Baked Stuffed Lobster",
+            price: "$40",
+            image: "../static/images/imgMenu/BakedStuffedLobster.webp",
+            info: "Ingredients: Lobster, butter, breadcrumbs, herbs (likely parsley), garlic, lemon, possibly white wine or brandy.",
+            nutrition: "Calories: 400 | Protein: 35g | Carbs: 8g"
+        },
+        {
+            name: "Herb Broiled Chicken",
+            price: "$27",
+            image: "../static/images/imgMenu/Herb BroiledChickenRecipe.webp",
+            info: "Ingredients: Whole chicken, olive oil, salt, pepper, herbs, garlic, parsley, cilantro, oregano, red pepper flakes, vinegar, lemon.",
+            nutrition: "(per serving, 1/4 chicken): Calories: 350 | Protein: 45g | Carbs: 4g"
+        },
+        {
+            name: "Seafood Paella with Pork and Chicken",
+            price: "$26",
+            image: "../static/images/imgMenu/SeafoodPaellaWithPorkandChicken.webp",
+            info: "Ingredients: Short-grain rice, saffron, olive oil, onions, garlic, bell peppers, tomatoes, green peas, shrimp, mussels, white wine, fish or chicken stock, parsley, salt, pepper, paprika.",
+            nutrition: "Calories: 500 | Protein: 70g | Carbs: 25g"
+        },
+        {
+            name: "Roasted Rack of Lamb",
+            price: "$26.50",
+            image: "../static/images/imgMenu/RoastedRackofLamb.webp",
+            info: "Ingredients: Rack of lamb, herbs (rosemary, thyme, parsley), breadcrumbs, Dijon mustard, garlic, olive oil.",
+            nutrition: "(per 2-3 chops): Calories: 400 | Protein: 40g | Carbs: 8g"
+        }
+        ]
+        },
+
+            //Dessert menu
+        dessert: {
+        title: "Dessert",
+        items: [
+        {
+            name: "Baked Alaska",
+            price: "$8",
+            image: "../static/images/imgMenu/BakedAlaska.webp",
+            info: "Ingredients: Egg whites, sugar, vanilla extract, pink strawberry or raspberry ice cream, vanilla ice cream, sponge cake, and a touch of liqueur.",
+            nutrition: "Calories: 400 | Protein: 8g | Carbs: 55g"
+        },
+        {
+            name: "Caramel Flan",
+            price: "$9",
+            image: "../static/images/imgMenu/CaramelFlan.webp",
+            info: "Ingredients: Heavy cream, egg yolks, sugar, vanilla bean or extract.",
+            nutrition: "Calories: 300 | Protein: 5g | Carbs: 30g"
+        },
+        {
+            name: "Lemon Creme Brulee",
+            price: "$10",
+            image: "../static/images/imgMenu/LemonCremeBrulee.webp",
+            info: "Heavy cream, Egg yolks, Granulated sugar, Vanilla extract, Fresh lemon juice, Lemon zest, Salt, Turbinado",
+            nutrition: "Calories: 380 | Protein: 5g | Carbs: 32g"
+        },
+        {
+            name: "Dark Chocolate Molten Lava cake",
+            price: "$7",
+            image: "../static/images/imgMenu/DarkChocolateMoltenLavacake.webp",
+            info: "Ingredients: Dark chocolate, butter, eggs, sugar, flour, vanilla extract, vanilla ice cream.",
+            nutrition: "Calories: 270 | Protein: 40g | Carbs: 15g"
+        },
+        {
+            name: "Lemon Blueberry Scones",
+            price: "$5",
+            image: "../static/images/imgMenu/LemonBlueberryScones.webp",
+            info: "Ingredients: Flour, butter, sugar, baking powder, eggs, cream or milk, vanilla, blueberries, lemon (zest and juice), powdered sugar.",
+            nutrition: "Calories: 300 | Protein: 5g | Carbs: 40g"
+        },
+        {
+            name: "New York Cheesecake",
+            price: "$8",
+            image: "../static/images/imgMenu/NewYorkChessecake.avif",
+            info: "Cream cheese (the primary ingredient, providing the dense texture), Sugar, Eggs, Heavy cream, Vanilla extract, Graham cracker crust (typically made with graham crackers, butter, and sugar)",
+            nutrition: "Calories: 500 | Protein: 9g | Carbs: 30g"
+        },
+        {
+            name: "Holy Cannoli's",
+            price: "$11",
+            image: "../static/images/imgMenu/HolyCannoli_s.avif",
+            info: "Ingredients: Chocolate cake, sweetened cream/mascarpone filling, whipped cream, cherry garnish",
+            nutrition: "Calories: 500 | Protein: 8g | Carbs: 50g"
+        },
+        {
+            name: "StrawBerry Cheesecake",
+            price: "$8",
+            image: "../static/images/imgMenu/StrawBerryChessecake.avif",
+            info: "Cream cheese, sugar, eggs, vanilla extract, graham crackers, butter, fresh strawberries, heavy cream, sour cream (sometimes), cornstarch (for glazes), lemon juice",
+            nutrition: "Calories: 500 | Protein: 9g | Carbs: 35g"
+        }
+        ]
+        },
+            //Kids menu
+        kids: {
+        title: "Kids Meal",
+        items: [
+        {
+            name: "Grilled Cheese",
+            price: "$12.50",
+            image: "../static/images/imgMenu/grilledcheese.jpg",
+            info: "Ingredients: White bread, butter, American or cheddar cheese",
+            nutrition: "Calories: 300 | Protein: 12g | Carbs: 30g"
+        },
+        {
+            name: "Chicken Tenders with Fries",
+            price: "$16.50",
+            image: "../static/images/imgMenu/TendersFries.jpg",
+            info: "<p>(4 pieces tender per serving)</p>Ingredients: For chicken tenders: Chicken breast, flour, eggs, breadcrumbs, salt, pepper, various spicesfor french fries: Potatoes, vegetable oil, salt",
+            nutrition: "Tenders Calories: 450 | Protein: 40g | Carbs: 20g",
+            nutrition: "Fries Calories: 300 | Protein: 5g | Carbs: 40g"
+        },
+        {
+            name: "Pizza Slice",
+            price: "$7.25",
+            image: "../static/images/imgMenu/pepperoni-pizza.webp",
+            info: "<p>(1 slice)</p> Types: Cheese , Pepperoni , Hawiian , MeatLovers ",
+        },
+        ]
+        },
+            //Drinks menu
+        drinks: {
+        title: "Drinks",
+        items: [
+        {
+            name: "Soft Drink",
+            price: "$3",
+            image: "../static/images/imgMenu/beverages-soft-drinks.jpg.webp",
+            info: "Cola - Cola, Dr.Pepper, Sprite, Fanta, RootBeer, Pepsi<p>(16 oz cup)</p>",
+            nutrition: ""
+        },
+        {
+            name: "Sunset Lemonade",
+            price: "$6.50",
+            image: "../static/images/imgMenu/beverages-sunset-lemonade.jpg.webp",
+            info: "Ingredients: Fruit juices (likely orange/pineapple), grenadine for the red color, ice, orange garnish<p>(16 oz cup)</p>",
+            nutrition: "Calories: 175 | Protein: 0g | Carbs: 30g"
+        },
+        {
+            name: "Raspberry Lemonade",
+            price: "$6.50",
+            image: "../static/images/imgMenu/beverages-raspberry-flavored-lemonade.jpg.webp",
+            info: "Ingredients: Lemonade, rasberry juice, slice of lemon<p>(16 oz cup)</p>",
+            nutrition: "Calories: 380 | Protein: 4g | Carbs: 50g"
+        },
+        {
+            name: "Dr.Pepper CreamSoda",
+            price: "$8",
+            image: "../static/images/imgMenu/beverages-dr-pepper-creamsoda.jpg.webp",
+            info: "Ingredients: Dr. Pepper, Vanilla icecream, chocolate chips, whip cream, and cherry<p>(16 oz cup)</p>",
+            nutrition: "Calories: 270 | Protein: 40g | Carbs: 15g"
+        },
+        {
+            name: "Root Beer Float",
+            price: "$10",
+            image: "../static/images/imgMenu/beverages-root-beer-float.jpg.webp",
+            info: "Ingredients: Root beer soda, vanilla ice cream<p>(16 oz cup)</p>",
+            nutrition: "Calories: 300 | Protein: 3g | Carbs: 50g"
+        },
+        {
+            name: "Milk",
+            price: "$3",
+            image: "../static/images/imgMenu/Milkglass.webp",
+            info: "Types: Whole milk, 2% milk, 1% milk , Almande milk <p>(16 oz cup)</p>",
+        },
+        {
+            name: "Red Bull",
+            price: "$5",
+            image: "../static/images/imgMenu/red-bull-can_0.jpg.webp",
+        },
+        {
+            name: "Virgin Pina Colada",
+            price: "$11",
+            image: "../static/images/imgMenu/PinaColada.webp",
+            info: "Ingredients: Coconut cream, pineapple juice, pineapple garnish, cherry<p>(13 oz cup)</p>",
+            nutrition: "Calories: 400 | Protein: 2g | Carbs: 28g",
+        },
+        {
+            name: "Virgin Pink Panther",
+            price: "$12",
+            image: "../static/images/imgMenu/PinkPanther.jpg",
+            info: "Ingredients: coconut cream, pineapple juice, strawberry or fruit puree for color, pineapple garnish<p>(13 oz cup)</p>",
+            nutrition: "Calories: 300 | Protein: 2g | Carbs: 35g"
+        }
+        ]
+        },
+            //Bar menu
+        Alcohol: {
+        title: "Bar",
+        items: [
+        {
+            name: "Pina Colada",
+            price: "$13",
+            image: "../static/images/imgMenu/PinaColada.webp",
+            info: "Ingredients: Coconut cream, Rum, pineapple juice, pineapple garnish, cherry<p>(13 oz cup)</p>",
+            nutrition: "Calories: 400 | Protein: 2g | Carbs: 28g"
+        },
+        {
+            name: "Pink Panther",
+            price: "$14",
+            image: "../static/images/imgMenu/PinkPanther.jpg",
+            info: "Ingredients: coconut cream, Rum, pineapple juice, strawberry or fruit puree for color, pineapple garnish<p>(13 oz cup)</p>",
+            nutrition: "Calories: 300 | Protein: 2g | Carbs: 35g"
+        },
+        {
+            name: "Don Julio",
+            price: "$125",
+            image: "../static/images/imgMenu/DonJulio.jpeg",
+            info: "<p>( Full Bottle 750lm ) </p>",
+        },
+        {
+            name: "Grey Goose",
+            price: "$150",
+            image: "../static/images/imgMenu/greygoose.webp",
+            info: "<p>(Full Bottle 1.5L)</p>",
+        },
+        {
+            name: "Beer",
+            price: "$7",
+            image: "../static/images/imgMenu/Beer.webp",
+            info: "<p>(1 bottle - 16oz)</p> Types: Budweiser , Blue Moon , Samuel Adam , Corona , Heineken , Coors Light ",
+        },
+        {
+            name: "Jack Daniel",
+            price: "$40",
+            image: "../static/images/imgMenu/JackDaniel.webp",
+            info: "<p>(Full Bottle 1.5L)</p>",
+        },
+        ]
+        },
+
+        };
+
+
+        // Function to create a menu item element
+        function createMenuItem(item) {
+            const menuItem = document.createElement('div');
+            menuItem.className = 'menu-item';
+            
+            // Check if the item has info to display on the front and back
+            if (item.info) {
+                menuItem.innerHTML = `
+                    <div class="flipper">
+                        <div class="front">
+                            <div class="item-image">
+                                <img src="${item.image}" width="300" height="275" alt="${item.name}">
+                            </div>
+                            <h3 class="item-title">${item.name}</h3>
+                            <span class="item-price">${item.price}</span>
+                            <h4 class="ClickHere">click for info</h4>
+                        </div>
+                        <div class="Back">
+                            <div class="Back-card">
+                                <div class="item-title">${item.name}</div>
+                                <div class="Food-info">
+                                    ${item.info}
+                                </div>
+                                ${item.nutrition ? `<div class="Nutrition-info">${item.nutrition}</div>` : ''}
+                                <div class="fip-instru">
+                                    Click to flip back
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else {
+                // For items without flip info 
+                menuItem.innerHTML = `
+                    <div class="item-image">
+                        <img src="${item.image}" width="300" height="275" alt="${item.name}">
+                    </div>
+                    <h3 class="item-title">${item.name}</h3>
+                    <span class="item-price">${item.price}</span>
+                `;
+            }
+            
+            return menuItem;
+        }
+
+        // Function to create a section with its items
+        function createMenuSection(sectionKey) {
+            const section = menuData[sectionKey];
+            
+            const sectionElement = document.createElement('div');
+            sectionElement.className = 'menu-section';
+            
+            // Add section title
+            const titleElement = document.createElement('h2');
+            titleElement.className = 'section-title';
+            titleElement.textContent = section.title;
+            sectionElement.appendChild(titleElement);
+            
+            // Create table for menu items
+            const tableElement = document.createElement('div');
+            tableElement.className = 'menu-table';
+            
+            // Add each menu item
+            section.items.forEach(item => {
+                const menuItemElement = createMenuItem(item);
+                tableElement.appendChild(menuItemElement);
+            });
+            
+            sectionElement.appendChild(tableElement);
+            return sectionElement;
+        }
+
+        // render the entire menu
+        function renderMenu() {
+            const menuContainer = document.getElementById('menu-container');
+            
+            // Clear existing content
+            menuContainer.innerHTML = '';
+            
+            // Add each section in order
+            ['breakfast', 'dinner', 'dessert', 'kids', 'drinks', 'Alcohol'].forEach(sectionKey => {
+                const sectionElement = createMenuSection(sectionKey);
+                menuContainer.appendChild(sectionElement);
+            });
+        }
+
+        // Function to add a new menu item to a specific section
+        function addMenuItem(sectionKey, item) {
+            if (!menuData[sectionKey]) {
+                console.error(`Section "${sectionKey}" does not exist`);
+                return;
+            }
+            
+            menuData[sectionKey].items.push(item);
+            
+            // Re-render the menu
+            renderMenu();
+        }
+
+        document.addEventListener('DOMContentLoaded', renderMenu);
+
+    </script>
+
+
+        <!-- script to flip the cards around -->
+        <script src="js/cardFlip.js"></script>  {% comment %} might have to change it {% endcomment %}
+
+</div>
+
+{% endblock %}
