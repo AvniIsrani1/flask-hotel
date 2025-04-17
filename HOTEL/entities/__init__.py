@@ -1,5 +1,5 @@
 from ..db import db
-
+from .Creditcard import Creditcard
 from .Users import Users
 from .Bookings import Bookings
 from .Services import Services
@@ -13,6 +13,6 @@ from .Enums import Locations, YesNo, RoomType, Assistance, Availability, SType, 
 
 __all__ = ['Users', 'Bookings', 'Services',
            'Hotel','Floor','Room',
-           'FAQ','Saved',
+           'FAQ','Saved','Creditcard',
            'Locations', 'YesNo', 'RoomType', 'Assistance', 'Availability', 'SType','Status']
 
