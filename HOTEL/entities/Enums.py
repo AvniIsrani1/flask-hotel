@@ -39,17 +39,12 @@ class Availability(PyEnum):
     M = 'Maintenance'
 
 class SType(PyEnum):
-    """
-    Enum representing service types.
-    
-    Defines the categories of services that can be requested.
-    """
-    I = 'Items'
+    I = 'Items Needed'
     H = 'Housekeeping'
-    T = 'Trash'
-    C = 'Call'
-    D = 'Dining'
-    A = 'Assistance'
+    T = 'Trash Cleanup'
+    C = 'Wake-Up Call'
+    D = 'Dining Reservation'
+    A = 'Assistance Needed'
     O = 'Other'
 
 class Assistance(PyEnum):

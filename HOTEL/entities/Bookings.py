@@ -6,6 +6,11 @@ from ..db import db
 
 class Bookings(db.Model):
     __tablename__ = 'bookings'
+    """
+    A table for storing reservation details. 
+    Has a foreign key to the Users and Rooms tables.
+    Has a 2-way relationship with the Services table.
+    """
     id = db.Column(db.Integer, primary_key=True, autoincrement=True) 
     uid = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     rid = db.Column(db.Integer, db.ForeignKey('room.id'), nullable=False)
@@ -22,6 +27,19 @@ class Bookings(db.Model):
     services = db.relationship('Services', backref='users', lazy=True, cascade='all, delete-orphan')
 
     def update_booking(self, special_requests, name, email, phone, num_guests):
+        """
+        Update booking details.
+
+        Args: 
+            special_requests (str): The special requests made by the user.
+            name (str): The name the booking is made under.
+            email (str): The email address specified by the user.
+            phone (str): The phone number specified by the user.
+            num_guests (str): The number of guests.
+
+        Returns:
+            None
+        """
         self.special_requests = special_requests
         self.name = name
         self.email = email
@@ -29,48 +47,139 @@ class Bookings(db.Model):
         self.num_guests=num_guests
 
     def full_refund(self):
+        """
+        Check if a full refund should be issued upon cancellation.
+
+        Args:
+            None
+
+        Returns:
+            YesNo: YesNo.N if check_in is within 2 days of today, else YesNo.Y
+        """
         today = datetime.now()
         if (self.check_in - today).days >= 2:
             return YesNo.Y
         return YesNo.N
     
     def cancel(self):
+        """
+        Cancel the booking.
+
+        Args:
+            None
+
+        Returns:
+            None
+        """
         today = datetime.now()
         self.refund_type = self.full_refund()
         self.cancel_date = today
 
     @classmethod
     def add_booking(cls, uid, rid, check_in, check_out, fees, special_requests, name, email, phone, num_guests):
+        """
+        Creaate and commit a booking
+        
+        Args:
+            uid (int): The unique ID of the user.
+            rid (int): The unique ID of the room to reserve.
+            check_in (datetime): The check in date.
+            check_out (datetime): The check out date.
+            fees (int): The flat rate per night. 
+            special_requests (str): Special requests made by the user.
+            name (str): The name the booking is under.
+            email (str): The email address specified by the user.
+            phone (str): The phone number specified by the user.
+            num_guests (str): The number of guests.
+        
+        Returns:
+            None
+        """
         booking = cls(uid=uid, rid=rid, check_in=check_in, check_out=check_out, fees=fees, special_requests=special_requests, name=name, email=email, phone=phone, num_guests=num_guests)
         db.session.add(booking)
         db.session.commit()
 
     @classmethod
     def get_booking(cls, id):
+        """
+        Retrieve a booking by its unique ID.
+
+        Args:
+            id (int): The unique ID of the booking.
+
+        Returns:
+            Booking | None: The Booking object if found, else None.
+        """
         return cls.query.get(id)
 
     @classmethod
     def get_current_user_bookings(cls,uid):
+        """
+        Retrieve a user's current (active) bookings.
+        
+        Args:
+            uid (int): The unique ID of the user.
+        
+        Returns:
+            list[Booking]: A list of the user's current (active) bookings.
+        """
         today = datetime.now()
         return cls.query.filter(cls.uid==uid, cls.check_in<=today, cls.check_out>=today, cls.cancel_date.is_(None)).order_by(asc(cls.check_in), asc(cls.check_out)).all()
 
     @classmethod
     def get_specific_current_user_bookings(cls,uid,bid):
+        """
+        Retrieve a user's booking by its unique ID.
+
+        Args:
+            uid: The unique ID of the user.
+            bid: The unique ID of the booking.
+
+        Returns:
+            Booking | None: The Booking object if found, else None.
+        """
         today = datetime.now()
         return cls.query.filter(cls.uid==uid, cls.id==bid, cls.check_in<=today,cls.check_out>=today, cls.cancel_date.is_(None)).order_by(asc(cls.check_in), asc(cls.check_out)).first()
 
     @classmethod
     def get_future_user_bookings(cls,uid):
+        """
+        Retrieve a user's future bookings. 
+
+        Args:
+            uid (int): The unique ID of the user.
+        
+        Returns:
+            list[Booking]: A list of the user's future bookings.
+        """
         today = datetime.now()
         return cls.query.filter(cls.uid==uid,cls.check_in>today, cls.cancel_date.is_(None)).order_by(asc(cls.check_in), asc(cls.check_out)).all()
     
     @classmethod
     def get_past_user_bookings(cls,uid):
+        """
+        Retrieve a user's past, completed bookings.
+
+        Args:
+            uid (int): The unique ID of the user.
+
+        Returns:
+            list[Booking]: A list of the user's past, completed bookings.
+        """
         today = datetime.now()
         return cls.query.filter(cls.uid==uid, cls.check_out<today, cls.cancel_date.is_(None)).order_by(asc(cls.check_in), asc(cls.check_out)).all()
     
     @classmethod
     def get_canceled_user_bookings(cls,uid):
+        """
+        Retrieve a user's cancelled bookings. 
+
+        Args:
+            uid (int): The unique ID of the user.
+
+        Returns:
+            list[Booking]: A list of the user's cancelled bookings.
+        """
         return cls.query.filter(cls.uid==uid, cls.cancel_date.isnot(None)).order_by(desc(cls.check_in), asc(cls.check_out)).all()
     
 

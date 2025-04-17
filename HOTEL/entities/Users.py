@@ -4,6 +4,10 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 
 class Users(db.Model):
+    """
+    A table for storing user information and profile settings.
+    Maintains a 2-way relationship with the Bookings table.
+    """
     __tablename__ = 'users'  # Name of the table in the database
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)  # Unique id for each user
     name = db.Column(db.String(150), nullable=False)  # User's name
@@ -23,21 +27,76 @@ class Users(db.Model):
     
     @classmethod
     def get_user(cls, id):
+        """
+        Retrieve a user by their unique ID.
+
+        Args: 
+            id (int): The unique ID of the user.
+
+        Returns:
+            User | None: The User object if found, else None.
+        """
         return cls.query.filter(cls.id==id).first()
     
     @classmethod
     def get_user_by_email(cls,email):
+        """
+        Retrieve a user by their unique email address.
+
+        Args:
+            email (str): The email address to check for.
+        
+        Returns:
+            User | None: The User object if found, else None    
+        """
         return cls.query.filter(cls.email==email).first()
     
     @classmethod
     def unique_email(cls,email):
+        """
+        Check if the email specified is unique among all users.
+        
+        Args:
+            email (str): The email address to search for.
+
+        Returns:
+            bool: True if the email address is unique, else False
+        """
         return cls.get_user_by_email(email) is None
     
     @classmethod
     def create_initial_user(cls,name,email,password):
+        """
+        Create a new User object with hashed password.
+
+        Args:
+            name (str): The name of the user.
+            email (str): The unique email address of the user.
+            password (str): The password of the user in plaintext.
+
+        Returns:
+            User: A new User object with the provided name, email, and hashed password.
+        """
         return cls(name=name,email=email,password=generate_password_hash(password))
 
     def update_profile(self, name=None, phone=None, address_line1=None, address_line2=None, city=None, state=None, zipcode=None):
+        """
+        Update the user's profile information. 
+        If name and phone are provided, the user's first_login is set to YesNo.N.
+
+        Args:
+            name (str, optional): Updated name.
+            phone (str, optional): Updated phone number.
+            address_line1 (str, optional): Updated address line 1.
+            address_line2 (str, optional): Updated address line 2.
+            city (str, optional): Updated city.
+            state (str, optional): Updated state.
+            zipcode (str, optional): Updated zipcode.
+        
+        Returns:
+            None
+
+        """
         self.name = name
         self.phone = phone
         self.address_line1 = address_line1
@@ -45,15 +104,43 @@ class Users(db.Model):
         self.city = city
         self.state = state
         self.zipcode = zipcode
-        if self.name and self.phone: #what information do we most want from user??
+        if self.name and self.phone: 
             self.first_login = YesNo.N
 
     def update_notifications(self, text_notifications, email_notifications):
+        """
+        Update the user's notification settings.
+
+        Args:
+            text_notifications (YesNo): New text notification setting.
+            email_notifications (YesNo): New email notification setting.
+
+        Returns:
+            None
+        """
         self.text_notifications = text_notifications
         self.email_notifications = email_notifications
     
     def verify_password(self, entered_password):
+        """
+        Check if the user's saved password matches the entered password.
+
+        Args:
+            entered_password (str): The plaintext password to verify.
+
+        Returns:
+            bool: True if the entered password matches the user's password, else False
+        """
         return check_password_hash(self.password, entered_password)
     
     def change_password(self, new_password):
+        """
+        Update the user's password after hashing the new password.
+
+        Args:
+            new_password (str): The plaintext password to update to.
+
+        Returns:
+            None
+        """
         self.password = generate_password_hash(new_password)
