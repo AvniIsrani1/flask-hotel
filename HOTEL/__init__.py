@@ -15,7 +15,7 @@ from .db import db
 #all will evantually become plural here
 
 from .controllers import RoomAvailability #will remove this line once payment is moved to routes.py
-from .adding import add_layout
+#from .adding import add_layout
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
 from HOTEL.AImodels.ai_model import load_ai_model, generate_ai_response
@@ -177,9 +177,9 @@ def terms():
 def events():
     return render_template('events.html')
 
-@app.route("/menu1")
-def menu1():
-    return render_template('menu1.html')
+@app.route("/menu")
+def menu():
+    return render_template('menus2.html')
 
 @app.route("/faq")
 def faq():
