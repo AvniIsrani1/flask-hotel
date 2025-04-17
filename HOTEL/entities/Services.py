@@ -1,11 +1,15 @@
 from ..db import db
-from sqlalchemy import DateTime, distinct, Computed
+from sqlalchemy import DateTime, Date, cast, distinct, Computed
 from datetime import datetime, timedelta
 from .Enums import YesNo, Assistance, SType, Status
 
 
 class Services(db.Model):
     __tablename__ = 'services'
+    """
+    A table to keep track of service request information.
+    Has a foreign key to the Bookings table.
+    """
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     bid = db.Column(db.Integer, db.ForeignKey('bookings.id'), nullable=False) 
     issued = db.Column(DateTime, nullable=False)
@@ -34,6 +38,27 @@ class Services(db.Model):
 
     @classmethod
     def add_item(cls, bid,robes=0, btowels=0, htowels=0, soap=0, shampoo=0, conditioner=0, wash=0, lotion=0, hdryer=0, pillows=0, blankets=0, sheets=0):
+        """
+        Create an request for items.
+
+        Args:
+            bid (int): The unique ID of the booking.
+            robes (int): The number of robes requested.
+            btowels (int): The number of bath towels requested.
+            htowels (int): The number of hand towels requested.
+            soap (int): The number of soaps requested.
+            shampoo (int): The number of shampoo bottles requested.
+            conditioner (int): The number of conditioner bottles requested.
+            wash (int): The number of body wash bottles requested.
+            lotion (int): The number of lotion bottles requested.
+            hdryer (int): The number of hair dryers requested.
+            pillows (int): The number of pillows requested.
+            blankets (int): The number of blankets requested.
+            sheets (int): The number of sheets requested. 
+
+        Returns:
+            Service: The item request.
+        """
         today = datetime.now()
         return cls(
             bid=bid,
@@ -45,6 +70,13 @@ class Services(db.Model):
     
     @classmethod
     def add_housekeeping(cls, bid, housetime, validate_check_out):
+        """
+        Create a request for housekeeping service.
+
+        Args:
+            bid (int): The unique ID of the booking.
+            housetime (datetime): The 
+        """
         today = datetime.now()
         housedatetime = datetime.combine(today.date(), housetime)
         if housedatetime < today:
@@ -93,3 +125,4 @@ class Services(db.Model):
             self.status = new_status
             return True
         return False
+    

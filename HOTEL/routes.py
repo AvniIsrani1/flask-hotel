@@ -1,8 +1,8 @@
 from flask import Flask, Blueprint, jsonify, render_template, request, redirect, url_for, session, flash, get_flashed_messages
 from .db import db
-from sqlalchemy import DateTime, distinct, desc, asc, cast, func, not_, String, Computed
-from datetime import datetime, timedelta
-from .entities import Users, Bookings, Services, Hotel, Floor, Room, YesNo, Assistance, Locations, Availability, RoomType
+from sqlalchemy import DateTime, Date, cast, distinct, desc, asc, cast, func, not_, String, Computed
+from datetime import datetime, date, timedelta
+from .entities import Users, Bookings, Services, Hotel, Floor, Room, YesNo, Assistance, Locations, Availability, RoomType, Status, SType
 from .controllers import SearchController
 from .controllers import RoomAvailability
 from datetime import datetime
@@ -298,3 +298,13 @@ def search():
     rooms = search_controller.get_search()
     print(rooms)
     return render_template('search.html', locations=locations, roomtypes=roomtypes, rooms=rooms, YesNo = YesNo)
+
+bp_staff = Blueprint('staff',__name__)
+@bp_search.route("/tasks", methods=["GET", "POST"])
+def tasks():
+    today = date.today()
+    current_tasks = Services.query.filter(cast(Services.issued, Date) >= today).order_by(
+            asc(Services.issued), asc(Services.bid), asc(Services.stype)
+        ).all()
+    print(current_tasks)
+    return render_template('tasks.html', current_tasks=current_tasks, Status=Status, SType=SType)

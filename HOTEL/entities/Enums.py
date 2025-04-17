@@ -15,12 +15,12 @@ class Availability(PyEnum):
     B = 'Booked'
     M = 'Maintenance'
 class SType(PyEnum):
-    I = 'Items'
+    I = 'Items Needed'
     H = 'Housekeeping'
-    T = 'Trash'
-    C = 'Call'
-    D = 'Dining'
-    A = 'Assistance'
+    T = 'Trash Cleanup'
+    C = 'Wake-Up Call'
+    D = 'Dining Reservation'
+    A = 'Assistance Needed'
     O = 'Other'
 class Assistance(PyEnum):
     L = 'recommendations'
