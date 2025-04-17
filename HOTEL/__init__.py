@@ -12,44 +12,53 @@ import json
 from .entities import Users, Bookings, Services, Hotel, Floor, Room, FAQ, Saved, YesNo, Locations, RoomType, Availability, Assistance
 from .controllers import EmailController
 from .db import db
-#all will evantually become plural here
 
-from .controllers import RoomAvailability #will remove this line once payment is moved to routes.py
-#from .adding import add_layout
+from .controllers import RoomAvailability
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
 from HOTEL.AImodels.ai_model import load_ai_model, generate_ai_response
 from HOTEL.AImodels.csv_retriever import setup_csv_retrieval, get_answer_from_csv
 from .response import format_response  
 from io import BytesIO
-from .receipt_generator import ReceiptGenerator
+from .Services.receipt_generator import ReceiptGenerator
 from flask import send_file
-# from .routes import bp_profile, bp_bookings, bp_reserve, bp_request_services, bp_search
 from .blueprints import register_blueprints
+
 app = Flask(__name__,
-            static_folder='static',     # Define the static folder (default is 'static')
+            static_folder='static',
             template_folder='templates')
-app.secret_key = 'GITGOOD_12345'  # This key keeps your session data safe.
+app.secret_key = 'GITGOOD_12345'
 
 rds_secret_name = "rds!db-d319020b-bb3f-4784-807c-6271ab3293b0"
 ses_secret_name = "oceanvista_ses"
 
 
 def get_secrets(secret_name):
+    """
+    Retrieve secrets from AWS Secrets Manager.
+    
+    Args:
+        secret_name (str): The name of the secret to retrieve.
+        
+    Returns:
+        tuple: A tuple containing username and password.
+        
+    Raises:
+        ClientError: If there is an error retrieving the secret.
+    """
     client = boto3.client(service_name='secretsmanager', region_name='us-west-1')
     try:
         response = client.get_secret_value(SecretId=secret_name)
     except ClientError as e:
         raise e
     secret = json.loads(response['SecretString'])
-    username=secret.get("username")
+    username = secret.get("username")
     pwd = secret.get("password")
     return username, pwd
 
 rds_username, rds_pwd = get_secrets(rds_secret_name)
 rds_pwd = quote(rds_pwd)
 ses_username, ses_pwd = get_secrets(ses_secret_name)
-#'AKIAZVMTVFXJYB4NK7BH','BLQALd5gKDcpmTq+Fl6nAMZ8hSdGv+gFvgAfaBGrXlwf'
 
 app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql+pymysql://{rds_username}:{rds_pwd}@hotel-db-instance.cvwasiw2g3h6.us-west-1.rds.amazonaws.com:3306/hotel_db'
 
@@ -69,32 +78,37 @@ mail = Mail(app)
 email_controller = EmailController(mail)
 register_blueprints(app, email_controller)
 
-
-
 model = [Users, Hotel, Floor, Room, Bookings, FAQ, YesNo, Locations, RoomType, Availability, Saved]
 admin = Admin(app, name="Admin", template_mode="bootstrap4")
-
-
 
 # Create all database tables (if they don't exist already)
 with app.app_context():
     db.create_all()
 
-    # admin.add_view(ModelView(Users, db.session))
-
 # ----- Routes -----
 
-
-
-# Home page route
 @app.route("/")
 def home():
+    """
+    Render the home page with a list of available hotel locations.
+    
+    Returns:
+        Template: The rendered home page template.
+    """
     locations = db.session.query(distinct(Hotel.location)).all()
     return render_template("home.html", locations=locations)
 
-# Sign Up route: Display form on GET, process form on POST
 @app.route("/signup", methods=["GET", "POST"])
 def sign_up():
+    """
+    Handle user sign-up requests.
+    
+    GET: Display the sign-up form.
+    POST: Process the sign-up form submission.
+    
+    Returns:
+        Template: The sign-up form or a redirect to the login page on success.
+    """
     if request.method == "POST":
         # Get form data
         name = request.form.get("name")
@@ -113,8 +127,7 @@ def sign_up():
             return redirect(url_for("sign_up"))
         
         # Hash the password before storing for security
-        user = Users.create_initial_user(name,email,password)
-
+        user = Users.create_initial_user(name, email, password)
         
         try:
             # Save the new user to the database
@@ -131,9 +144,17 @@ def sign_up():
     
     return render_template("signup.html")
 
-# Login route: Display form on GET, process form on POST
 @app.route("/login", methods=["GET", "POST"])
 def log_in():
+    """
+    Handle user login requests.
+    
+    GET: Display the login form.
+    POST: Process the login form submission.
+    
+    Returns:
+        Template: The login form or a redirect to the home page on success.
+    """
     if request.method == "POST":
         email = request.form.get("email")
         password = request.form.get("password")
@@ -157,45 +178,94 @@ def log_in():
     
     return render_template("login.html")
 
-# Logout route: Clear the session and log the user out
 @app.route("/logout")
 def logout():
+    """
+    Handle user logout requests by clearing the session.
+    
+    Returns:
+        Redirect: Redirect to the home page.
+    """
     session.clear()
     flash("You have been logged out.", "info")
     return redirect(url_for("home"))
 
-
 @app.route("/success")
 def success():
+    """
+    Render the success page.
+    
+    Returns:
+        Template: The success page template.
+    """
     return render_template('success.html')
 
 @app.route("/terms")
 def terms():
+    """
+    Render the terms and conditions page.
+    
+    Returns:
+        Template: The terms page template.
+    """
     return render_template('terms.html')
 
 @app.route("/events")
 def events():
+    """
+    Render the events page.
+    
+    Returns:
+        Template: The events page template.
+    """
     return render_template('events.html')
 
 @app.route("/menu")
 def menu():
+    """
+    Render the restaurant menu page.
+    
+    Returns:
+        Template: The menu page template.
+    """
     return render_template('menus2.html')
 
 @app.route("/faq")
 def faq():
+    """
+    Render the FAQ page with all FAQs from the database.
+    
+    Returns:
+        Template: The FAQ page template with FAQs.
+    """
     faqs = FAQ.query.all()
-    return render_template('faq.html',faqs=faqs)
+    return render_template('faq.html', faqs=faqs)
 
 @app.route("/about")
 def about():
+    """
+    Render the about page.
+    
+    Returns:
+        Template: The about page template.
+    """
     return render_template('about.html')
 
-from datetime import datetime, timedelta
-
-# Credit Card Validation Class
 class CreditCard:
-    def __init__(self, credit_card_number, exp_date, cvv):  # Step 1
-        self.credit_card_number = credit_card_number.replace('-','').replace(' ','')  # Step 2
+    """
+    Credit card validation class implementing the Luhn algorithm.
+    """
+    
+    def __init__(self, credit_card_number, exp_date, cvv):
+        """
+        Initialize a credit card validation object.
+        
+        Args:
+            credit_card_number (str): The credit card number.
+            exp_date (str): The expiration date in MM/YY format.
+            cvv (str): The CVV code.
+        """
+        self.credit_card_number = credit_card_number.replace('-', '').replace(' ', '')
 
         if "/" not in exp_date and len(exp_date) == 4:
             exp_date = exp_date[:2] + "/" + exp_date[2:]
@@ -204,6 +274,12 @@ class CreditCard:
         self.cvv = cvv
         
     def validate_CC(self):
+        """
+        Validate credit card number using the Luhn algorithm.
+        
+        Returns:
+            bool: True if the card number is valid, False otherwise.
+        """
         # First check if the card number has valid digits
         if not self.credit_card_number.isdigit():
             return False
@@ -212,12 +288,12 @@ class CreditCard:
         sum_even_digits = 0
         total = 0
         
-        reverse_credit_card_number = self.credit_card_number[::-1]  # Step 3
+        reverse_credit_card_number = self.credit_card_number[::-1]
 
         for x in reverse_credit_card_number[::2]:
             sum_odd_digits += int(x)
 
-        for x in reverse_credit_card_number[1::2]:  # Step 4
+        for x in reverse_credit_card_number[1::2]:
             x = int(x) * 2 
 
             if x >= 10:
@@ -225,10 +301,16 @@ class CreditCard:
             else:
                 sum_even_digits += x
             
-        total = sum_odd_digits + sum_even_digits  # Step 5
-        return total % 10 == 0  # Step 6
+        total = sum_odd_digits + sum_even_digits
+        return total % 10 == 0
     
     def validate_exp_date(self):
+        """
+        Validate the expiration date.
+        
+        Returns:
+            bool: True if the expiration date is valid, False otherwise.
+        """
         try:
             exp_month, exp_year = map(int, self.exp_date.split('/'))
             exp_year += (2000 if exp_year < 100 else 0)
@@ -241,20 +323,34 @@ class CreditCard:
             return False
         
     def validate_cvv(self):
+        """
+        Validate the CVV code.
+        
+        Returns:
+            bool: True if the CVV is valid, False otherwise.
+        """
         if self.credit_card_number and self.credit_card_number[0] == '3':
             return len(self.cvv) == 4 and self.cvv.isdigit()
         else:
             return len(self.cvv) == 3 and self.cvv.isdigit()   
         
     def is_valid(self):
+        """
+        Check if the credit card information is valid.
+        
+        Returns:
+            bool: True if all validations pass, False otherwise.
+        """
         return (self.validate_CC() and 
                 self.validate_exp_date() and 
                 self.validate_cvv())
 
-# Add sample rooms if needed (run this after db.create_all())
-
 def add_sample_data():
-    """Add sample data to the database if tables are empty"""
+    """
+    Add sample data to the database if tables are empty.
+    
+    Creates sample hotels, rooms, and users for testing.
+    """
     # Check if we have any rooms
     if not Room.query.first():
         print("Adding sample rooms")
@@ -270,38 +366,28 @@ def add_sample_data():
         malibu_hotel = Hotel.get_hotels_by_location("Malibu")[0]
         sm_hotel = Hotel.get_hotels_by_location("Santa Monica")[0]
         
-        with open('sample_layout.json','r') as f:
+        with open('sample_layout.json', 'r') as f:
             add_room_params = json.load(f)
         malibu_hotel.add_layout(base_floor_number=1, number_floors=4, add_room_params=add_room_params)
         sm_hotel.add_layout(base_floor_number=1, number_floors=4, add_room_params=add_room_params)
         print("Sample rooms added")
 
         users = []
-        avni = Users(name="avni",email="avni@gmail.com",password=generate_password_hash("avni"))
-        devansh = Users(name="devansh",email="devansh@gmail.com",password=generate_password_hash("devansh"))
-        elijah = Users(name="elijah",email="elijah@gmail.com",password=generate_password_hash("elijah"))
-        andrew = Users(name="andrew",email="andrew@gmail.com",password=generate_password_hash("andrew"))
+        avni = Users(name="avni", email="avni@gmail.com", password=generate_password_hash("avni"))
+        devansh = Users(name="devansh", email="devansh@gmail.com", password=generate_password_hash("devansh"))
+        elijah = Users(name="elijah", email="elijah@gmail.com", password=generate_password_hash("elijah"))
+        andrew = Users(name="andrew", email="andrew@gmail.com", password=generate_password_hash("andrew"))
         users.extend([avni, devansh, elijah, andrew])
         db.session.add_all(users)
         db.session.commit()
         print('sample users added')
 
-        # avni_id = Users.query.filter_by(email="avni@gmail.com").first().id
-        # malibu_room_1 = Room.query.filter_by(hid=malibu_id).first().id
-        # sm_room_1 = Room.query.filter_by(hid=sm_id).first().id
-        # sample_bookings = []
-        # sample_bookings.append(Booking(uid=avni_id, rid=malibu_room_1, check_in=datetime.now(), check_out=datetime.now()+timedelta(5), fees=500, name="avni", email="avni@gmail.com", phone="123"))
-        # sample_bookings.append(Booking(uid=avni_id, rid=sm_room_1, check_in=datetime.now()+timedelta(5), check_out=datetime.now()+timedelta(days=10), fees=600, name="avni", email="avni@gmail.com", phone="123"))
-        # sample_bookings.append(Booking(uid=avni_id, rid=malibu_room_1, check_in=datetime.now()-timedelta(2), check_out=datetime.now()-timedelta(days=1), fees=600, name="avni", email="avni@gmail.com", phone="123"))
-        # sample_bookings.append(Booking(uid=avni_id, rid=sm_room_1, check_in=datetime.now()-timedelta(3), check_out=datetime.now()-timedelta(days=1), fees=600, name="avni", email="avni@gmail.com", phone="123"))
-        # sample_bookings.append(Booking(uid=avni_id, rid=malibu_room_1, check_in=datetime.now()-timedelta(1), check_out=datetime.now()+timedelta(days=1), fees=600, name="avni", email="avni@gmail.com", phone="123"))
-        # sample_bookings[0].cancel()
-        # results = Bookings.create_bookings_db(sample_bookings)
-        # db.session.add_all(results)
-        # db.session.commit()
         print("sample bookings")
 
 def add_sample_faq():
+    """
+    Add sample FAQs to the database.
+    """
     faqs = [
         ("Where are Ocean Vista's locations?", 
         "Ocean Vista Hotel has two locations: one in Malibu and one in Santa Monica.", 
@@ -354,7 +440,15 @@ def add_sample_faq():
     FAQ.add_faq(faqs)
 
 def process_query(user_question):
-    "Processes the user query using CSV first, AI as backup."
+    """
+    Process a user query using CSV data first, falling back to AI.
+    
+    Args:
+        user_question (str): The user's question.
+        
+    Returns:
+        str: The formatted response to the question.
+    """
     csv_answer = get_answer_from_csv(ai_db, user_question)
     formatted_response = format_response(csv_answer, user_question)
     
@@ -367,10 +461,22 @@ def process_query(user_question):
 
 @app.route("/")
 def index():
+    """
+    Render the chat interface.
+    
+    Returns:
+        Template: The chat page template.
+    """
     return render_template("chat.html")
 
 @app.route("/get_response", methods=["POST"])
 def get_response():
+    """
+    Process an AI chat request.
+    
+    Returns:
+        JSON: The AI response as JSON.
+    """
     try:
         csv_data = request.get_json()
         user_message = csv_data.get("message", "")
@@ -393,14 +499,22 @@ with app.app_context():
     if not FAQ.query.first():
         add_sample_faq()
 
-# Payment page route
-@app.route("/payment", methods=["GET","POST"])
+@app.route("/payment", methods=["GET", "POST"])
 def payment():
+    """
+    Handle the payment page.
+    
+    GET: Display the payment form.
+    POST: Process the payment form data and show the payment form.
+    
+    Returns:
+        Template: The payment form template.
+    """
     if "user_id" not in session:
         flash("Please log in first.", "error")
         return redirect(url_for("log_in"))
-    if request.method=='POST':
-        rid = request.form.get('rid') #only being used to get back to reserve page if cancel button is clicked; otherwise is never used
+    if request.method == 'POST':
+        rid = request.form.get('rid')
         location_type = request.form.get('location_type')
         startdate = request.form.get('startdate')
         enddate = request.form.get('enddate')
@@ -411,11 +525,11 @@ def payment():
         phone = request.form.get('phone')
         guests = request.form.get('guests')
 
-        room_availability = RoomAvailability(startdate=startdate,enddate=enddate)
+        room_availability = RoomAvailability(startdate=startdate, enddate=enddate)
         room_availability.set_rid_room(rid=rid)
-        similar_rooms=room_availability.get_similar_rooms(status='open')
+        similar_rooms = room_availability.get_similar_rooms(status='open')
         if not similar_rooms:
-            flash('This room no longer available. Please search for a new room.','error')
+            flash('This room no longer available. Please search for a new room.', 'error')
             return redirect(url_for('search.search'))
 
         rooms_to_book = similar_rooms.limit(int(rooms))
@@ -423,14 +537,21 @@ def payment():
         if rooms_to_book_count < int(rooms):
             flash('Not able to book ' + rooms + ' rooms. ' + str(rooms_to_book_count) + ' rooms available.', 'error') 
         one_room = rooms_to_book.first()
-        return render_template('payment.html', rid=rid, location_type=location_type, startdate=startdate, enddate=enddate,duration=room_availability.get_duration(),
+        return render_template('payment.html', rid=rid, location_type=location_type, startdate=startdate, enddate=enddate, duration=room_availability.get_duration(),
                                YesNo=YesNo, one_room=one_room, 
                                guests=guests, rooms=rooms_to_book_count, name=name, email=email, phone=phone,
                                requests=requests)
 
-# Process payment route (form submission handling)
 @app.route("/process-payment", methods=["POST"])
 def process_payment():
+    """
+    Process a payment submission.
+    
+    Validates credit card information and creates bookings.
+    
+    Returns:
+        Redirect: Redirect to bookings or search page based on result.
+    """
     print("processing payment...")
     if "user_id" not in session:
         flash("Please log in first.", "error")
@@ -456,12 +577,11 @@ def process_payment():
     guests = request.form.get('guests')
 
     # Find a valid room to book 
-
-    room_availability = RoomAvailability(startdate=startdate,enddate=enddate)
+    room_availability = RoomAvailability(startdate=startdate, enddate=enddate)
     room_availability.set_rid_room(rid=rid)
-    similar_rooms=room_availability.get_similar_rooms(status='open')
+    similar_rooms = room_availability.get_similar_rooms(status='open')
     if not similar_rooms:
-        flash('Room no longer available. Please search for a new room.','error')
+        flash('Room no longer available. Please search for a new room.', 'error')
         return redirect(url_for('search.search'))
     rooms_to_book = similar_rooms.limit(int(rooms))
     rooms_to_book_count = rooms_to_book.count()
@@ -487,7 +607,6 @@ def process_payment():
         validation_passed = False
         flash("Invalid CVV \n\t The security code should be 3 digits (4 for American Express cards).", "cvv_error")
     
-
     if validation_passed:
         # Card is valid, process the payment
         print("card validation passed...")
@@ -495,11 +614,11 @@ def process_payment():
             user_id = session.get("user_id")
             
             if not rooms_to_book:
-                flash('Room no longer available. Please search for a new room.','error')
+                flash('Room no longer available. Please search for a new room.', 'error')
                 return redirect(url_for('search.search'))
             elif rooms_to_book_count < int(rooms):
                 flash('Not able to book ' + rooms + ' rooms. ' + str(rooms_to_book_count) + ' rooms available.', 'error') 
-                return render_template('payment.html', rid=rid, location_type=location_type, startdate=startdate, enddate=enddate,duration=room_availability.get_duration(),
+                return render_template('payment.html', rid=rid, location_type=location_type, startdate=startdate, enddate=enddate, duration=room_availability.get_duration(),
                                     YesNo=YesNo, one_room=one_room, 
                                     guests=guests, rooms=rooms_to_book_count, name=name, email=email, phone=phone,
                                     requests=requests)                
@@ -516,7 +635,7 @@ def process_payment():
                         rid=room.id, 
                         check_in=check_in_date,
                         check_out=check_out_date,
-                        fees=Room.get_room(id==room.id).rate, #might need to update fees
+                        fees=Room.get_room(id==room.id).rate,
                         special_requests=requests,
                         name=name, 
                         email=email,
@@ -524,15 +643,10 @@ def process_payment():
                         num_guests=guests
                     )
                 )
-                # Update room availability
-                #room.available = Availability.B
-                # db.session.add(new_booking)
-                # send_email(subject='Ocean Vista Booking Created!',recipients=[user.email], body="Thank you for creating a new booking!",
-                #            body_template='emails/booking_created.html',user=user, booking=new_booking, YesNo=YesNo)
             db.session.add_all(new_bookings)
             db.session.commit()
             print("sending email...")
-            email_controller.send_booking_created(user=user,bookings=new_bookings,YesNo=YesNo)
+            email_controller.send_booking_created(user=user, bookings=new_bookings, YesNo=YesNo)
             print("Done sending email")
             print("Card accepted...")
             flash("YOUR CARD HAS BEEN ACCEPTED", "success")
@@ -543,14 +657,10 @@ def process_payment():
             print(f"Database error: {str(e)}", "database_error")
             flash(f"Database error: {str(e)}", "database_error")
             return redirect(url_for('search.search'))
-            # return render_template('payment.html', rid=rid, location_type=location_type, startdate=startdate, enddate=enddate,duration=duration,
-            #             YesNo=YesNo, one_room=one_room, 
-            #             guests=guests, rooms=rooms_to_book_count, name=name, email=email, phone=phone,
-            #             requests=requests)
     else:
         # Card is invalid, display appropriate error messages
         flash("INVALID CREDIT CARD DETAILS", "error")
-        return render_template('payment.html', rid=rid, location_type=location_type, startdate=startdate, enddate=enddate,duration=room_availability.get_duration(),
+        return render_template('payment.html', rid=rid, location_type=location_type, startdate=startdate, enddate=enddate, duration=room_availability.get_duration(),
                                YesNo=YesNo, one_room=one_room, 
                                guests=guests, rooms=rooms_to_book_count, name=name, email=email, phone=phone,
                                requests=requests)
@@ -558,7 +668,13 @@ def process_payment():
 @app.route("/booking/<int:booking_id>/receipt/view")
 def view_receipt(booking_id):
     """
-    Display an HTML receipt for a booking
+    Display an HTML receipt for a booking.
+    
+    Args:
+        booking_id (int): The ID of the booking.
+        
+    Returns:
+        Template: The receipt template with booking details.
     """
     if "user_id" not in session:
         flash("Please log in first.", "error")
@@ -602,7 +718,13 @@ def view_receipt(booking_id):
 @app.route("/booking/<int:booking_id>/receipt/download")
 def download_receipt(booking_id):
     """
-    Generate and download a PDF receipt for a booking
+    Generate and download a PDF receipt for a booking.
+    
+    Args:
+        booking_id (int): The ID of the booking.
+        
+    Returns:
+        Response: The PDF receipt file download.
     """
     if "user_id" not in session:
         flash("Please log in first.", "error")
@@ -633,8 +755,7 @@ def download_receipt(booking_id):
     receipt_gen = ReceiptGenerator()
     
     pdf_buffer = receipt_gen.generate_receipt(
-        booking=booking, 
-        #num_nights=num_nights, 
+        booking=booking,
         room_rate=room_rate,
         total_room_charges=total_room_charges,
         resort_fee=resort_fee,
