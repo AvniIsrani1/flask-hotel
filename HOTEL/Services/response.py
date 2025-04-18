@@ -44,7 +44,8 @@ def format_response(answer, question):
     # If all extraction methods fail, just return the answer with branding
     return f"Ocean Vista: {answer}"
 
-def is_greeting(text):
+''' #not functional at the moment
+def is_greeting(text): 
     """
     Check whether the user input is a greeting.
 
@@ -86,3 +87,4 @@ def handle_special_queries(user_input):
         return "Ocean Vista: I'm doing great, thank you! What information can I help you with today?"
     
     return None
+'''
