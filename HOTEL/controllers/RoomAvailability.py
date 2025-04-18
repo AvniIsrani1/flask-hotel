@@ -3,10 +3,10 @@ from ..db import db
 from sqlalchemy import DateTime, distinct, desc, asc, cast, func, not_, String, Computed
 
 class RoomAvailability:
-"""
-RoomAvailability class for managing room availability information and querying room availability within a given date range.
-This class handles the logic for finding rooms based on specific criteria and date ranges.
-"""
+    """
+    RoomAvailability class for managing room availability information and querying room availability within a given date range.
+    This class handles the logic for finding rooms based on specific criteria and date ranges.
+    """
 
     def __init__(self,startdate=None,enddate=None,rid=None):
         """
@@ -112,35 +112,35 @@ This class handles the logic for finding rooms based on specific criteria and da
 
 
     def get_duration(self):
-    """
-    Get the duration of the stay in days.
-    Args:
-        None
-    Returns:
-        int: The number of days of the stay.
-    """
+        """
+        Get the duration of the stay in days.
+        Args:
+            None
+        Returns:
+            int: The number of days of the stay.
+        """
         return self.duration
 
     
     def get_starting(self):
-    """
-    Get the starting datetime of the stay.
-    Args:
-        None
-    Returns:
-        datetime: The check-in datetime.
-    """
+        """
+        Get the starting datetime of the stay.
+        Args:
+            None
+        Returns:
+            datetime: The check-in datetime.
+        """
         return self.starting
 
 
     def get_ending(self):
-    """
-    Get the ending datetime of the stay.
-    Args:
-        None
-    Returns:
-        datetime: The check-out datetime.
-    """
+        """
+        Get the ending datetime of the stay.
+        Args:
+            None
+        Returns:
+            datetime: The check-out datetime.
+        """
         return self.ending
 
 
