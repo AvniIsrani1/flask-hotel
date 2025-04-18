@@ -11,19 +11,19 @@ class FAQ(db.Model):
     subject = db.Column(db.String(150), nullable=False)
 
     @classmethod
-    def add_faq(cls, f):
+    def add_faqs(cls, f):
         """
         Adds and commits a list of FAQs to the table.
         
         Args:
-            f (list[dict]): A list of dictionaries with keys question, answer, and subject
+            f (list[dict]): A list of dictionaries with keys: question, answer, and subject
 
         Returns:
             None
         """
         faqs = []
-        for question, answer, subject in f:
-            faq = cls(question=question, answer=answer, subject=subject)
+        for item in f:
+            faq = cls(question=item["question"], answer=item["answer"], subject=item["subject"])
             faqs.append(faq)
         db.session.add_all(faqs)
         db.session.commit()

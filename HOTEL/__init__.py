@@ -9,18 +9,15 @@ from urllib.parse import quote
 import boto3
 from botocore.exceptions import ClientError
 import json
-from .entities import Users, Bookings, Services, Hotel, Floor, Room, FAQ, Saved, YesNo, Locations, RoomType, Availability, Assistance, Creditcard
+from .entities import Users, Hotel, Room, FAQ, Locations
 from .controllers import EmailController
 from .db import db
 
-from .controllers import RoomAvailability, FormController
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
 from HOTEL.AImodels.ai_model import load_ai_model, generate_ai_response
 from HOTEL.AImodels.csv_retriever import setup_csv_retrieval, get_answer_from_csv
 from .response import format_response  
-from io import BytesIO
-from .Services.ReceiptGenerator import ReceiptGenerator
 from flask import send_file
 from .blueprints import register_blueprints
 
@@ -78,7 +75,7 @@ mail = Mail(app)
 email_controller = EmailController(mail)
 register_blueprints(app, email_controller)
 
-model = [Users, Hotel, Floor, Room, Bookings, FAQ, YesNo, Locations, RoomType, Availability, Saved]
+# model = [Users, Hotel, Floor, Room, Bookings, FAQ, YesNo, Locations, RoomType, Availability, Saved]
 admin = Admin(app, name="Admin", template_mode="bootstrap4")
 
 # Create all database tables (if they don't exist already)
@@ -97,16 +94,6 @@ def home():
     """
     locations = db.session.query(distinct(Hotel.location)).all()
     return render_template("home.html", locations=locations)
-
-@app.route("/success")
-def success():
-    """
-    Render the success page.
-    
-    Returns:
-        Template: The success page template.
-    """
-    return render_template('success.html')
 
 @app.route("/terms")
 def terms():
@@ -137,17 +124,6 @@ def menu():
         Template: The menu page template.
     """
     return render_template('menus2.html')
-
-@app.route("/faq")
-def faq():
-    """
-    Render the FAQ page with all FAQs from the database.
-    
-    Returns:
-        Template: The FAQ page template with FAQs.
-    """
-    faqs = FAQ.query.all()
-    return render_template('faq.html', faqs=faqs)
 
 @app.route("/about")
 def about():
@@ -202,56 +178,10 @@ def add_sample_faq():
     """
     Add sample FAQs to the database.
     """
-    faqs = [
-        ("Where are Ocean Vista's locations?", 
-        "Ocean Vista Hotel has two locations: one in Malibu and one in Santa Monica.", 
-        "General Information"),
 
-        ("What are the check-in and check-out times?", 
-        "Check-in is at 3:00 PM, and check-out is at 11:00 AM.", 
-        "General Information"),
-
-        ("Do you allow early check-in or late check-out?", 
-        "Early check-in and late check-out are subject to availability. Please contact the front desk for requests.", 
-        "General Information"),
-
-        ("Is parking available at the hotel?", 
-        "Yes, both locations offer on-site parking. A daily parking fee may apply.", 
-        "General Information"),
-
-        ("Does Ocean Vista have an on-site restaurant?", 
-        "Yes, our Ocean Breeze Restaurant serves fresh seafood and international cuisine with stunning oceanfront views.", 
-        "Dining & Activities"),
-
-        ("Is room service available?", 
-        "Yes, room service is available from 7:00 AM to 10:00 PM.", 
-        "Dining & Activities"),
-
-        ("Does Ocean Vista have a pool or spa?", 
-        "Our Santa Monica location features a rooftop infinity pool, while our Malibu location has a full-service spa and wellness center.", 
-        "Dining & Activities"),
-
-        ("Is Wi-Fi available?", 
-        "Yes, we offer complimentary high-speed Wi-Fi in all rooms and public areas.", 
-        "Rooms & Amenities"),
-
-        ("Do rooms have kitchenettes or minibars?", 
-        "Select suites come with kitchenettes. All rooms include a minibar, coffee maker, and essential appliances.", 
-        "Rooms & Amenities"),
-
-        ("Is Ocean Vista pet-friendly?", 
-        "Yes! We welcome pets for an additional fee. Please review our pet policy before booking.", 
-        "Rooms & Amenities"),
-
-        ("What is the cancellation policy?", 
-        "Our standard cancellation policy allows free cancellations up to 48 hours before check-in. Policies may vary for special rates and peak seasons.", 
-        "Reservations & Policies"),
-
-        ("Can I host an event or wedding at Ocean Vista?", 
-        "Absolutely! We offer event spaces, wedding packages, and beachside ceremonies at both locations.", 
-        "Reservations & Policies")
-    ]
-    FAQ.add_faq(faqs)
+    with open('sample_faqs.json', 'r') as f:
+        sample_faqs = json.load(f)
+    FAQ.add_faqs(sample_faqs)
 
 def process_query(user_question):
     """

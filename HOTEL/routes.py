@@ -2,106 +2,119 @@ from flask import Flask, Blueprint, jsonify, render_template, request, redirect,
 from .db import db
 from sqlalchemy import DateTime, Date, cast, distinct, desc, asc, cast, func, not_, String, Computed
 from datetime import datetime, date, timedelta
-from .entities import Users, Bookings, Services, Hotel, Floor, Room, YesNo, Assistance, Locations, Availability, RoomType, Status, SType, Creditcard
+from .entities import Users, Bookings, Services, Hotel, Floor, Room, YesNo, Assistance, Locations, Availability, RoomType, Status, SType, Creditcard, FAQ
 from .controllers import SearchController, FormController, RoomAvailability
 from datetime import datetime
 from .Services import ReceiptGenerator
 
-bp_auth = Blueprint('auth', __name__)
-@bp_auth.route("/signup", methods=["GET", "POST"])
-def sign_up():
+def auth_routes(email_controller):
     """
-    Handle user sign-up requests.
+    Create authentication-related routes and register them to a blueprint.
     
-    GET: Display the sign-up form.
-    POST: Process the sign-up form submission.
-    
+    Args:
+        email_controller (EmailController): The email controller for sending notifications.
+        
     Returns:
-        Template: The sign-up form or a redirect to the login page on success.
+        Blueprint: The blueprint with authentication routes registered.
     """
-    if request.method == "POST":
-        # Get form data
-        name = request.form.get("name")
-        email = request.form.get("email")
-        password = request.form.get("password")
-        confirm_password = request.form.get("confirm_password")
-        
-        # Check if passwords match
-        if password != confirm_password:
-            flash("Passwords do not match.", "error")
-            return redirect(url_for("auth.sign_up"))
-        
-        # Check if email already exists
-        if not Users.unique_email(email):
-            flash("Email already registered. Please use a different email or login.", "error")
-            return redirect(url_for("auth.sign_up"))
-        
-        # Create a new user
-        user = Users.create_initial_user(name, email, password)
-        
-        try:
-            # Save the new user to the database
-            db.session.add(user)
-            db.session.commit()
-            flash("Account created successfully! Please log in.", "success")
-            
-            # If you have email functionality, you might want to send a welcome email here
-            email_controller.send_welcome_email(user=user)
-            
-            return redirect(url_for("auth.log_in"))
-        except Exception as e:
-            # Roll back the session if there is an error
-            db.session.rollback()
-            flash(f"An error occurred: {str(e)}", "error")
-            return redirect(url_for("auth.sign_up"))
-    
-    return render_template("signup.html")
+    bp_auth = Blueprint('auth', __name__)
 
-@bp_auth.route("/login", methods=["GET", "POST"])
-def login():
-    """
-    Handle user login requests.
-    
-    GET: Display the login form.
-    POST: Process the login form submission.
-    
-    Returns:
-        Template: The login form or a redirect to the home page on success.
-    """
-    if request.method == "POST":
-        email = request.form.get("email")
-        password = request.form.get("password")
+    @bp_auth.route("/signup", methods=["GET", "POST"])
+    def sign_up():
+        """
+        Handle user sign-up requests.
         
-        # Find user by email
-        user = Users.get_user_by_email(email)
+        GET: Display the sign-up form.
+        POST: Process the sign-up form submission.
+        
+        Returns:
+            Template: The sign-up form or a redirect to the login page on success.
+        """
+        if request.method == "POST":
+            # Get form data
+            name = request.form.get("name")
+            email = request.form.get("email")
+            password = request.form.get("password")
+            confirm_password = request.form.get("confirm_password")
+            
+            # Check if passwords match
+            if password != confirm_password:
+                flash("Passwords do not match.", "error")
+                return redirect(url_for("auth.sign_up"))
+            
+            # Check if email already exists
+            if not Users.unique_email(email):
+                flash("Email already registered. Please use a different email or login.", "error")
+                return redirect(url_for("auth.sign_up"))
+            
+            # Create a new user
+            user = Users.create_initial_user(name, email, password)
+            
+            try:
+                # Save the new user to the database
+                db.session.add(user)
+                db.session.commit()
+                flash("Account created successfully! Please log in.", "success")
+                
+                # If you have email functionality, you might want to send a welcome email here
+                email_controller.send_welcome_email(user=user)
+                
+                return redirect(url_for("auth.login"))
+            except Exception as e:
+                # Roll back the session if there is an error
+                db.session.rollback()
+                flash(f"An error occurred: {str(e)}", "error")
+                return redirect(url_for("auth.sign_up"))
+        
+        return render_template("signup.html")
 
-        # Check if user exists and if the password is correct
-        if user and user.verify_password(password):
-            # Save user's id and name in session so we know they are logged in
-            session["user_id"] = user.id
-            session["user_name"] = user.name
-            if user.first_login == YesNo.Y:
-                return redirect(url_for('profile.profile'))
+    @bp_auth.route("/login", methods=["GET", "POST"])
+    def login():
+        """
+        Handle user login requests.
+        
+        GET: Display the login form.
+        POST: Process the login form submission.
+        
+        Returns:
+            Template: The login form or a redirect to the home page on success.
+        """
+        if request.method == "POST":
+            email = request.form.get("email")
+            password = request.form.get("password")
+            
+            # Find user by email
+            user = Users.get_user_by_email(email)
+
+            # Check if user exists and if the password is correct
+            if user and user.verify_password(password):
+                # Save user's id and name in session so we know they are logged in
+                session["user_id"] = user.id
+                session["user_name"] = user.name
+                if user.first_login == YesNo.Y:
+                    return redirect(url_for('profile.profile'))
+                else:
+                    flash("Logged in successfully!", "success")
+                    return redirect(url_for("home"))
             else:
-                flash("Logged in successfully!", "success")
-                return redirect(url_for("home"))
-        else:
-            flash("Invalid email or password.", "error")
-            return redirect(url_for("auth.log_in"))
-    
-    return render_template("login.html")
+                flash("Invalid email or password.", "error")
+                return redirect(url_for("auth.login"))
+        
+        return render_template("login.html")
 
-@bp_auth.route("/logout")
-def logout():
-    """
-    Handle user logout requests by clearing the session.
+    @bp_auth.route("/logout")
+    def logout():
+        """
+        Handle user logout requests by clearing the session.
+        
+        Returns:
+            Redirect: Redirect to the home page.
+        """
+        session.clear()
+        flash("You have been logged out.", "info")
+        return redirect(url_for("home"))
     
-    Returns:
-        Redirect: Redirect to the home page.
-    """
-    session.clear()
-    flash("You have been logged out.", "info")
-    return redirect(url_for("home"))
+    return bp_auth
 
 bp_profile = Blueprint('profile',__name__)
 @bp_profile.route("/profile",methods=["GET", "POST"])
@@ -455,11 +468,11 @@ def payment_routes(email_controller):
         """
         if "user_id" not in session:
             flash("Please log in first.", "error")
-            return redirect(url_for("auth.log_in"))
+            return redirect(url_for("auth.login"))
         user = Users.query.get(session["user_id"])
         if user is None:
             flash("User is not valid","error")
-            return redirect(url_for("auth.log_in"))
+            return redirect(url_for("auth.login"))
         if request.method == 'POST':
             rid, location_type, startdate, enddate, name, phone, email, guests, rooms, requests = FormController.get_summary_reservation_information(user)
             room_availability = RoomAvailability(startdate=startdate, enddate=enddate)
@@ -492,7 +505,7 @@ def payment_routes(email_controller):
         print("processing payment...")
         if "user_id" not in session:
             flash("Please log in first.", "error")
-            return redirect(url_for("auth.log_in"))
+            return redirect(url_for("auth.login"))
         
         user = Users.query.get(session["user_id"])
         
@@ -606,7 +619,7 @@ def payment_routes(email_controller):
         """
         if "user_id" not in session:
             flash("Please log in first.", "error")
-            return redirect(url_for("auth.log_in"))
+            return redirect(url_for("auth.login"))
         
         booking = Bookings.query.get(booking_id)
         
@@ -656,7 +669,7 @@ def payment_routes(email_controller):
         """
         if "user_id" not in session:
             flash("Please log in first.", "error")
-            return redirect(url_for("auth.log_in"))
+            return redirect(url_for("auth.login"))
         
         booking = Bookings.query.get(booking_id)
         
@@ -720,3 +733,35 @@ def tasks():
         ).all()
     print(current_tasks)
     return render_template('tasks.html', current_tasks=current_tasks, Status=Status, SType=SType)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+bp_info = Blueprint('info',__name__)
+@bp_info.route("/faq")
+def faq():
+    """
+    Render the FAQ page with all FAQs from the database.
+    
+    Returns:
+        Template: The FAQ page template with FAQs.
+    """
+    faqs = FAQ.query.all()
+    return render_template('faq.html', faqs=faqs)
