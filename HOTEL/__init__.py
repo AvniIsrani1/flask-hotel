@@ -186,16 +186,6 @@ def logout():
     flash("You have been logged out.", "info")
     return redirect(url_for("home"))
 
-@app.route("/success")
-def success():
-    """
-    Render the success page.
-    
-    Returns:
-        Template: The success page template.
-    """
-    return render_template('success.html')
-
 @app.route("/terms")
 def terms():
     """
