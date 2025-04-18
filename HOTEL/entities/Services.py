@@ -1,15 +1,17 @@
 from ..db import db
-from sqlalchemy import DateTime, Date, cast, distinct, Computed
+from sqlalchemy import DateTime, distinct, Computed
 from datetime import datetime, timedelta
 from .Enums import YesNo, Assistance, SType, Status
 
 
 class Services(db.Model):
+    """
+    Model representing service requests for bookings.
+    
+    This class manages various types of service requests that guests can make
+    during their stay, including housekeeping, item requests, and assistance.
+    """
     __tablename__ = 'services'
-    """
-    A table to keep track of service request information.
-    Has a foreign key to the Bookings table.
-    """
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     bid = db.Column(db.Integer, db.ForeignKey('bookings.id'), nullable=False) 
     issued = db.Column(DateTime, nullable=False)
@@ -34,36 +36,36 @@ class Services(db.Model):
     restaurant = db.Column(db.String(200)) 
     assistance = db.Column(db.Enum(Assistance))
     other = db.Column(db.String(300)) 
-    status = db.Column(db.Enum(Status),default=Status.N)
+    status = db.Column(db.Enum(Status), default=Status.N)
 
     @classmethod
-    def add_item(cls, bid,robes=0, btowels=0, htowels=0, soap=0, shampoo=0, conditioner=0, wash=0, lotion=0, hdryer=0, pillows=0, blankets=0, sheets=0):
+    def add_item(cls, bid, robes=0, btowels=0, htowels=0, soap=0, shampoo=0, conditioner=0, wash=0, lotion=0, hdryer=0, pillows=0, blankets=0, sheets=0):
         """
-        Create an request for items.
-
+        Create a new item request service.
+        
         Args:
-            bid (int): The unique ID of the booking.
-            robes (int): The number of robes requested.
-            btowels (int): The number of bath towels requested.
-            htowels (int): The number of hand towels requested.
-            soap (int): The number of soaps requested.
-            shampoo (int): The number of shampoo bottles requested.
-            conditioner (int): The number of conditioner bottles requested.
-            wash (int): The number of body wash bottles requested.
-            lotion (int): The number of lotion bottles requested.
-            hdryer (int): The number of hair dryers requested.
-            pillows (int): The number of pillows requested.
-            blankets (int): The number of blankets requested.
-            sheets (int): The number of sheets requested. 
-
+            bid (int): The booking ID associated with this service request.
+            robes (int, optional): Number of robes requested. Defaults to 0.
+            btowels (int, optional): Number of bath towels requested. Defaults to 0.
+            htowels (int, optional): Number of hand towels requested. Defaults to 0.
+            soap (int, optional): Number of soap bars requested. Defaults to 0.
+            shampoo (int, optional): Number of shampoo bottles requested. Defaults to 0.
+            conditioner (int, optional): Number of conditioner bottles requested. Defaults to 0.
+            wash (int, optional): Number of body wash bottles requested. Defaults to 0.
+            lotion (int, optional): Number of lotion bottles requested. Defaults to 0.
+            hdryer (int, optional): Number of hair dryers requested. Defaults to 0.
+            pillows (int, optional): Number of pillows requested. Defaults to 0.
+            blankets (int, optional): Number of blankets requested. Defaults to 0.
+            sheets (int, optional): Number of sheet sets requested. Defaults to 0.
+            
         Returns:
-            Service: The item request.
+            Services: A new service request object for items.
         """
         today = datetime.now()
         return cls(
             bid=bid,
             issued=today,
-            stype = SType.I,
+            stype=SType.I,
             robes=robes, btowels=btowels, htowels=htowels, soap=soap, shampoo=shampoo, conditioner=conditioner, wash=wash, lotion=lotion,
             hdryer=hdryer, pillows=pillows, blankets=blankets, sheets=sheets
         )
@@ -71,27 +73,43 @@ class Services(db.Model):
     @classmethod
     def add_housekeeping(cls, bid, housetime, validate_check_out):
         """
-        Create a request for housekeeping service.
-
+        Create a new housekeeping service request.
+        
         Args:
-            bid (int): The unique ID of the booking.
-            housetime (datetime): The 
+            bid (int): The booking ID associated with this service request.
+            housetime (time): The requested time for housekeeping.
+            validate_check_out (datetime): The checkout date to validate against.
+            
+        Returns:
+            Services: A new service request object for housekeeping if valid, None otherwise.
         """
         today = datetime.now()
         housedatetime = datetime.combine(today.date(), housetime)
         if housedatetime < today:
             housedatetime = today
-        if housedatetime <= validate_check_out: #this probably does not work, this method probably needs to be self instead!!!
+        if housedatetime <= validate_check_out:
             return cls(id=id, bid=bid, issued=today, stype=SType.H, housedatetime=housedatetime)
     
     @classmethod
-    def add_call(cls, bid, calltime, recurrent, validate_check_out): #when calltime is recieved from form, it is of type time (not datetime)
+    def add_call(cls, bid, calltime, recurrent, validate_check_out):
+        """
+        Create one or more wake-up call service requests.
+        
+        Args:
+            bid (int): The booking ID associated with this service request.
+            calltime (time): The requested time for the wake-up call.
+            recurrent (bool): Whether the call should recur daily until checkout.
+            validate_check_out (datetime): The checkout date to validate against.
+            
+        Returns:
+            list: A list of service request objects for wake-up calls if valid, empty list otherwise.
+        """
         today = datetime.now()
         calls = []
         calldatetime = datetime.combine(today.date(), calltime)
         if calldatetime < today:
             calldatetime = calldatetime + timedelta(days=1)
-        if calldatetime <= validate_check_out: #probably does not work (likely need self instead of cls for validate_check_out)
+        if calldatetime <= validate_check_out:
             if recurrent:
                 while(calldatetime <= validate_check_out):
                     call = cls(bid=bid, issued=today, stype=SType.C, calldatetime=calldatetime)
@@ -100,29 +118,76 @@ class Services(db.Model):
             else:
                 call = cls(bid=bid, issued=today, stype=SType.C, calldatetime=calldatetime)
                 calls.append(call)
-            return calls #calls is a list of Call objects!!
+            return calls
         
     @classmethod
     def add_trash(cls, bid):
+        """
+        Create a new trash pickup service request.
+        
+        Args:
+            bid (int): The booking ID associated with this service request.
+            
+        Returns:
+            Services: A new service request object for trash pickup.
+        """
         return cls(bid=bid, issued=datetime.now(), stype=SType.T, trash=YesNo.Y)
 
     @classmethod
     def add_dining(cls, bid, restaurant):
+        """
+        Create a new dining reservation service request.
+        
+        Args:
+            bid (int): The booking ID associated with this service request.
+            restaurant (str): The restaurant name for the reservation.
+            
+        Returns:
+            Services: A new service request object for dining reservation.
+        """
         return cls(bid=bid, issued=datetime.now(), stype=SType.D, restaurant=restaurant)
     
     @classmethod
-    def add_assistance(cls,bid, assistance):
+    def add_assistance(cls, bid, assistance):
+        """
+        Create a new assistance service request.
+        
+        Args:
+            bid (int): The booking ID associated with this service request.
+            assistance (Assistance): The type of assistance needed.
+            
+        Returns:
+            Services: A new service request object for assistance.
+        """
         return cls(bid=bid, issued=datetime.now(), stype=SType.A, assistance=assistance)
 
     @classmethod
-    def add_other(cls,bid, other):
+    def add_other(cls, bid, other):
+        """
+        Create a new custom service request.
+        
+        Args:
+            bid (int): The booking ID associated with this service request.
+            other (str): Description of the custom service request.
+            
+        Returns:
+            Services: A new service request object for other services.
+        """
         return cls(bid=bid, issued=datetime.now(), stype=SType.O, other=other)
 
     def update_status(self, new_status):
+        """
+        Update the status of a service request.
+        
+        Args:
+            new_status (Status): The new status to set.
+            
+        Returns:
+            bool: True if the status was updated successfully, False otherwise.
+        """
         from ..entities.Enums import Status
         self.modified = datetime.now()
-        if isinstance(new_status,Status):
+        if isinstance(new_status, Status):
             self.status = new_status
             return True
         return False
-    

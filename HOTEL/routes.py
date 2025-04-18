@@ -9,6 +9,16 @@ from datetime import datetime
 bp_profile = Blueprint('profile',__name__)
 @bp_profile.route("/profile",methods=["GET", "POST"])
 def profile():
+    """
+    Handle user profile viewing and updates.
+    
+    GET: Display the user profile page.
+    POST: Process profile updates based on the form type submitted.
+    
+    Returns:
+        Template: The profile template with user data.
+        Redirect: Redirect to login page if not logged in.
+    """
     if "user_id" not in session:
         flash("Please log in first.", "error")
         return redirect(url_for("log_in"))
@@ -63,10 +73,26 @@ def profile():
 
 
 def booking_routes(email_controller):
+    """
+    Create booking-related routes and register them to a blueprint.
+    
+    Args:
+        email_controller (EmailController): The email controller for sending notifications.
+        
+    Returns:
+        Blueprint: The blueprint with booking routes registered.
+    """
     bp_bookings = Blueprint('bookings',__name__)
 
     @bp_bookings.route("/bookings", methods=["GET", "POST"])
     def bookings():
+        """
+        Display user's bookings organized by status.
+        
+        Returns:
+            Template: The bookings template with all user bookings.
+            Redirect: Redirect to login page if not logged in.
+        """
         if "user_id" not in session:
             flash("Please log in first.", "error")
             return redirect(url_for("log_in"))
@@ -84,6 +110,16 @@ def booking_routes(email_controller):
 
     @bp_bookings.route("/modify/<int:bid>", methods=["GET", "POST"])
     def modify(bid):
+        """
+        Modify an existing booking.
+        
+        Args:
+            bid (int): The booking ID to modify.
+            
+        Returns:
+            Template: The reservation form with booking data.
+            Redirect: Redirect to bookings page if booking not found.
+        """
         modifying = True
         if "user_id" not in session:
             flash("Please log in first.", "error")
@@ -114,7 +150,16 @@ def booking_routes(email_controller):
                                 modifying=modifying, bid=bid)
 
     @bp_bookings.route("/save/<int:bid>", methods=["GET", "POST"])
-    def save(bid): #currently not able to add more rooms by modifying existing booking
+    def save(bid):
+        """
+        Save changes to a booking or cancel it.
+        
+        Args:
+            bid (int): The booking ID to save changes for.
+            
+        Returns:
+            Redirect: Redirect to bookings page after processing.
+        """
         if "user_id" not in session:
             flash("Please log in first.", "error")
             return redirect(url_for("log_in"))
@@ -146,6 +191,16 @@ def booking_routes(email_controller):
 bp_reserve = Blueprint('reserve',__name__)
 @bp_reserve.route("/reserve", methods=["GET", "POST"])
 def reserve():
+    """
+    Handle room reservation requests.
+    
+    GET: Display reservation form with room details.
+    POST: Process the reservation form data.
+    
+    Returns:
+        Template: The reservation form template.
+        Redirect: Redirect to search page if data is missing.
+    """
     if "user_id" not in session:
         flash("Please log in first.", "error")
         return redirect(url_for("log_in"))
@@ -175,6 +230,19 @@ def reserve():
 bp_request_services = Blueprint('request_services',__name__)
 @bp_request_services.route("/request-services/<int:bid>", methods=["GET","POST"])
 def request_services(bid):
+    """
+    Handle guest service requests for a booking.
+    
+    GET: Display the service request form.
+    POST: Process the service request submissions.
+    
+    Args:
+        bid (int): The booking ID to request services for.
+        
+    Returns:
+        Template: The service request form template.
+        Redirect: Redirect to bookings page after processing.
+    """
     if "user_id" not in session:
         flash("Please log in first.", "error")
         return redirect(url_for("log_in"))
@@ -232,6 +300,14 @@ def request_services(bid):
 bp_search = Blueprint('search',__name__)
 @bp_search.route("/search", methods=["GET", "POST"])
 def search():
+    """
+    Handle room search and filtering.
+    
+    GET: Display search results based on query parameters.
+    
+    Returns:
+        Template: The search results template.
+    """
     locations = db.session.query(distinct(Hotel.location)).all()
     roomtypes = db.session.query(distinct(cast(Room.room_type, String))).order_by(desc(cast(Room.room_type, String))).all()
     
@@ -254,11 +330,20 @@ def search():
     search_controller.get_quantities()
     rooms = search_controller.get_search()
     print(rooms)
-    return render_template('search.html', locations=locations, roomtypes=roomtypes, rooms=rooms, YesNo = YesNo)
+    return render_template('search.html', locations=locations, roomtypes=roomtypes, rooms=rooms, YesNo=YesNo)
 
-bp_staff = Blueprint('staff',__name__)
-@bp_search.route("/tasks", methods=["GET", "POST"])
+bp_staff = Blueprint('staff', __name__)
+@bp_staff.route("/tasks", methods=["GET", "POST"])
 def tasks():
+    """
+    Display all current service tasks for staff to manage.
+    
+    Retrieves all service requests from today onwards and displays them
+    in chronological order, grouped by booking ID and service type.
+    
+    Returns:
+        Template: The tasks template with all current service requests.
+    """
     today = date.today()
     current_tasks = Services.query.filter(cast(Services.issued, Date) >= today).order_by(
             asc(Services.issued), asc(Services.bid), asc(Services.stype)
