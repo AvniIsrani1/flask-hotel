@@ -63,7 +63,7 @@ class Floor(db.Model):
     
     def get_hotel_id(self):
         """
-        Retrieves the hotel ID of the floor.
+        Retrieves the floor's hotel ID.
 
         Args:
             None
@@ -87,7 +87,7 @@ class Floor(db.Model):
     
     def get_rooms(self):
         """
-        Retrieves the rooms in the floor.
+        Retrieves the floor's rooms.
 
         Args:
             None

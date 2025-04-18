@@ -13,7 +13,7 @@ from .entities import Users, Bookings, Services, Hotel, Floor, Room, FAQ, Saved,
 from .controllers import EmailController
 from .db import db
 
-from .controllers import RoomAvailability
+from .controllers import RoomAvailability, FormController
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
 from HOTEL.AImodels.ai_model import load_ai_model, generate_ai_response
@@ -327,18 +327,12 @@ def payment():
     if "user_id" not in session:
         flash("Please log in first.", "error")
         return redirect(url_for("log_in"))
+    user = Users.query.get(session["user_id"])
+    if user is None:
+        flash("User is not valid","error")
+        return redirect(url_for("log_in"))
     if request.method == 'POST':
-        rid = request.form.get('rid')
-        location_type = request.form.get('location_type')
-        startdate = request.form.get('startdate')
-        enddate = request.form.get('enddate')
-        rooms = request.form.get('rooms')
-        requests = request.form.get('requests')
-        name = request.form.get('name')
-        email = request.form.get('email')
-        phone = request.form.get('phone')
-        guests = request.form.get('guests')
-
+        rid, location_type, startdate, enddate, name, phone, email, guests, rooms, requests = FormController.get_summary_reservation_information(user)
         room_availability = RoomAvailability(startdate=startdate, enddate=enddate)
         room_availability.set_rid_room(rid=rid)
         similar_rooms = room_availability.get_similar_rooms(status='open')
@@ -379,16 +373,8 @@ def process_payment():
     cvv = request.form.get("cvv")
 
     # Extract room information from form
-    rid = request.form.get('rid') 
-    location_type = request.form.get('location_type')
-    startdate = request.form.get('startdate')
-    enddate = request.form.get('enddate')
-    rooms = request.form.get('rooms')
-    requests = request.form.get('requests')
-    name = request.form.get('name')
-    email = request.form.get('email')
-    phone = request.form.get('phone')
-    guests = request.form.get('guests')
+    rid, location_type, startdate, enddate, name, phone, email, guests, rooms, requests = FormController.get_summary_reservation_information(user)
+
 
     # Find a valid room to book 
     room_availability = RoomAvailability(startdate=startdate, enddate=enddate)

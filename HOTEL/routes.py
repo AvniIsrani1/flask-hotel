@@ -1,10 +1,9 @@
 from flask import Flask, Blueprint, jsonify, render_template, request, redirect, url_for, session, flash, get_flashed_messages
 from .db import db
-from sqlalchemy import DateTime, distinct, desc, asc, cast, func, not_, String, Computed
-from datetime import datetime, timedelta
-from .entities import Users, Bookings, Services, Hotel, Floor, Room, YesNo, Assistance, Locations, Availability, RoomType
-from .controllers import SearchController
-from .controllers import RoomAvailability
+from sqlalchemy import DateTime, Date, cast, distinct, desc, asc, cast, func, not_, String, Computed
+from datetime import datetime, date, timedelta
+from .entities import Users, Bookings, Services, Hotel, Floor, Room, YesNo, Assistance, Locations, Availability, RoomType, Status, SType
+from .controllers import SearchController, FormController, RoomAvailability
 from datetime import datetime
 
 bp_auth = Blueprint('auth', __name__)
@@ -131,20 +130,15 @@ def profile():
     if request.method == "POST":
         ptype = request.form.get('ptype')
         if ptype == 'profile':
+            name, phone, address_line1, address_line2, city, state, zipcode = FormController.get_profile_update_information()
             user.update_profile(
-                name = request.form.get("name"),
-                phone = request.form.get("phone"),
-                address_line1 = request.form.get("address"),
-                address_line2 = request.form.get("address2"),
-                city = request.form.get("city"),
-                state = request.form.get("state"),
-                zipcode = request.form.get("zipcode")
+                name = name, phone = phone, address_line1 = address_line1, address_line2 = address_line2,
+                city = city, state = state, zipcode = zipcode
             )
             message = 'Profile has been updated!'
             status = 'success'
         elif ptype=='notifications':
-            tremind = YesNo.Y if request.form.get('tremind') is not None else YesNo.N
-            eremind = YesNo.Y if request.form.get('eremind') is not None else YesNo.N
+            tremind, eremind = FormController.get_profile_notification_information()
             user.update_notifications(tremind,eremind)
             message = 'Notification preferences have been updated!'
             status = 'success'
@@ -276,11 +270,8 @@ def booking_routes(email_controller):
                 message='Booking canceled!'
                 status = 'success'
             else:
-                booking.update_booking(special_requests=request.form.get('requests'), 
-                                name=request.form.get('name', booking.name), 
-                                email = request.form.get('email', booking.email), 
-                                phone=request.form.get('phone', booking.phone), 
-                                num_guests=request.form.get('guests'))
+                special_requests, name, email, phone, num_guests = FormController.get_update_booking_information(booking)
+                booking.update_booking(special_requests=special_requests, name = name, email = email, phone = phone, num_guests = num_guests)
                 email_controller.send_booking_updated(user=user,booking=booking,YesNo=YesNo)
                 message='Booking updated!'
                 status='success'
@@ -311,10 +302,7 @@ def reserve():
         return redirect(url_for("log_in"))
     user = Users.query.get(session["user_id"])
     if request.method=='GET' or request.method=='POST':
-        rid = request.args.get('rid')
-        location_type = request.args.get('location_type')
-        startdate = request.args.get('startdate')
-        enddate = request.args.get('enddate')
+        rid, location_type, startdate, enddate = FormController.get_booking_reservation_information()
         if not startdate or not enddate:
             if not rid:
                 flash("Reservation details are missing. Please search for a room again.", "error")
@@ -329,12 +317,7 @@ def reserve():
             flash('Room not found',"error")
             return redirect(url_for('search.search'))
         if request.method=='POST':
-            name=request.form.get('name', user.name)
-            phone=request.form.get('phone', user.phone)
-            email=request.form.get('email', user.email)
-            guests=request.form.get('guests',1)
-            rooms=request.form.get('rooms',1)
-            requests=request.form.get('requests','')
+            name, phone, email, guests, rooms, requests = FormController.get_make_reservation_information(user)
             return render_template('reserve.html', user=user, room=room, YesNo=YesNo, rid=rid, location_type=location_type, duration=room_availability.get_duration(), startdate=startdate, enddate=enddate,
                                    name=name, phone=phone,email=email,guests=guests,rooms=rooms,requests=requests)
         
@@ -366,35 +349,20 @@ def request_services(bid):
         if not booking:
             flash("You do not have an active booking for this request.",'error')
             return redirect(url_for('bookings.bookings'))
-        robes = int(request.form.get('robes','') or 0)
-        btowels = int(request.form.get('btowels','') or 0)
-        htowels = int(request.form.get('htowels','') or 0)
-        soap = int(request.form.get('soap','') or 0)
-        shampoo = int(request.form.get('shampoo','') or 0)
-        conditioner = int(request.form.get('conditioner','') or 0)
-        wash = int(request.form.get('wash','') or 0)
-        lotion = int(request.form.get('lotion','') or 0)
-        hdryer = int(request.form.get('hdryer','') or 0)
-        pillows = int(request.form.get('pillows','') or 0)
-        blankets = int(request.form.get('blankets','') or 0)
-        sheets = int(request.form.get('sheets','') or 0)
+        robes, btowels, htowels, soap, shampoo, conditioner, wash, lotion, hdryer, pillows, blankets, sheets, housetime, trash, calltime, recurrent, restaurant, assistance, other = FormController.get_service_request_information()
         print(robes,btowels,htowels,soap,shampoo,conditioner,wash,lotion,hdryer,pillows,blankets,sheets)
         services = []
         if robes or btowels or htowels or soap or shampoo or conditioner or wash or lotion or hdryer or pillows or blankets or sheets:
             services.append(Services.add_item(bid=bid, robes=robes, btowels=btowels, htowels=htowels, soap=soap, shampoo=shampoo,
                                                     conditioner=conditioner, wash=wash, lotion=lotion, hdryer=hdryer, pillows=pillows,
                                                     blankets=blankets, sheets=sheets))
-        housetime = request.form.get('housetime')
         if housetime:
             print('before',housetime)
             housetime = datetime.strptime(housetime,"%H:%M").time()
             print('after',housetime)
             services.append(Services.add_housekeeping(bid=bid, housetime=housetime, validate_check_out=booking.check_out))
-        trash = request.form.get('trash')
         if trash:
             services.append(Services.add_trash(bid=bid))
-        calltime = request.form.get('calltime')
-        recurrent = request.form.get('recurrent')
         if calltime:
             print('before',calltime)
             calltime = datetime.strptime(calltime, "%H:%M").time()
@@ -403,14 +371,11 @@ def request_services(bid):
                 services.extend(Services.add_call(bid=bid, calltime=calltime, recurrent=True, validate_check_out=booking.check_out))
             else:
                 services.extend(Services.add_call(bid=bid, calltime=calltime, recurrent=False, validate_check_out=booking.check_out))
-        restaurant = request.form.get('restaurant')
         if restaurant:
             services.append(Services.add_dining(bid=bid, restaurant=restaurant))
-        assistance = request.form.get('assistance')
         if assistance:
             assistance = Assistance(assistance)
             services.append(Services.add_assistance(bid=bid, assistance=assistance))
-        other = request.form.get('other')
         if other:
             services.append(Services.add_other(bid=bid, other=other))
         try:
@@ -446,23 +411,15 @@ def search():
     if request.method == "GET":
         stype = request.args.get('stype')
         # if stype == 'apply_search':
-        location = request.args.get('location_type')
-        start = request.args.get('startdate') 
-        end = request.args.get('enddate') 
-        starting, ending, result = search_controller.main_search(location=location, start=start, end=end)
+        location, start, end = FormController.get_main_search()
+        starting, ending,result = search_controller.main_search(location=location,start=start,end=end)
         if(not result):
             flash('Please enter both the start and end dates',"error")
             return redirect(url_for('search.search', startdate=starting, enddate=ending))
         if stype=='apply_filters':
-            room_type = request.args.get('room_type')
-            bed_type = request.args.get('bed_type')
-            view = request.args.get('view')
-            balcony = request.args.get('balcony')
-            smoking_preference = request.args.get('smoking_preference')
-            accessibility = request.args.get('accessibility')
-            price_range = request.args.get('price_range')
-            search_controller.filter_search(room_type=room_type, bed_type=bed_type, view=view, balcony=balcony,
-                           smoking_preference=smoking_preference, accessibility=accessibility,
+            room_type, bed_type, view, balcony, smoking_preference, accessibility, price_range = FormController.get_filters_search()
+            search_controller.filter_search(room_type=room_type,bed_type=bed_type,view=view,balcony=balcony,
+                           smoking_preference=smoking_preference,accessibility=accessibility,
                            price_range=price_range)
     sort = request.args.get('sort-by')
     search_controller.sort_search(sort=sort)
