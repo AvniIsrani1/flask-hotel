@@ -131,13 +131,13 @@ def profile():
     """
     if "user_id" not in session:
         flash("Please log in first.", "error")
-        return redirect(url_for("log_in"))
+        return redirect(url_for("auth.login"))
     
     user = Users.query.get(session["user_id"])
     if not user:
         flash('Account not found','error')
         session.clear()
-        return redirect(url_for("log_in"))
+        return redirect(url_for("auth.login"))
     if user.first_login is YesNo.Y:
         flash("Please update your profile information!", "action")
     message = status = ''
@@ -205,7 +205,7 @@ def booking_routes(email_controller):
         """
         if "user_id" not in session:
             flash("Please log in first.", "error")
-            return redirect(url_for("log_in"))
+            return redirect(url_for("auth.login"))
         user_id = session["user_id"]
         user = Users.get_user(user_id)
 
@@ -272,7 +272,7 @@ def booking_routes(email_controller):
         """
         if "user_id" not in session:
             flash("Please log in first.", "error")
-            return redirect(url_for("log_in"))
+            return redirect(url_for("auth.login"))
         user = Users.query.get(session["user_id"])
         booking = Bookings.query.get(bid)
         message = status = ''
@@ -313,7 +313,7 @@ def reserve():
     """
     if "user_id" not in session:
         flash("Please log in first.", "error")
-        return redirect(url_for("log_in"))
+        return redirect(url_for("auth.login"))
     user = Users.query.get(session["user_id"])
     if request.method=='GET' or request.method=='POST':
         rid, location_type, startdate, enddate = FormController.get_booking_reservation_information()
@@ -355,7 +355,7 @@ def request_services(bid):
     """
     if "user_id" not in session:
         flash("Please log in first.", "error")
-        return redirect(url_for("log_in"))
+        return redirect(url_for("auth.login"))
     user = Users.query.get(session["user_id"])
     if request.method == 'POST':
         #making sure user has active bid
