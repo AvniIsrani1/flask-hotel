@@ -37,10 +37,11 @@ class SearchController:
             tuple: Contains the starting date (datetime), ending date (datetime), and a boolean 
                   indicating whether search parameters were provided (True) or defaults used (False).
         """
+        valid = True
         if not start and not end: #only time this can happen is when user clicks to search page via home search bar or search button (otherwise always have at least start)
             starting = datetime.now().strftime("%B %d, %Y")
             ending = (datetime.now() + timedelta(days=1)).strftime("%B %d, %Y")
-            return starting,ending,False
+            valid = False
         if location:
             location = Locations(location)
             self.query = self.query.filter(Hotel.location == location)
@@ -52,7 +53,7 @@ class SearchController:
             if not start: #impossible to have only end (must have at least start) (will never reach this condition)
                 starting = (ending - timedelta(days=1)).replace(hour=15,minute=0,second=0)
         self.query = self.query.filter(not_(db.exists().where(Bookings.rid == Room.id).where(Bookings.check_in < ending).where(Bookings.check_out>starting)))
-        return starting,ending,True
+        return starting,ending,valid
     
     def filter_search(self,room_type=None,bed_type=None,view=None,balcony=None,smoking_preference=None,accessibility=None,price_range=None):
         """

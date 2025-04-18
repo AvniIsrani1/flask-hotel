@@ -39,12 +39,12 @@
           </a>
         </nav>
       </div>
-        <a href="{{ url_for('logout') }}">
+        <a href="{{ url_for('auth.logout') }}">
           <i class="fa-solid fa-right-from-bracket"></i>
           <p>Logout</p>
         </a>
       {% else %}
-        <a href="{{ url_for('log_in') }}">
+        <a href="{{ url_for('auth.login') }}">
           <i class="fa-solid fa-user"></i>
           <p>Sign-In</p>
         </a>

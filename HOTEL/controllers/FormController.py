@@ -9,6 +9,19 @@ class FormController():
 
     @classmethod
     def get_signup_information(cls):
+        """
+        Retrieve signup information from the POST form on the signup page.
+
+        Args: 
+            None
+
+        Returns:
+            tuple: A tuple containing:
+                name (str): The user's name.
+                email (str): The user's email address.
+                password (str): The user's plaintext password.
+                confirm_password (str): The user's plaintext confirmation password.
+        """
         name = request.form.get("name")
         email = request.form.get("email")
         password = request.form.get("password")
@@ -17,6 +30,17 @@ class FormController():
     
     @classmethod
     def get_login_information(cls):
+        """
+        Retrieve login information from the POST form on the login page.
+
+        Args: 
+            None
+
+        Returns:
+            tuple: A tuple containing:
+                email (str): The user's email address.
+                password (str): The user's plaintext password.
+        """
         email = request.form.get("email")
         password = request.form.get("password")
         return email, password
@@ -30,13 +54,14 @@ class FormController():
             None
 
         Returns:
-            name (str): The new name.
-            phone (str): The new phone number.
-            address_line1 (str): The new address line 1.
-            address_line2 (str): The new address line 2.
-            city (str): The new city.
-            state (str): The new state.
-            zipcode (str): The new zipcode
+            tuple: A tuple containing: 
+                name (str): The new name.
+                phone (str): The new phone number.
+                address_line1 (str): The new address line 1.
+                address_line2 (str): The new address line 2.
+                city (str): The new city.
+                state (str): The new state.
+                zipcode (str): The new zipcode
         """
         name = request.form.get("name")
         phone = request.form.get("phone")
@@ -56,8 +81,9 @@ class FormController():
             None
         
         Returns:
-            tremind: YesNo.Y if text notifications were checked, else YesNo.N
-            eremind: YesNo.Y if email notifications were checked, else YesNo.N
+            tuple: A tuple containing:
+                tremind: YesNo.Y if text notifications were checked, else YesNo.N
+                eremind: YesNo.Y if email notifications were checked, else YesNo.N
         """
         tremind = YesNo.Y if request.form.get('tremind') is not None else YesNo.N
         eremind = YesNo.Y if request.form.get('eremind') is not None else YesNo.N
@@ -72,9 +98,10 @@ class FormController():
             None
 
         Returns:
-            location (str): The retrieved location.
-            start (str): The retrieved start date
-            end (str): The retrieved end date
+            tuple: A tuple containing:
+                location (str): The retrieved location.
+                start (str): The retrieved start date
+                end (str): The retrieved end date
         """
         location = request.args.get('location_type')
         start = request.args.get('startdate') 
@@ -90,14 +117,14 @@ class FormController():
             None
 
         Returns:
-            room_type (str): The type of room to search for.
-            bed_type (str): The number of beds in the room.
-            view (str): The type of view (ocean or city)
-            balcony (str): The balcony status (balcony or no_balcony)
-            smoking_preference (str): The smoking preference (Smoking or Non-Smoking)
-            accessibility (str): The accessibility needs desired (wheelchair or '')
-            price_range (str): The maximum price range to search through.
-
+            tuple: A tuple containing:
+                room_type (str): The type of room to search for.
+                bed_type (str): The number of beds in the room.
+                view (str): The type of view (ocean or city)
+                balcony (str): The balcony status (balcony or no_balcony)
+                smoking_preference (str): The smoking preference (Smoking or Non-Smoking)
+                accessibility (str): The accessibility needs desired (wheelchair or '')
+                price_range (str): The maximum price range to search through.
         """
         room_type = request.args.get('room_type')
         bed_type = request.args.get('bed_type')

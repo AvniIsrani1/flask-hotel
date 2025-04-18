@@ -9,22 +9,35 @@ class EmailController:
     """
     
     def __init__(self,mail):
+        """
+        Initialize the EmailController with a Flask-Mail instance.
+
+        Args:
+            mail: The mail object to use for sending emails.
+
+        Returns:
+            None
+        """
         self.mail=mail
-    """
-    Initialize an EmailController object with the mail service.
-    Args:
-        mail: The mail service to use for sending emails.
-    Returns:
-        None
-    """
+
 
     
 
     def send_email(self,subject, recipients, body, body_template, user=None, booking=None,YesNo=YesNo, attachment=None, attachment_type=None):
         """
         Initialize an EmailController object with the mail service.
+
         Args:
-            mail: The mail service to use for sending emails.
+            subject (str): The subject line of the email.
+            recipients (list): List of recipient emails.
+            body (str): Text body of the email (used when body_template cannot be used)
+            body_template (str): Path to the HTML template for the email content.
+            user (User, optional): User object to pass to the template.
+            booking (Booking): Booking object to pass to the template.
+            YesNo (Enum, Optional): YesNo enum to pass to the template.
+            attachment (str, optional): Path to the file to attach.
+            attchment_type (str, optional): Type of file to attach.
+
         Returns:
             None
         """
@@ -61,8 +74,10 @@ class EmailController:
     def send_welcome_email(self,user):
         """
         Send a welcome email to a new user.
+
         Args:
-            user (User): The user object containing email and other details.
+            user (User): The new user who just signed up
+
         Returns:
             str: A message indicating the email was sent.
         """
@@ -78,7 +93,7 @@ class EmailController:
         Args:
             user (User): The user who created the booking.
             bookings (Booking): The booking object containing reservation details.
-            YesNo (enum): The YesNo enumeration to use in the template.
+            YesNo (enum): The YesNo enum to use in the template.
     
         Returns:
             str: A message indicating the email was sent.
@@ -95,7 +110,7 @@ class EmailController:
         Args:
             user (User): The user whose booking was updated.
             booking (Booking): The updated booking object.
-            YesNo (enum): The YesNo enumeration to use in the template.
+            YesNo (enum): The YesNo enum to use in the template.
     
         Returns:
             str: A message indicating the email was sent.
@@ -112,7 +127,7 @@ class EmailController:
         Args:
             user (User): The user whose booking was canceled.
             booking (Booking): The canceled booking object.
-            YesNo (enum): The YesNo enumeration to use in the template.
+            YesNo (enum): The YesNo enum to use in the template.
     
         Returns:
             str: A message indicating the email was sent.
