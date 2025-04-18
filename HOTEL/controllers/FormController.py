@@ -3,12 +3,28 @@ from ..entities import YesNo
 
 class FormController():
     """
+    Handles form data extraction from HTTP requests for various pages. 
+    Returns parsed and validated data to be used for further operations.
     """
 
     @classmethod
+    def get_signup_information(cls):
+        name = request.form.get("name")
+        email = request.form.get("email")
+        password = request.form.get("password")
+        confirm_password = request.form.get("confirm_password")
+        return name, email, password, confirm_password
+    
+    @classmethod
+    def get_login_information(cls):
+        email = request.form.get("email")
+        password = request.form.get("password")
+        return email, password
+    
+    @classmethod
     def get_profile_update_information(cls):
         """
-        Retrieve profile information from the form on the profile page.
+        Retrieve profile information from the POST form on the profile page.
 
         Args:
             None
@@ -22,19 +38,19 @@ class FormController():
             state (str): The new state.
             zipcode (str): The new zipcode
         """
-        name = request.form.get("name"),
-        phone = request.form.get("phone"),
-        address_line1 = request.form.get("address"),
-        address_line2 = request.form.get("address2"),
-        city = request.form.get("city"),
-        state = request.form.get("state"),
+        name = request.form.get("name")
+        phone = request.form.get("phone")
+        address_line1 = request.form.get("address")
+        address_line2 = request.form.get("address2")
+        city = request.form.get("city")
+        state = request.form.get("state")
         zipcode = request.form.get("zipcode")
         return name, phone, address_line1, address_line2, city, state, zipcode
     
     @classmethod
     def get_profile_notification_information(cls):
         """
-        Retrieve notification information from the form on the profile page. 
+        Retrieve notification information from the POST form on the profile page. 
 
         Args:
             None
@@ -50,7 +66,7 @@ class FormController():
     @classmethod
     def get_main_search(cls):
         """
-        Retrieve broad search information from the form on the search page. 
+        Retrieve broad search information from the GET form on the search page. 
 
         Args:
             None
@@ -68,7 +84,7 @@ class FormController():
     @classmethod
     def get_filters_search(cls):
         """
-        Retrieve filters to be applied on the search from the form on the search page.
+        Retrieve filters to be applied on the search from the GET form on the search page.
 
         Args:
             None
@@ -95,14 +111,14 @@ class FormController():
     @classmethod
     def get_booking_reservation_information(cls):
         """
-        Retrieve overarching booking reservation information from the form.
+        Retrieve overarching booking reservation information from the GET form.
 
         Args:
             None
 
         Returns:
-            rid (str): The room ID that represents the room description desired.
-            location_type (str): The location of the room.
+            rid (str): The room ID that represents the desired room characteristics.
+            location_type (str): The location of the hotel.
             startdate (str): The start date of the booking.
             enddate (str): The end date of the booking.
         """
@@ -115,7 +131,7 @@ class FormController():
     @classmethod
     def get_make_reservation_information(cls, user):
         """
-        Retrieve user-specific booking reservation details from the form.
+        Retrieve user-specific booking reservation details from the POST form.
 
         Args:
             None
@@ -135,6 +151,39 @@ class FormController():
         rooms=request.form.get('rooms',1)
         requests=request.form.get('requests','')
         return name, phone, email, guests, rooms, requests
+    
+    @classmethod
+    def get_summary_reservation_information(cls, user):
+        """
+        Retrieve all booking reservation details from the POST form.
+
+        Args:
+            None
+
+        Returns:
+            rid (str): The room ID that represents the desired room characteristics.
+            location_type (str): The location of the hotel.
+            startdate (str): The start date of the booking.
+            enddate (str): The end date of the booking.
+            name (str): The name to be associated with the reservation(s).
+            phone (str): The phone number to be associated with the reservation(s)
+            email (str): The email address to be associated with the reservation(s).  
+            guests (str): The number of guests to be associated with the reservation(s).
+            rooms (str): The number of rooms to be reserved.
+            requests (str): Special requests to be associated with the reservation(s)
+        """
+        rid = request.form.get('rid') 
+        location_type = request.form.get('location_type')
+        startdate = request.form.get('startdate')
+        enddate = request.form.get('enddate')
+        # rooms = request.form.get('rooms')
+        # requests = request.form.get('requests')
+        # name = request.form.get('name')
+        # email = request.form.get('email')
+        # phone = request.form.get('phone')
+        # guests = request.form.get('guests')
+        name, phone, email, guests, rooms, requests = cls.get_make_reservation_information(user)
+        return rid, location_type, startdate, enddate, name, phone, email, guests, rooms, requests
     
     @classmethod
     def get_update_booking_information(cls, booking):
