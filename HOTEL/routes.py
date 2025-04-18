@@ -32,10 +32,7 @@ def auth_routes(email_controller):
         """
         if request.method == "POST":
             # Get form data
-            name = request.form.get("name")
-            email = request.form.get("email")
-            password = request.form.get("password")
-            confirm_password = request.form.get("confirm_password")
+            name, email, password, confirm_password = FormController.get_signup_information()
             
             # Check if passwords match
             if password != confirm_password:
@@ -80,8 +77,7 @@ def auth_routes(email_controller):
             Template: The login form or a redirect to the home page on success.
         """
         if request.method == "POST":
-            email = request.form.get("email")
-            password = request.form.get("password")
+            email, password = FormController.get_login_information()
             
             # Find user by email
             user = Users.get_user_by_email(email)
@@ -510,9 +506,7 @@ def payment_routes(email_controller):
         user = Users.query.get(session["user_id"])
         
         # Extract payment information from the form
-        credit_card_number = request.form.get("card-number")
-        exp_date = request.form.get("expiry")
-        cvv = request.form.get("cvv")
+        credit_card_number, exp_date, cvv = FormController.get_payment_information()
 
         # Extract room information from form
         rid, location_type, startdate, enddate, name, phone, email, guests, rooms, requests = FormController.get_summary_reservation_information(user)
