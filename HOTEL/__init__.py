@@ -16,9 +16,9 @@ from .db import db
 from .controllers import RoomAvailability, FormController
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
-from HOTEL.AImodels.ai_model import load_ai_model, generate_ai_response
 from HOTEL.AImodels.csv_retriever import setup_csv_retrieval, get_answer_from_csv
-from .response import format_response  
+from HOTEL.AImodels.ai_model import load_ai_model, generate_ai_response
+from .Services.response import format_response  
 from io import BytesIO
 from .Services.receipt_generator import ReceiptGenerator
 from flask import send_file
@@ -351,7 +351,13 @@ def process_query(user_question):
     Returns:
         str: The formatted response to the question.
     """
-    csv_answer = get_answer_from_csv(ai_db, user_question)
+    global ai_db, ai_model  # Using only the globals that are defined
+    
+    # Initialize or re-initialize the CSV retrieval system
+    ai_db, ai_df = setup_csv_retrieval()  # Get both db and df from the function call
+    
+    # Use ai_df from the local scope, not trying to access a non-existent global
+    csv_answer = get_answer_from_csv(ai_db, ai_df, user_question)
     formatted_response = format_response(csv_answer, user_question)
     
     # If we got a valid formatted response, return it

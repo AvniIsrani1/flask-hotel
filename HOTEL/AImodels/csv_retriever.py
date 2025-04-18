@@ -5,16 +5,40 @@ import os
 import numpy as np
 
 def setup_csv_retrieval():
-    "Set up the CSV-based retrieval system."
-    # Path to your hotel information CSV
-    csv_path = os.path.join(os.path.dirname(__file__), '..', 'csv_data', 'hotel_info.csv')
+    """
+    Set up the CSV-based information retrieval system using FAISS and Hugging Face embeddings.
+
+    Args:
+        None
+
+    Returns:
+        tuple: A tuple (db, df) where db is a FAISS vector store and df is the original CSV DataFrame.
+    """
+    # Path construction
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    csv_path = os.path.join(os.path.dirname(current_dir), 'csv_data', 'hotel_info.csv')
+    
+    print(f"Looking for CSV at: {csv_path}")
     
     try:
+        # Check if file exists before trying to read it
+        if not os.path.exists(csv_path):
+            print(f"CSV file not found at: {csv_path}")
+            return None, None
+            
         # Load hotel information from CSV
         df = pd.read_csv(csv_path)
         
-        # Combine all text columns for embedding
-        df['combined'] = df.apply(lambda row: ' '.join(row.astype(str).values), axis=1)
+        if df.empty:
+            print("CSV file is empty")
+            return None, None
+        
+        # Format how we store the data similar to BugginFace.py
+        df["combined"] = df.apply(
+            lambda row: f"{row['category']} - {row['sub_category']}: {row['description']}", 
+            axis=1
+        )
+        
         texts = df['combined'].tolist()
         
         # Create embeddings
@@ -22,14 +46,26 @@ def setup_csv_retrieval():
         
         # Create vector store
         db = FAISS.from_texts(texts, embeddings)
-        return db
+        print("Successfully created FAISS index")
+        return db, df  # Return both db and df
     except Exception as e:
         print(f"Error setting up CSV retrieval: {e}")
-        return None
+        return None, None  # Return None for both when there's an error
 
-def get_answer_from_csv(db, question):
-    "Get answer from CSV data based on similarity search."
-    if not db:
+def get_answer_from_csv(db, df, question):
+    """
+    Get the most relevant answer from the CSV dataset based on the user's question using FAISS similarity.
+
+    Args:
+        db (FAISS): The vector database of embedded CSV content.
+        df (DataFrame): The raw CSV content as a Pandas DataFrame.
+        question (str): The user's input question.
+
+    Returns:
+        str | None: The best matching text from the CSV or None if no suitable result is found.
+    """
+    if db is None or df is None or df.empty:
+        print("Database or DataFrame is None or empty")
         return None
         
     try:
@@ -39,23 +75,19 @@ def get_answer_from_csv(db, question):
         if not results:
             return None
             
-        # Get the document and test term similarity 
+        # Get the document and score
         doc, score = results[0]
+        print(f"Found document with score: {score}")
         
         # If similarity score is low do not use CSV info
         if score > 1.0:  # Adjust this threshold based on testing
+            print(f"Score {score} exceeds threshold, not using CSV info")
             return None
-            
-        # Check if the content is actually relevant to the question
-        if "restaurant" in question.lower() or "eat" in question.lower() or "food" in question.lower():
-            if not any(term in doc.page_content.lower() for term in ["restaurant", "dining", "food", "eat"]):
-                return None
-                
-        if "activities" in question.lower() or "things to do" in question.lower():
-            if not any(term in doc.page_content.lower() for term in ["activities", "entertainment", "recreation"]):
-                return None
         
+        # Return the document content - the format_response function will extract just the description
+        print(f"Returning document content: {doc.page_content}")
         return doc.page_content
+        
     except Exception as e:
         print(f"Error in CSV retrieval: {e}")
         return None

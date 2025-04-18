@@ -1,8 +1,68 @@
 ﻿category,sub_category,description
-rooms,suite,10 suites are available.
-rooms,deluxe,20 deluxe rooms are available.
-rooms,standard,100 standard rooms are available.
-pool,hours,The pool is open from 8 AM to 8PM.
-pool,towels, Towels are available for rent at the gate.
-pool, size,The pool has 50ft x 35ft dimensions.
-pool, jacuzzi, There is a jacuzzi next to the main pool. 
+rooms,suite,Our luxury suites feature ocean views you can experience from your own private balcony o king-size bed. We have 50 suites available occupying the Malibu location.
+rooms,standard,Our comfortable standard rooms include have all that you need to enjoy your stay in Malibu. There are currently 200 standard rooms in total at the Malibu location.
+rooms,deluxe,Our spacious deluxe rooms offers beautiful ocean views with extra amenities to make your stay even more perfect. We currently have 150 deluxe rooms available at the Malibu location.
+rooms,accessible,We offer 25 fully wheelchair accessible rooms designed to accommodate guests with mobility needs. They all include roll-in showers and other ADA-compliant features.
+amenities,wifi,Complimentary high-speed WiFi is available throughout the hotel property and in all guest rooms.
+amenities,parking,Self-parking is available for $25 per night. Valet parking is available for $35 per night.
+amenities,fitness,Our 24-hour fitness center features state-of-the-art equipment including free weights and cardio machines. Personal training sessions can be arranged through the concierge.
+amenities,business,Our business center offers computers and printing services. Through the concierge you are also able to reserve a private meeting spaces available.
+amenities,spa,The Ocean Vista Spa offers full massages and other services at our fully staffed salon boutique. Open daily from 9AM to 7PM. Reservations recommended.
+pool,hours,The main pool is open from 8AM to 8PM daily. Seasonal hours may vary.
+pool,towels,Pool towels are complimentary and available at the pool gate. Please return used towels to the designated bins.
+pool,size,Our main pool measures 50ft x 35ft with depths ranging from 3ft to 9ft.
+pool,kiddie,A separate kiddie pool for children is located adjacent to the main pool. The depth is 1.5ft.
+pool,jacuzzi,Our heated jacuzzi accommodates up to 12 people and is open from 8AM to 10PM daily.
+dining,oceanview,Our signature restaurant "Ocean View" serves California coastal cuisine with stunning views. Open for all three meals of the day.
+dining,lounge,The Sunset Lounge offers various seaside themed cocktails including all your essentials. Live bands play music on weekends after 7pm - 3pm.
+dining,cafe,The Beach side Cafe serves Coffee and pastries from 6AM to 2PM daily.
+dining,roomservice,Room service is available from 6AM to 11PM daily. See the menu in your room for options.
+dining,breakfast,Breakfast is served from 6:30AM to 10:30AM daily in the Ocean View restaurant. Continental breakfast is included and a full buffet is available for $30 per person every night. Any room service meals can be also be purchased via your reservation.
+beach,access,The hotel has direct beach access via a private path. The walk to the sand is approximately 2 minutes.
+beach,equipment,Beach equipment is all included such as chairs/umbrellas/towels for guests at no additional charge.
+beach,activities,We offer beach volleyball games throughout the day. Snorkeling tours by local reefs start at 12pm. All Paddleboards/Surfboards/floaties are available for rent during the day. Surfing leesson can also be arranged through our concierge.
+transportation,airport,LAX is approximately 45 minutes away. We offer airport shuttle service for $65 each way (reservation required).
+transportation,local,Our complimentary shuttle provides service to destinations within a all the way down PCH to the greater LA area based on availability starting at 7am with the last return bus call is at 11pm.
+transportation,car, Various car rentals can be arranged at the front desk in our lobby. Open daily from 8AM to 6PM. Varieties include sports/family/luxury cars.
+events,wedding,Our oceanfront pavilion can accommodate weddings of up to 150 guests. Contact our events team for packages.
+events,corporate,We offer 5 meeting rooms ranging from 500 to 2000 square feet including with full AV capabilities.
+events,catering,Our catering team provides customized menus for all events. Minimum 72 hours notice required.
+checkout,time,Standard checkout time is 11AM. Late checkout until 1PM is available upon request(subject to availability).
+checkout,express,Express checkout is available by dropping your key card in the express box at the front desk or through our mobile app.
+checkout,luggage,Complimentary luggage storage is available if you wish to enjoy the property after checking out.
+checkin,time,Standard check-in time is 3PM. Early check-in is subject to availability.
+checkin,requirements,Please present a valid ID and credit card upon check-in. The card holder must be present.
+checkin,mobile,Mobile check-in is available through our app 24 hours before arrival.
+pets,policy,We welcome pets under 40 pounds. A $75 non-refundable pet fee applies per stay by request arrangements prior either via email or over the phone.
+pets,amenities, Pet appliances such bowls/bags/treats are available upon request for rooms.
+activities,local,Surfing lessons are available at Zuma Beach. Our concierge can arrange lessons for all skill levels.
+activities,downtown,Explore the Galleria shopping center in downtown Los Angeles. There is also the famous Hollywood walk of fame. Or check out Santa Monica pier and ride the roller coaster right aboce the ocean waves.
+activities,hiking,The Santa Monica Mountains offer beautiful hiking trails with ocean views. Trail maps available at the concierge desk.
+activities,biking,Rent bicycles from our activity center to explore the Malibu coastline. $25 for 2 hours and $40 for a full day.
+activities,yoga,Complimentary beach yoga is offered daily at 7AM. Meet in the lobby 15 minutes before class.
+activities,wine,Malibu Wine Safari offers tours of local vineyards and wine tasting experiences. Our concierge can arrange reservations.
+attractions,getty,The Getty Villa is located 15 minutes from the hotel and features Greek and Roman antiquities. Free admission (reservation required).
+attractions,pier,The historic Malibu Pier is a 10-minute drive from the hotel.
+attractions,garden,The Malibu Botanical Gardens showcase native California plants and are located 5 miles from the hotel.
+attractions,celebrity,Many celebrity homes are located here in LA especially Malibu. Please however respect their private property and local regulations.
+shopping,cross,The Malibu Country Mart and Malibu Lumber Yard offer upscale shopping experiences just 10 minutes from the hotel.
+shopping,farmers,The Malibu Farmers Market is held every Sunday from 10AM to 3PM. There you can find fresh locally sourced produce and artisanal goods.
+food,local,Nobu Malibu offers high-quality Japanese cuisine with ocean views. You can also find good grub at Neptune's Net for great quality and locally sourced seafood. Or check out the state famous In-N-Out Burger is available for quick meals.
+food,seafood,Malibu Seafood Fresh Fish Market & Patio Cafe serves fresh-caught seafood in a casual setting with ocean views.
+food,vegetarian,The Real Coconut Kitchen offers plant-based and gluten-free options just 5 minutes from the hotel.
+art,museum,Visit the Getty Villa for art and culture. Free admission but reservations are required.
+car,museum,The Petersen Automotive Museum in Los Angeles displays extraordinary cars and automotive history. Approximately 50 minutes from the hotel.
+amusement,disneyland,Disneyland and California Adventure are located in Anaheim.
+amusement,universal,Universal Studios offers movie-inspired rides and tours in Hollywood.
+recreation,golf,Malibu Golf Club is a scenic 18-hole course located 15 minutes from the hotel. Club rentals available.
+recreation,tennis,Our hotel features two tennis courts available for guest use. Reservations recommended. Racquets available for rent.
+recreation,spa,The Ocean Vista Spa offers a variety of treatments including hot stone massage/full body/facials/bodywraps.(reservation required)
+weather,climate,Malibu enjoys a Mediterranean climate with average temperatures ranging from 65°F to 85°F year-round. Evenings can be cool and even in summer.
+weather,seasons,The best time to visit is late spring through early fall. Winter months may have occasional rain but are still mild.
+entertainment,live,Catch live music at the Malibu Inn or comedy shows at the Malibu Playhouse. Ask our concierge for current schedules.
+entertainment,movies,The Malibu Film Society hosts screenings throughout the year. The nearest multiplex cinema is in Santa Monica.
+services,babysitting,Babysitting services can be arranged with 24-hour notice. Background-checked sitters available for $25/hour.
+services,laundry,Same-day laundry and dry cleaning services are available if items are submitted before 9AM. See in-room directory for pricing.
+services,medical,A doctor can be called to your room for medical assistance. The nearest hospital is 15 minutes away.
+
+
