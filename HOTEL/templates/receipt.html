@@ -11,7 +11,7 @@
     <div class="receipt-actions">
         <h1>Booking Receipt</h1>
         <div class="action-buttons">
-            <a href="{{ url_for('download_receipt', booking_id=booking.id) }}" class="download-btn">
+            <a href="{{ url_for('payment.download_receipt', booking_id=booking.id) }}" class="download-btn">
                 <i class="fa-solid fa-download"></i> Download PDF
             </a>
         </div>

@@ -1,10 +1,107 @@
-from flask import Flask, Blueprint, jsonify, render_template, request, redirect, url_for, session, flash, get_flashed_messages
+from flask import Flask, Blueprint, jsonify, render_template, request, redirect, url_for, session, flash, get_flashed_messages, send_file
 from .db import db
 from sqlalchemy import DateTime, Date, cast, distinct, desc, asc, cast, func, not_, String, Computed
 from datetime import datetime, date, timedelta
-from .entities import Users, Bookings, Services, Hotel, Floor, Room, YesNo, Assistance, Locations, Availability, RoomType, Status, SType
+from .entities import Users, Bookings, Services, Hotel, Floor, Room, YesNo, Assistance, Locations, Availability, RoomType, Status, SType, Creditcard
 from .controllers import SearchController, FormController, RoomAvailability
 from datetime import datetime
+from .Services import ReceiptGenerator
+
+bp_auth = Blueprint('auth', __name__)
+@bp_auth.route("/signup", methods=["GET", "POST"])
+def sign_up():
+    """
+    Handle user sign-up requests.
+    
+    GET: Display the sign-up form.
+    POST: Process the sign-up form submission.
+    
+    Returns:
+        Template: The sign-up form or a redirect to the login page on success.
+    """
+    if request.method == "POST":
+        # Get form data
+        name = request.form.get("name")
+        email = request.form.get("email")
+        password = request.form.get("password")
+        confirm_password = request.form.get("confirm_password")
+        
+        # Check if passwords match
+        if password != confirm_password:
+            flash("Passwords do not match.", "error")
+            return redirect(url_for("auth.sign_up"))
+        
+        # Check if email already exists
+        if not Users.unique_email(email):
+            flash("Email already registered. Please use a different email or login.", "error")
+            return redirect(url_for("auth.sign_up"))
+        
+        # Create a new user
+        user = Users.create_initial_user(name, email, password)
+        
+        try:
+            # Save the new user to the database
+            db.session.add(user)
+            db.session.commit()
+            flash("Account created successfully! Please log in.", "success")
+            
+            # If you have email functionality, you might want to send a welcome email here
+            email_controller.send_welcome_email(user=user)
+            
+            return redirect(url_for("auth.log_in"))
+        except Exception as e:
+            # Roll back the session if there is an error
+            db.session.rollback()
+            flash(f"An error occurred: {str(e)}", "error")
+            return redirect(url_for("auth.sign_up"))
+    
+    return render_template("signup.html")
+
+@bp_auth.route("/login", methods=["GET", "POST"])
+def login():
+    """
+    Handle user login requests.
+    
+    GET: Display the login form.
+    POST: Process the login form submission.
+    
+    Returns:
+        Template: The login form or a redirect to the home page on success.
+    """
+    if request.method == "POST":
+        email = request.form.get("email")
+        password = request.form.get("password")
+        
+        # Find user by email
+        user = Users.get_user_by_email(email)
+
+        # Check if user exists and if the password is correct
+        if user and user.verify_password(password):
+            # Save user's id and name in session so we know they are logged in
+            session["user_id"] = user.id
+            session["user_name"] = user.name
+            if user.first_login == YesNo.Y:
+                return redirect(url_for('profile.profile'))
+            else:
+                flash("Logged in successfully!", "success")
+                return redirect(url_for("home"))
+        else:
+            flash("Invalid email or password.", "error")
+            return redirect(url_for("auth.log_in"))
+    
+    return render_template("login.html")
+
+@bp_auth.route("/logout")
+def logout():
+    """
+    Handle user logout requests by clearing the session.
+    
+    Returns:
+        Redirect: Redirect to the home page.
+    """
+    session.clear()
+    flash("You have been logged out.", "info")
+    return redirect(url_for("home"))
 
 bp_profile = Blueprint('profile',__name__)
 @bp_profile.route("/profile",methods=["GET", "POST"])
@@ -123,7 +220,7 @@ def booking_routes(email_controller):
         modifying = True
         if "user_id" not in session:
             flash("Please log in first.", "error")
-            return redirect(url_for("log_in"))
+            return redirect(url_for("auth.login"))
         user_id = session["user_id"]
         user = Users.get_user(user_id)
         booking = Bookings.get_booking(bid)
@@ -331,6 +428,279 @@ def search():
     rooms = search_controller.get_search()
     print(rooms)
     return render_template('search.html', locations=locations, roomtypes=roomtypes, rooms=rooms, YesNo=YesNo)
+
+
+def payment_routes(email_controller):
+    """
+    Create payment-related routes and register them to a blueprint.
+    
+    Args:
+        email_controller (EmailController): The email controller for sending notifications.
+        
+    Returns:
+        Blueprint: The blueprint with payment routes registered.
+    """
+    bp_payment = Blueprint('payment', __name__)
+
+    @bp_payment.route("/payment", methods=["GET", "POST"])
+    def payment():
+        """
+        Handle the payment page.
+        
+        GET: Display the payment form.
+        POST: Process the payment form data and show the payment form.
+        
+        Returns:
+            Template: The payment form template.
+        """
+        if "user_id" not in session:
+            flash("Please log in first.", "error")
+            return redirect(url_for("auth.log_in"))
+        user = Users.query.get(session["user_id"])
+        if user is None:
+            flash("User is not valid","error")
+            return redirect(url_for("auth.log_in"))
+        if request.method == 'POST':
+            rid, location_type, startdate, enddate, name, phone, email, guests, rooms, requests = FormController.get_summary_reservation_information(user)
+            room_availability = RoomAvailability(startdate=startdate, enddate=enddate)
+            room_availability.set_rid_room(rid=rid)
+            similar_rooms = room_availability.get_similar_rooms(status='open')
+            if not similar_rooms:
+                flash('This room no longer available. Please search for a new room.', 'error')
+                return redirect(url_for('search.search'))
+
+            rooms_to_book = similar_rooms.limit(int(rooms))
+            rooms_to_book_count = rooms_to_book.count()
+            if rooms_to_book_count < int(rooms):
+                flash('Not able to book ' + rooms + ' rooms. ' + str(rooms_to_book_count) + ' rooms available.', 'error') 
+            one_room = rooms_to_book.first()
+            return render_template('payment.html', rid=rid, location_type=location_type, startdate=startdate, enddate=enddate, duration=room_availability.get_duration(),
+                               YesNo=YesNo, one_room=one_room, 
+                               guests=guests, rooms=rooms_to_book_count, name=name, email=email, phone=phone,
+                               requests=requests)
+
+    @bp_payment.route("/process-payment", methods=["POST"])
+    def process_payment():
+        """
+        Process a payment submission.
+        
+        Validates credit card information and creates bookings.
+        
+        Returns:
+            Redirect: Redirect to bookings or search page based on result.
+        """
+        print("processing payment...")
+        if "user_id" not in session:
+            flash("Please log in first.", "error")
+            return redirect(url_for("auth.log_in"))
+        
+        user = Users.query.get(session["user_id"])
+        
+        # Extract payment information from the form
+        credit_card_number = request.form.get("card-number")
+        exp_date = request.form.get("expiry")
+        cvv = request.form.get("cvv")
+
+        # Extract room information from form
+        rid, location_type, startdate, enddate, name, phone, email, guests, rooms, requests = FormController.get_summary_reservation_information(user)
+
+        # Find a valid room to book 
+        room_availability = RoomAvailability(startdate=startdate, enddate=enddate)
+        room_availability.set_rid_room(rid=rid)
+        similar_rooms = room_availability.get_similar_rooms(status='open')
+        if not similar_rooms:
+            flash('Room no longer available. Please search for a new room.', 'error')
+            return redirect(url_for('search.search'))
+        rooms_to_book = similar_rooms.limit(int(rooms))
+        rooms_to_book_count = rooms_to_book.count()
+        one_room = rooms_to_book.first()
+        print(one_room)
+        rooms_to_book = rooms_to_book.all()
+        
+        # Create a new CreditCard instance with the provided information
+        new_credit_card = Creditcard(credit_card_number, exp_date, cvv)
+        
+        # Check individual validations to show specific errors
+        validation_passed = True
+        
+        if not new_credit_card.validate_CC():
+            validation_passed = False
+            flash("INVALID CARD NUMBER \n\t The card number you have entered is either INCORRECT or INVALID.", "card_error")
+            
+        if not new_credit_card.validate_exp_date():
+            validation_passed = False
+            flash("INCORRECT EXPIRY DATE \n\t Expired or incorrectly formatted expiry date, use a '/' between the month and the year.", "date_error")
+            
+        if not new_credit_card.validate_cvv():
+            validation_passed = False
+            flash("Invalid CVV \n\t The security code should be 3 digits (4 for American Express cards).", "cvv_error")
+        
+        if validation_passed:
+            # Card is valid, process the payment
+            print("card validation passed...")
+            try:
+                user_id = session.get("user_id")
+                
+                if not rooms_to_book:
+                    flash('Room no longer available. Please search for a new room.', 'error')
+                    return redirect(url_for('search.search'))
+                elif rooms_to_book_count < int(rooms):
+                    flash('Not able to book ' + rooms + ' rooms. ' + str(rooms_to_book_count) + ' rooms available.', 'error') 
+                    return render_template('payment.html', rid=rid, location_type=location_type, startdate=startdate, enddate=enddate, duration=room_availability.get_duration(),
+                                    YesNo=YesNo, one_room=one_room, 
+                                    guests=guests, rooms=rooms_to_book_count, name=name, email=email, phone=phone,
+                                    requests=requests)                
+                # Set check-in and check-out dates
+                check_in_date = room_availability.get_starting()
+                check_out_date = room_availability.get_ending()
+                
+                # Create a new booking record
+                new_bookings = []
+                for room in rooms_to_book:
+                    new_bookings.append(
+                        Bookings(
+                            uid=user_id,
+                            rid=room.id, 
+                            check_in=check_in_date,
+                            check_out=check_out_date,
+                            fees=Room.get_room(id==room.id).rate,
+                            special_requests=requests,
+                            name=name, 
+                            email=email,
+                            phone=phone, 
+                            num_guests=guests
+                        )
+                    )
+                db.session.add_all(new_bookings)
+                db.session.commit()
+                print("sending email...")
+                email_controller.send_booking_created(user=user, bookings=new_bookings, YesNo=YesNo)
+                print("Done sending email")
+                print("Card accepted...")
+                flash("YOUR CARD HAS BEEN ACCEPTED", "success")
+                return redirect(url_for("bookings.bookings"))
+                
+            except Exception as e:
+                db.session.rollback()
+                print(f"Database error: {str(e)}", "database_error")
+                flash(f"Database error: {str(e)}", "database_error")
+                return redirect(url_for('search.search'))
+        else:
+            # Card is invalid, display appropriate error messages
+            flash("INVALID CREDIT CARD DETAILS", "error")
+            return render_template('payment.html', rid=rid, location_type=location_type, startdate=startdate, enddate=enddate, duration=room_availability.get_duration(),
+                               YesNo=YesNo, one_room=one_room, 
+                               guests=guests, rooms=rooms_to_book_count, name=name, email=email, phone=phone,
+                               requests=requests)
+    
+    @bp_payment.route("/booking/<int:booking_id>/receipt/view")
+    def view_receipt(booking_id):
+        """
+        Display an HTML receipt for a booking.
+        
+        Args:
+            booking_id (int): The ID of the booking.
+            
+        Returns:
+            Template: The receipt template with booking details.
+        """
+        if "user_id" not in session:
+            flash("Please log in first.", "error")
+            return redirect(url_for("auth.log_in"))
+        
+        booking = Bookings.query.get(booking_id)
+        
+        if not booking:
+            flash("Booking not found.", "error")
+            return redirect(url_for("bookings.bookings"))
+        
+        if booking.uid != session["user_id"]:
+            flash("You don't have permission to view this receipt.", "error")
+            return redirect(url_for("bookings.bookings"))
+        
+        today = datetime.now()
+        
+        num_nights = (booking.check_out - booking.check_in).days
+        if num_nights == 0:
+            num_nights = 1
+        
+        room_rate = booking.room.rate
+        total_room_charges = room_rate * num_nights
+        resort_fee = 30.00 * num_nights
+        tax_amount = total_room_charges * 0.15
+        total_amount = total_room_charges + resort_fee + tax_amount
+        
+        return render_template(
+            "receipt.html", 
+            booking=booking, 
+            today=today,
+            YesNo=YesNo,
+            num_nights=num_nights,
+            room_rate=room_rate,
+            total_room_charges=total_room_charges,
+            resort_fee=resort_fee,
+            tax_amount=tax_amount,
+            total_amount=total_amount
+        )
+
+    @bp_payment.route("/booking/<int:booking_id>/receipt/download")
+    def download_receipt(booking_id):
+        """
+        Generate and download a PDF receipt for a booking.
+        
+        Args:
+            booking_id (int): The ID of the booking.
+            
+        Returns:
+            Response: The PDF receipt file download.
+        """
+        if "user_id" not in session:
+            flash("Please log in first.", "error")
+            return redirect(url_for("auth.log_in"))
+        
+        booking = Bookings.query.get(booking_id)
+        
+        if not booking:
+            flash("Booking not found.", "error")
+            return redirect(url_for("bookings.bookings"))
+        
+        if booking.uid != session["user_id"]:
+            flash("You don't have permission to download this receipt.", "error")
+            return redirect(url_for("bookings.bookings"))
+        
+        today = datetime.now()
+
+        num_nights = (booking.check_out - booking.check_in).days
+        if num_nights == 0:
+            num_nights = 1
+
+        room_rate = booking.room.rate
+        total_room_charges = room_rate * num_nights
+        resort_fee = 30.00 * num_nights
+        tax_amount = total_room_charges * 0.15
+        total_amount = total_room_charges + resort_fee + tax_amount
+        
+        receipt_gen = ReceiptGenerator()
+        
+        pdf_buffer = receipt_gen.generate_receipt(
+            booking=booking,
+            room_rate=room_rate,
+            total_room_charges=total_room_charges,
+            resort_fee=resort_fee,
+            tax_amount=tax_amount,
+            total_amount=total_amount,
+            return_bytes=True
+        )
+        
+        filename = f"OceanVista_Booking_Receipt_{booking.id}_{datetime.now().strftime('%Y%m%d')}.pdf"
+        
+        return send_file(
+            pdf_buffer,
+            as_attachment=True,
+            download_name=filename,
+            mimetype='application/pdf'
+        )
+    return bp_payment
 
 bp_staff = Blueprint('staff', __name__)
 @bp_staff.route("/tasks", methods=["GET", "POST"])
