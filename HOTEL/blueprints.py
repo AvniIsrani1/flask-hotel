@@ -1,4 +1,4 @@
-from .routes import bp_profile, bp_reserve, bp_request_services, bp_search, bp_staff, booking_routes
+from .routes import bp_profile, bp_reserve, bp_request_services, bp_search, bp_staff, booking_routes, bp_auth
 
 def register_blueprints(app, email_controller):
     app.register_blueprint(bp_profile)
@@ -8,3 +8,4 @@ def register_blueprints(app, email_controller):
     app.register_blueprint(bp_request_services)
     app.register_blueprint(bp_search)
     app.register_blueprint(bp_staff)
+    app.register_blueprint(bp_auth)
