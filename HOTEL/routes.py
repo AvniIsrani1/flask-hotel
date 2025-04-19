@@ -497,7 +497,7 @@ def payment_routes(email_controller):
         Blueprint: The blueprint with payment routes registered.
 
     Note: 
-        Author: Devansh Sharma
+        Author: Devansh Sharma and Andrew Ponce
         Created: March 11, 2025
         Modified: April 17, 2025
     """
