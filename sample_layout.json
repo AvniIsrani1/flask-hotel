@@ -64,7 +64,7 @@
          {
               "num_rooms": "1", 
               "img": "../static/images/roomImgs/standard 5.jpg",
-              "modPath": "/static/assets/standard.glbb",
+              "modPath": "/static/assets/standard.glb",
               "room_type": "Standard",
               "number_beds": "1",
               "rate": "300",
