@@ -2,7 +2,7 @@ from flask import Flask, Blueprint, jsonify, render_template, request, redirect,
 from .db import db
 from sqlalchemy import DateTime, Date, cast, distinct, desc, asc, cast, func, not_, String, Computed
 from datetime import datetime, date, timedelta
-from .entities import Users, Bookings, Services, Hotel, Floor, Room, YesNo, Assistance, Locations, Availability, RoomType, Status, SType, Creditcard
+from .entities import Users, Bookings, Services, Hotel, Floor, Room, YesNo, Assistance, Locations, Availability, RoomType, Status, SType, Creditcard, FAQ
 from .controllers import SearchController, FormController, RoomAvailability
 from datetime import datetime
 from .Services import ReceiptGenerator
@@ -14,101 +14,125 @@ from .Services.response import format_response
 ai_model = load_ai_model()
 ai_db, ai_df = setup_csv_retrieval()
 
-bp_auth = Blueprint('auth', __name__)
-@bp_auth.route("/signup", methods=["GET", "POST"])
-def sign_up():
-    """
-    Handle user sign-up requests.
-    
-    GET: Display the sign-up form.
-    POST: Process the sign-up form submission.
-    
-    Returns:
-        Template: The sign-up form or a redirect to the login page on success.
-    """
-    if request.method == "POST":
-        # Get form data
-        name = request.form.get("name")
-        email = request.form.get("email")
-        password = request.form.get("password")
-        confirm_password = request.form.get("confirm_password")
-        
-        # Check if passwords match
-        if password != confirm_password:
-            flash("Passwords do not match.", "error")
-            return redirect(url_for("auth.sign_up"))
-        
-        # Check if email already exists
-        if not Users.unique_email(email):
-            flash("Email already registered. Please use a different email or login.", "error")
-            return redirect(url_for("auth.sign_up"))
-        
-        # Create a new user
-        user = Users.create_initial_user(name, email, password)
-        
-        try:
-            # Save the new user to the database
-            db.session.add(user)
-            db.session.commit()
-            flash("Account created successfully! Please log in.", "success")
-            
-            # If you have email functionality, you might want to send a welcome email here
-            email_controller.send_welcome_email(user=user)
-            
-            return redirect(url_for("auth.log_in"))
-        except Exception as e:
-            # Roll back the session if there is an error
-            db.session.rollback()
-            flash(f"An error occurred: {str(e)}", "error")
-            return redirect(url_for("auth.sign_up"))
-    
-    return render_template("signup.html")
+"""
+Create routes for each page.
 
-@bp_auth.route("/login", methods=["GET", "POST"])
-def login():
-    """
-    Handle user login requests.
-    
-    GET: Display the login form.
-    POST: Process the login form submission.
-    
-    Returns:
-        Template: The login form or a redirect to the home page on success.
-    """
-    if request.method == "POST":
-        email = request.form.get("email")
-        password = request.form.get("password")
-        
-        # Find user by email
-        user = Users.get_user_by_email(email)
+Note:
+    Author: Avni Israni, Devansh Sharma, Elijah Cortez, Andrew Ponce
+    Documentation: Devansh Sharma
+    Created: March 2, 2025
+    Modified: April 17, 2025
+"""
 
-        # Check if user exists and if the password is correct
-        if user and user.verify_password(password):
-            # Save user's id and name in session so we know they are logged in
-            session["user_id"] = user.id
-            session["user_name"] = user.name
-            if user.first_login == YesNo.Y:
-                return redirect(url_for('profile.profile'))
+def auth_routes(email_controller):
+    """
+    Create authentication-related routes and register them to a blueprint.
+    
+    Args:
+        email_controller (EmailController): The email controller for sending notifications.
+        
+    Returns:
+        Blueprint: The blueprint with authentication routes registered.
+
+    Note: 
+        Author: Devansh Sharma
+        Created: February 16, 2025
+        Modified: April 17, 2025
+    """
+    bp_auth = Blueprint('auth', __name__)
+
+    @bp_auth.route("/signup", methods=["GET", "POST"])
+    def sign_up():
+        """
+        Handle user sign-up requests.
+        
+        GET: Display the sign-up form.
+        POST: Process the sign-up form submission.
+        
+        Returns:
+            Template: The sign-up form or a redirect to the login page on success.
+        """
+        if request.method == "POST":
+            # Get form data
+            name, email, password, confirm_password = FormController.get_signup_information()
+            
+            # Check if passwords match
+            if password != confirm_password:
+                flash("Passwords do not match.", "error")
+                return redirect(url_for("auth.sign_up"))
+            
+            # Check if email already exists
+            if not Users.unique_email(email):
+                flash("Email already registered. Please use a different email or login.", "error")
+                return redirect(url_for("auth.sign_up"))
+            
+            # Create a new user
+            user = Users.create_initial_user(name, email, password)
+            
+            try:
+                # Save the new user to the database
+                db.session.add(user)
+                db.session.commit()
+                flash("Account created successfully! Please log in.", "success")
+                
+                # If you have email functionality, you might want to send a welcome email here
+                email_controller.send_welcome_email(user=user)
+                
+                return redirect(url_for("auth.login"))
+            except Exception as e:
+                # Roll back the session if there is an error
+                db.session.rollback()
+                flash(f"An error occurred: {str(e)}", "error")
+                return redirect(url_for("auth.sign_up"))
+        
+        return render_template("signup.html")
+
+    @bp_auth.route("/login", methods=["GET", "POST"])
+    def login():
+        """
+        Handle user login requests.
+        
+        GET: Display the login form.
+        POST: Process the login form submission.
+        
+        Returns:
+            Template: The login form or a redirect to the home page on success.
+        """
+        if request.method == "POST":
+            email, password = FormController.get_login_information()
+            
+            # Find user by email
+            user = Users.get_user_by_email(email)
+
+            # Check if user exists and if the password is correct
+            if user and user.verify_password(password):
+                # Save user's id and name in session so we know they are logged in
+                session["user_id"] = user.id
+                session["user_name"] = user.name
+                if user.first_login == YesNo.Y:
+                    return redirect(url_for('profile.profile'))
+                else:
+                    flash("Logged in successfully!", "success")
+                    return redirect(url_for("info.home"))
             else:
-                flash("Logged in successfully!", "success")
-                return redirect(url_for("home"))
-        else:
-            flash("Invalid email or password.", "error")
-            return redirect(url_for("auth.log_in"))
-    
-    return render_template("login.html")
+                flash("Invalid email or password.", "error")
+                return redirect(url_for("auth.login"))
+        
+        return render_template("login.html")
 
-@bp_auth.route("/logout")
-def logout():
-    """
-    Handle user logout requests by clearing the session.
+    @bp_auth.route("/logout")
+    def logout():
+        """
+        Handle user logout requests by clearing the session.
+        
+        Returns:
+            Redirect: Redirect to the home page.
+        """
+        session.clear()
+        flash("You have been logged out.", "info")
+        return redirect(url_for("info.home"))
     
-    Returns:
-        Redirect: Redirect to the home page.
-    """
-    session.clear()
-    flash("You have been logged out.", "info")
-    return redirect(url_for("home"))
+    return bp_auth
 
 bp_profile = Blueprint('profile',__name__)
 @bp_profile.route("/profile",methods=["GET", "POST"])
@@ -122,16 +146,21 @@ def profile():
     Returns:
         Template: The profile template with user data.
         Redirect: Redirect to login page if not logged in.
+
+    Note: 
+        Author: Avni Israni
+        Created: February 16, 2025
+        Modified: April 17, 2025
     """
     if "user_id" not in session:
         flash("Please log in first.", "error")
-        return redirect(url_for("log_in"))
+        return redirect(url_for("auth.login"))
     
     user = Users.query.get(session["user_id"])
     if not user:
         flash('Account not found','error')
         session.clear()
-        return redirect(url_for("log_in"))
+        return redirect(url_for("auth.login"))
     if user.first_login is YesNo.Y:
         flash("Please update your profile information!", "action")
     message = status = ''
@@ -185,6 +214,11 @@ def booking_routes(email_controller):
         
     Returns:
         Blueprint: The blueprint with booking routes registered.
+
+    Note: 
+        Author: Avni Israni
+        Created: February 18, 2025
+        Modified: April 17, 2025
     """
     bp_bookings = Blueprint('bookings',__name__)
 
@@ -199,7 +233,7 @@ def booking_routes(email_controller):
         """
         if "user_id" not in session:
             flash("Please log in first.", "error")
-            return redirect(url_for("log_in"))
+            return redirect(url_for("auth.login"))
         user_id = session["user_id"]
         user = Users.get_user(user_id)
 
@@ -266,7 +300,7 @@ def booking_routes(email_controller):
         """
         if "user_id" not in session:
             flash("Please log in first.", "error")
-            return redirect(url_for("log_in"))
+            return redirect(url_for("auth.login"))
         user = Users.query.get(session["user_id"])
         booking = Bookings.query.get(bid)
         message = status = ''
@@ -304,10 +338,15 @@ def reserve():
     Returns:
         Template: The reservation form template.
         Redirect: Redirect to search page if data is missing.
+
+    Note: 
+        Author: Avni Israni
+        Created: March 18, 2025
+        Modified: April 17, 2025
     """
     if "user_id" not in session:
         flash("Please log in first.", "error")
-        return redirect(url_for("log_in"))
+        return redirect(url_for("auth.login"))
     user = Users.query.get(session["user_id"])
     if request.method=='GET' or request.method=='POST':
         rid, location_type, startdate, enddate = FormController.get_booking_reservation_information()
@@ -346,10 +385,15 @@ def request_services(bid):
     Returns:
         Template: The service request form template.
         Redirect: Redirect to bookings page after processing.
+
+    Note: 
+        Author: Avni Israni
+        Created: February 16, 2025
+        Modified: April 17, 2025
     """
     if "user_id" not in session:
         flash("Please log in first.", "error")
-        return redirect(url_for("log_in"))
+        return redirect(url_for("auth.login"))
     user = Users.query.get(session["user_id"])
     if request.method == 'POST':
         #making sure user has active bid
@@ -411,6 +455,11 @@ def search():
     
     Returns:
         Template: The search results template.
+
+    Note: 
+        Author: Avni Israni
+        Created: March 14, 2025
+        Modified: April 17, 2025
     """
     locations = db.session.query(distinct(Hotel.location)).all()
     roomtypes = db.session.query(distinct(cast(Room.room_type, String))).order_by(desc(cast(Room.room_type, String))).all()
@@ -446,6 +495,11 @@ def payment_routes(email_controller):
         
     Returns:
         Blueprint: The blueprint with payment routes registered.
+
+    Note: 
+        Author: Devansh Sharma
+        Created: March 11, 2025
+        Modified: April 17, 2025
     """
     bp_payment = Blueprint('payment', __name__)
 
@@ -462,11 +516,11 @@ def payment_routes(email_controller):
         """
         if "user_id" not in session:
             flash("Please log in first.", "error")
-            return redirect(url_for("auth.log_in"))
+            return redirect(url_for("auth.login"))
         user = Users.query.get(session["user_id"])
         if user is None:
             flash("User is not valid","error")
-            return redirect(url_for("auth.log_in"))
+            return redirect(url_for("auth.login"))
         if request.method == 'POST':
             rid, location_type, startdate, enddate, name, phone, email, guests, rooms, requests = FormController.get_summary_reservation_information(user)
             room_availability = RoomAvailability(startdate=startdate, enddate=enddate)
@@ -499,14 +553,12 @@ def payment_routes(email_controller):
         print("processing payment...")
         if "user_id" not in session:
             flash("Please log in first.", "error")
-            return redirect(url_for("auth.log_in"))
+            return redirect(url_for("auth.login"))
         
         user = Users.query.get(session["user_id"])
         
         # Extract payment information from the form
-        credit_card_number = request.form.get("card-number")
-        exp_date = request.form.get("expiry")
-        cvv = request.form.get("cvv")
+        credit_card_number, exp_date, cvv = FormController.get_payment_information()
 
         # Extract room information from form
         rid, location_type, startdate, enddate, name, phone, email, guests, rooms, requests = FormController.get_summary_reservation_information(user)
@@ -613,7 +665,7 @@ def payment_routes(email_controller):
         """
         if "user_id" not in session:
             flash("Please log in first.", "error")
-            return redirect(url_for("auth.log_in"))
+            return redirect(url_for("auth.login"))
         
         booking = Bookings.query.get(booking_id)
         
@@ -663,7 +715,7 @@ def payment_routes(email_controller):
         """
         if "user_id" not in session:
             flash("Please log in first.", "error")
-            return redirect(url_for("auth.log_in"))
+            return redirect(url_for("auth.login"))
         
         booking = Bookings.query.get(booking_id)
         
@@ -720,6 +772,11 @@ def tasks():
     
     Returns:
         Template: The tasks template with all current service requests.
+
+    Note: 
+        Author: Avni Israni
+        Created: April 12, 2025
+        Modified: April 17, 2025
     """
     today = date.today()
     current_tasks = Services.query.filter(cast(Services.issued, Date) >= today).order_by(

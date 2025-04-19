@@ -5,6 +5,11 @@ class FormController():
     """
     Handles form data extraction from HTTP requests for various pages. 
     Returns parsed and validated data to be used for further operations.
+
+    Author: Avni Israni
+    Documentation: Avni Israni
+    Created: April 17, 2025
+    Modified: April 18, 2025
     """
 
     @classmethod
@@ -17,10 +22,10 @@ class FormController():
 
         Returns:
             tuple: A tuple containing:
-                name (str): The user's name.
-                email (str): The user's email address.
-                password (str): The user's plaintext password.
-                confirm_password (str): The user's plaintext confirmation password.
+                str: name - The user's name.
+                str: email - The user's email address.
+                str: password - The user's plaintext password.
+                str: confirm_password - The user's plaintext confirmation password.
         """
         name = request.form.get("name")
         email = request.form.get("email")
@@ -38,8 +43,8 @@ class FormController():
 
         Returns:
             tuple: A tuple containing:
-                email (str): The user's email address.
-                password (str): The user's plaintext password.
+                str: email - The user's email address.
+                str: password - The user's plaintext password.
         """
         email = request.form.get("email")
         password = request.form.get("password")
@@ -55,13 +60,13 @@ class FormController():
 
         Returns:
             tuple: A tuple containing: 
-                name (str): The new name.
-                phone (str): The new phone number.
-                address_line1 (str): The new address line 1.
-                address_line2 (str): The new address line 2.
-                city (str): The new city.
-                state (str): The new state.
-                zipcode (str): The new zipcode
+                str: name - The new name.
+                str: phone - The new phone number.
+                str: address_line1 - The new address line 1.
+                str: address_line2 - The new address line 2.
+                str: city - The new city.
+                str: state - The new state.
+                str: zipcode - The new zipcode.
         """
         name = request.form.get("name")
         phone = request.form.get("phone")
@@ -82,8 +87,8 @@ class FormController():
         
         Returns:
             tuple: A tuple containing:
-                tremind: YesNo.Y if text notifications were checked, else YesNo.N
-                eremind: YesNo.Y if email notifications were checked, else YesNo.N
+                YesNo: tremind - YesNo.Y if text notifications were checked, else YesNo.N.
+                YesNo: eremind - YesNo.Y if email notifications were checked, else YesNo.N.
         """
         tremind = YesNo.Y if request.form.get('tremind') is not None else YesNo.N
         eremind = YesNo.Y if request.form.get('eremind') is not None else YesNo.N
@@ -99,9 +104,9 @@ class FormController():
 
         Returns:
             tuple: A tuple containing:
-                location (str): The retrieved location.
-                start (str): The retrieved start date
-                end (str): The retrieved end date
+                str: location - The retrieved location.
+                str: start - The retrieved start date.
+                str: end - The retrieved end date.
         """
         location = request.args.get('location_type')
         start = request.args.get('startdate') 
@@ -118,13 +123,13 @@ class FormController():
 
         Returns:
             tuple: A tuple containing:
-                room_type (str): The type of room to search for.
-                bed_type (str): The number of beds in the room.
-                view (str): The type of view (ocean or city)
-                balcony (str): The balcony status (balcony or no_balcony)
-                smoking_preference (str): The smoking preference (Smoking or Non-Smoking)
-                accessibility (str): The accessibility needs desired (wheelchair or '')
-                price_range (str): The maximum price range to search through.
+                str: room_type - The type of room to search for.
+                str: bed_type - The number of beds in the room.
+                str: view - The type of view (ocean or city).
+                str: balcony - The balcony status (balcony or no_balcony).
+                str: smoking_preference - The smoking preference (Smoking or Non-Smoking).
+                str: accessibility - The accessibility needs desired (wheelchair or '').
+                str: price_range - The maximum price range to search through.
         """
         room_type = request.args.get('room_type')
         bed_type = request.args.get('bed_type')
@@ -144,10 +149,11 @@ class FormController():
             None
 
         Returns:
-            rid (str): The room ID that represents the desired room characteristics.
-            location_type (str): The location of the hotel.
-            startdate (str): The start date of the booking.
-            enddate (str): The end date of the booking.
+            tuple: A tuple containing:
+                str: rid - The room ID that represents the desired room characteristics.
+                str: location_type - The location of the hotel.
+                str: startdate - The start date of the booking.
+                str: enddate - The end date of the booking.
         """
         rid = request.args.get('rid')
         location_type = request.args.get('location_type')
@@ -164,12 +170,13 @@ class FormController():
             None
 
         Returns:
-            name (str): The name to be associated with the reservation(s).
-            phone (str): The phone number to be associated with the reservation(s)
-            email (str): The email address to be associated with the reservation(s).  
-            guests (str): The number of guests to be associated with the reservation(s).
-            rooms (str): The number of rooms to be reserved.
-            requests (str): Special requests to be associated with the reservation(s)
+            tuple: A tuple containing:
+                str: name - The name to be associated with the reservation(s).
+                str: phone - The phone number to be associated with the reservation(s).
+                str: email - The email address to be associated with the reservation(s).  
+                str: guests - The number of guests to be associated with the reservation(s).
+                str: rooms - The number of rooms to be reserved.
+                str: requests - Special requests to be associated with the reservation(s).
         """
         name=request.form.get('name', user.name)
         phone=request.form.get('phone', user.phone)
@@ -188,27 +195,22 @@ class FormController():
             None
 
         Returns:
-            rid (str): The room ID that represents the desired room characteristics.
-            location_type (str): The location of the hotel.
-            startdate (str): The start date of the booking.
-            enddate (str): The end date of the booking.
-            name (str): The name to be associated with the reservation(s).
-            phone (str): The phone number to be associated with the reservation(s)
-            email (str): The email address to be associated with the reservation(s).  
-            guests (str): The number of guests to be associated with the reservation(s).
-            rooms (str): The number of rooms to be reserved.
-            requests (str): Special requests to be associated with the reservation(s)
+            tuple: A tuple containing:
+                str: rid - The room ID that represents the desired room characteristics.
+                str: location_type - The location of the hotel.
+                str: startdate - The start date of the booking.
+                str: enddate - The end date of the booking.
+                str: name - The name to be associated with the reservation(s).
+                str: phone - The phone number to be associated with the reservation(s).
+                str: email - The email address to be associated with the reservation(s).  
+                str: guests - The number of guests to be associated with the reservation(s).
+                str: rooms - The number of rooms to be reserved.
+                str: requests - Special requests to be associated with the reservation(s).
         """
         rid = request.form.get('rid') 
         location_type = request.form.get('location_type')
         startdate = request.form.get('startdate')
         enddate = request.form.get('enddate')
-        # rooms = request.form.get('rooms')
-        # requests = request.form.get('requests')
-        # name = request.form.get('name')
-        # email = request.form.get('email')
-        # phone = request.form.get('phone')
-        # guests = request.form.get('guests')
         name, phone, email, guests, rooms, requests = cls.get_make_reservation_information(user)
         return rid, location_type, startdate, enddate, name, phone, email, guests, rooms, requests
     
@@ -221,11 +223,12 @@ class FormController():
             booking (Booking): The booking object whose details should be defaulted to if missing information is provided. 
         
         Returns:
-            special_requests (str): Updated requests for the booking.
-            name (str): Updated name for the booking, defaults to booking's name information if none is provided
-            email (str): Updated email for the booking, defaults to booking's email information if none is provided
-            phone (str): Updated phone number for the booking, defaults to booking's phone number information if none is provided
-            num_guests (str): Updated num_guests for the booking, defaults to booking's num_guests information if none is provided
+            tuple: A tuple containing:
+                str: special_requests - Updated requests for the booking.
+                str: name - Updated name for the booking, defaults to booking's name information if none is provided.
+                str: email - Updated email for the booking, defaults to booking's email information if none is provided.
+                str: phone - Updated phone number for the booking, defaults to booking's phone number information if none is provided.
+                str: num_guests - Updated num_guests for the booking, defaults to booking's num_guests information if none is provided.
         """
         special_requests=request.form.get('requests'), 
         name=request.form.get('name', booking.name), 
@@ -243,25 +246,26 @@ class FormController():
             None
 
         Returns:
-            robes (str): The number of robes requested, defaults to 0 if empty
-            btowels (str): The number of bath towels requested, defaults to 0 if empty
-            htowels (str): The number of hand towels requested, defaults to 0 if empty
-            soap (str): The number of soap bottles requested, defaults to 0 if empty
-            shampoo (str): The number of shampoo bottles requested, defaults to 0 if empty
-            conditioner (str): The number of conditioner bottles requested, defaults to 0 if empty
-            wash (str): The number of bath wash bottles requested, defaults to 0 if empty
-            lotion (str): The number of lotion bottles requested, defaults to 0 if empty
-            hdryer (str): The number of hair dryers requested, defaults to 0 if empty
-            pillows (str): The number of pillows requested, defaults to 0 if empty
-            blankets (str): The number of blankets requested, defaults to 0 if empty
-            sheets (str): The number of sheets requested, defaults to 0 if empty
-            housetime (str): The time at which housekeeping is requested
-            trash (str): A trash pickup request if not empty
-            calltime (str): The time at which a wakeup call is requested
-            recurrent (str): The status on if a wakeup call should be recurrent (every day until check out)
-            restaurant (str): The restaurant to be reserved.
-            assistance (str): The type of assistance that is needed.
-            other (str): Other services that are needed.
+            tuple: A tuple containing:
+                str: robes - The number of robes requested, defaults to 0 if empty.
+                str: btowels - The number of bath towels requested, defaults to 0 if empty.
+                str: htowels - The number of hand towels requested, defaults to 0 if empty.
+                str: soap - The number of soap bottles requested, defaults to 0 if empty.
+                str: shampoo - The number of shampoo bottles requested, defaults to 0 if empty.
+                str: conditioner - The number of conditioner bottles requested, defaults to 0 if empty.
+                str: wash - The number of bath wash bottles requested, defaults to 0 if empty.
+                str: lotion - The number of lotion bottles requested, defaults to 0 if empty.
+                str: hdryer - The number of hair dryers requested, defaults to 0 if empty.
+                str: pillows - The number of pillows requested, defaults to 0 if empty.
+                str: blankets - The number of blankets requested, defaults to 0 if empty.
+                str: sheets - The number of sheets requested, defaults to 0 if empty.
+                str: housetime - The time at which housekeeping is requested.
+                str: trash - A trash pickup request if not empty.
+                str: calltime - The time at which a wakeup call is requested.
+                str: recurrent - The status on if a wakeup call should be recurrent (every day until check out).
+                str: restaurant - The restaurant to be reserved.
+                str: assistance - The type of assistance that is needed.
+                str: other - Other services that are needed.
         """
         robes = int(request.form.get('robes','') or 0)
         btowels = int(request.form.get('btowels','') or 0)
@@ -290,3 +294,22 @@ class FormController():
         return robes, btowels, htowels, soap, shampoo, conditioner, wash, lotion, hdryer, pillows, blankets, sheets, housetime, trash, calltime, recurrent, restaurant, assistance, other
 
 
+    @classmethod
+    def get_payment_information(cls):
+        """
+        Retrieve credit card information from POST form on payment page.
+
+        Args: 
+            None
+
+        Returns:
+            tuple: A tuple containing:
+                str: credit_card_number - The entered credit card number.
+                str: exp_date - The expiration date of the credit card.
+                str: cvv - The cvv of the credit card.
+            
+        """
+        credit_card_number = request.form.get("card-number")
+        exp_date = request.form.get("expiry")
+        cvv = request.form.get("cvv")
+        return credit_card_number, exp_date, cvv

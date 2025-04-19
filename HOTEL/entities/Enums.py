@@ -1,5 +1,17 @@
 from enum import Enum as PyEnum
 
+"""
+Enums to simplify data representation. 
+
+This module helps validate data consistently. 
+
+Note:
+    Author: Avni Israni
+    Documentation: Devansh Sharma
+    Created: March 6, 2025
+    Modified: April 17, 2025
+"""
+
 class YesNo(PyEnum):
     """
     Enum representing Yes/No values.
@@ -39,6 +51,11 @@ class Availability(PyEnum):
     M = 'Maintenance'
 
 class SType(PyEnum):
+    """
+    Enum representing service requests types. 
+
+    Defines the types of services that can be requested. 
+    """
     I = 'Items Needed'
     H = 'Housekeeping'
     T = 'Trash Cleanup'

@@ -1,0 +1,62 @@
+[
+  {
+    "question": "Where are Ocean Vista's locations?",
+    "answer": "Ocean Vista Hotel has two locations: one in Malibu and one in Santa Monica.",
+    "subject": "General Information"
+  },
+  {
+    "question": "What are the check-in and check-out times?",
+    "answer": "Check-in is at 3:00 PM, and check-out is at 11:00 AM.",
+    "subject": "General Information"
+  },
+  {
+    "question": "Do you allow early check-in or late check-out?",
+    "answer": "Early check-in and late check-out are subject to availability. Please contact the front desk for requests.",
+    "subject": "General Information"
+  },
+  {
+    "question": "Is parking available at the hotel?",
+    "answer": "Yes, both locations offer on-site parking. A daily parking fee may apply.",
+    "subject": "General Information"
+  },
+  {
+    "question": "Does Ocean Vista have an on-site restaurant?",
+    "answer": "Yes, our Ocean Breeze Restaurant serves fresh seafood and international cuisine with stunning oceanfront views.",
+    "subject": "Dining & Activities"
+  },
+  {
+    "question": "Is room service available?",
+    "answer": "Yes, room service is available from 7:00 AM to 10:00 PM.",
+    "subject": "Dining & Activities"
+  },
+  {
+    "question": "Does Ocean Vista have a pool or spa?",
+    "answer": "Our Santa Monica location features a rooftop infinity pool, while our Malibu location has a full-service spa and wellness center.",
+    "subject": "Dining & Activities"
+  },
+  {
+    "question": "Is Wi-Fi available?",
+    "answer": "Yes, we offer complimentary high-speed Wi-Fi in all rooms and public areas.",
+    "subject": "Rooms & Amenities"
+  },
+  {
+    "question": "Do rooms have kitchenettes or minibars?",
+    "answer": "Select suites come with kitchenettes. All rooms include a minibar, coffee maker, and essential appliances.",
+    "subject": "Rooms & Amenities"
+  },
+  {
+    "question": "Is Ocean Vista pet-friendly?",
+    "answer": "Yes! We welcome pets for an additional fee. Please review our pet policy before booking.",
+    "subject": "Rooms & Amenities"
+  },
+  {
+    "question": "What is the cancellation policy?",
+    "answer": "Our standard cancellation policy allows free cancellations up to 48 hours before check-in. Policies may vary for special rates and peak seasons.",
+    "subject": "Reservations & Policies"
+  },
+  {
+    "question": "Can I host an event or wedding at Ocean Vista?",
+    "answer": "Absolutely! We offer event spaces, wedding packages, and beachside ceremonies at both locations.",
+    "subject": "Reservations & Policies"
+  }
+]

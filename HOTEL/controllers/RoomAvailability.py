@@ -6,6 +6,12 @@ class RoomAvailability:
     """
     RoomAvailability class for managing room availability information and querying room availability within a given date range.
     This class handles the logic for finding rooms based on specific criteria and date ranges.
+
+    Note:
+        Author: Avni Israni
+        Documentation: Andrew Ponce
+        Created: March 17, 2025
+        Modified: April 17, 2025
     """
 
     def __init__(self,startdate=None,enddate=None,rid=None):
@@ -32,12 +38,13 @@ class RoomAvailability:
     def get_start_end_duration(self,startdate, enddate):
         """
         Convert string date inputs to datetime objects and calculate stay duration.
-        Check-in time is set to 15:00 (3 PM) on the start date.
-        Check-out time is set to 11:00 (11 AM) on the end date.
+        Check-in time is set to 15:00 (3:00 PM) on the start date.
+        Check-out time is set to 11:00 (11:00 AM) on the end date.
 
         Args:
             startdate (str): The starting date in "Month Day, Year" format.
             enddate (str): The ending date in "Month Day, Year" format.
+
         Returns:
             None
         """
@@ -48,7 +55,7 @@ class RoomAvailability:
 
     def set_rid_room(self,rid):
         """
-        Set the room ID and retrieve the corresponding room object.
+        Set the room ID and set the room attribute to the corresponding room object.
 
         Args:
             rid (str): The room ID to set.
@@ -56,9 +63,9 @@ class RoomAvailability:
         Returns:
             None
         """
-        from ..entities import Availability, Room,Hotel
-        self.rid=rid
-        self.room=Room.query.join(Hotel).filter(Room.available==Availability.A).filter(Room.id==rid).first()
+        from ..entities import Availability, Room, Hotel
+        self.rid = rid
+        self.room = Room.query.join(Hotel).filter(Room.available==Availability.A).filter(Room.id==rid).first()
 
 
     
@@ -80,7 +87,7 @@ class RoomAvailability:
             Room.hid==self.room.hid, Room.room_type==self.room.room_type, Room.number_beds==self.room.number_beds, Room.rate==self.room.rate, Room.balcony==self.room.balcony, Room.city_view==self.room.city_view,
             Room.ocean_view==self.room.ocean_view, Room.smoking==self.room.smoking, Room.max_guests==self.room.max_guests, Room.wheelchair_accessible==self.room.wheelchair_accessible
         )
-        if status=='open':
+        if status == 'open':
             similar_rooms = similar_rooms.filter(not_(db.exists().where(Bookings.rid == Room.id).where(Bookings.check_in < self.ending).where(Bookings.check_out>self.starting))).order_by(asc(Room.room_number))
         return similar_rooms
 
@@ -94,8 +101,7 @@ class RoomAvailability:
             status (str): Specifies whether to count only available rooms ('open') or all rooms ('any').
 
         Returns:
-            Query: A SQLAlchemy query object containing the count of similar rooms, 
-                   along with room and hotel information.
+            Query: A SQLAlchemy query object containing the count of similar rooms, along with room and hotel information.
         """
         from ..entities import Room, Hotel #need to update this when move Room/Hotel to model_dbs
         similar_rooms = self.get_similar_rooms(status=status)
@@ -114,8 +120,10 @@ class RoomAvailability:
     def get_duration(self):
         """
         Get the duration of the stay in days.
+
         Args:
             None
+
         Returns:
             int: The number of days of the stay.
         """
@@ -125,8 +133,10 @@ class RoomAvailability:
     def get_starting(self):
         """
         Get the starting datetime of the stay.
+
         Args:
             None
+
         Returns:
             datetime: The check-in datetime.
         """
@@ -136,8 +146,10 @@ class RoomAvailability:
     def get_ending(self):
         """
         Get the ending datetime of the stay.
+
         Args:
             None
+
         Returns:
             datetime: The check-out datetime.
         """

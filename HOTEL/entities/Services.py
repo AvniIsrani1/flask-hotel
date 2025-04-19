@@ -10,6 +10,12 @@ class Services(db.Model):
     
     This class manages various types of service requests that guests can make
     during their stay, including housekeeping, item requests, and assistance.
+
+    Note:
+        Author: Avni Israni
+        Documentation: Devansh Sharma, Avni Israni
+        Created: April 3, 2025
+        Modified: April 17, 2025
     """
     __tablename__ = 'services'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)

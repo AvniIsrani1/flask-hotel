@@ -8,8 +8,15 @@ class Bookings(db.Model):
     __tablename__ = 'bookings'
     """
     A table for storing reservation details. 
+
     Has a foreign key to the Users and Rooms tables.
     Has a 2-way relationship with the Services table.
+
+    Note:
+        Author: Avni Israni
+        Documentation: Avni Israni
+        Created: March 6, 2025
+        Modified: April 17, 2025
     """
     id = db.Column(db.Integer, primary_key=True, autoincrement=True) 
     uid = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
@@ -54,7 +61,7 @@ class Bookings(db.Model):
             None
 
         Returns:
-            YesNo: YesNo.N if check_in is within 2 days of today, else YesNo.Y
+            YesNo: YesNo.N if check_in is within 2 days of today, else YesNo.Y.
         """
         today = datetime.now()
         if (self.check_in - today).days >= 2:
@@ -132,8 +139,8 @@ class Bookings(db.Model):
         Retrieve a user's booking by its unique ID.
 
         Args:
-            uid: The unique ID of the user.
-            bid: The unique ID of the booking.
+            uid (int): The unique ID of the user.
+            bid (int): The unique ID of the booking.
 
         Returns:
             Booking | None: The Booking object if found, else None.

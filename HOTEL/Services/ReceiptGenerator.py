@@ -11,6 +11,16 @@ from reportlab.pdfbase.ttfonts import TTFont
 from io import BytesIO
 
 class ReceiptGenerator:
+    """
+    Generate PDF receipts for hotel bookings. 
+
+    Note:
+        Author: Devansh Sharma
+        Documentation: Devansh Sharma
+        Created: April 6, 2025
+        Modified: April 17, 2025
+    """
+    
     def __init__(self):
         """
         Initialize the ReceiptGenerator with necessary directories and styling.
@@ -95,7 +105,7 @@ class ReceiptGenerator:
             return_bytes (bool, optional): Whether to return the PDF as bytes. Defaults to False.
             
         Returns:
-            str|BytesIO: The path to the saved PDF file or the PDF as a BytesIO object.
+            str | BytesIO: The path to the saved PDF file or the PDF as a BytesIO object.
         """
         room = booking.room
         hotel = room.hotel

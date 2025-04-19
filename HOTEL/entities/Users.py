@@ -6,7 +6,14 @@ from werkzeug.security import generate_password_hash, check_password_hash
 class Users(db.Model):
     """
     A table for storing user information and profile settings.
+
     Maintains a 2-way relationship with the Bookings table.
+
+    Note:
+        Author: Devansh Sharma, Avni Israni
+        Documentation: Avni Israni
+        Created: March 1, 2025
+        Modified: April 17, 2025
     """
     __tablename__ = 'users'  # Name of the table in the database
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)  # Unique id for each user

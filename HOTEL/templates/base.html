@@ -16,7 +16,7 @@
 <body>
   <header>
     <div class="logo">
-      <a href="{{ url_for('home') }}">
+      <a href="{{ url_for('info.home') }}">
         <img src="{{ url_for('static', filename='images/logo2.png') }}" alt="Ocean Vista" width="50" height="50">
         <p>Ocean Vista</p>
       </a>
@@ -24,8 +24,8 @@
     <nav class="base-links">
       <a href="{{url_for('search.search')}}"><i class="fa-solid fa-hotel"></i><p>Reserve</p></a>
       <a href=""><i class="fa-solid fa-bell-concierge"></i><p>Amenities</p></a>
-      <a href="{{url_for('events')}}"><i class="fa-regular fa-calendar-days"></i><p>Events</p></a>
-      <a href="{{url_for('menu')}}"><i class="fa-solid fa-utensils"></i><p>Dining</p></a>
+      <a href="{{url_for('info.events')}}"><i class="fa-regular fa-calendar-days"></i><p>Events</p></a>
+      <a href="{{url_for('info.menu')}}"><i class="fa-solid fa-utensils"></i><p>Dining</p></a>
       {% if session.get('user_name') %}
       <div class="profile-info">
         <a href="{{ url_for('profile.profile') }}">
@@ -66,13 +66,13 @@
     <div class="quick-links">
       <p>QUICK LINKS</p>
       <div class="inner">
-        <a href="{{ url_for('home') }}" class="indent">Home</a>
+        <a href="{{ url_for('info.home') }}" class="indent">Home</a>
         <a href="{{url_for('search.search')}}" class="indent">Reserve</a>
         <a href="" class="indent">Amenities</a>
-        <a href="{{url_for('events')}}" class="indent">Events</a>
-        <a href="{{url_for('menu')}}" class="indent">Dining</a>
-        <a href="{{url_for('faq')}}" class="indent">FAQs</a>
-        <a href="{{url_for('about')}}" class="indent">About Us</a>
+        <a href="{{url_for('info.events')}}" class="indent">Events</a>
+        <a href="{{url_for('info.menu')}}" class="indent">Dining</a>
+        <a href="{{url_for('info.faq')}}" class="indent">FAQs</a>
+        <a href="{{url_for('info.about')}}" class="indent">About Us</a>
       </div>
     </div>
     <hr>
@@ -81,8 +81,8 @@
       <a href="mailto:oceanvista@gmail.com"><i class="fa-solid fa-envelope"></i><p>oceanvista@gmail.com</p></a>
       <a href="tel:818-000-0000"><i class="fa-solid fa-phone"></i><p>Call 818-000-0000</p></a>
       <br>
-      <a href="{{ url_for('terms') }}" class="indent">Terms & Conditions</a>
-      <a href="{{ url_for('terms') }}" class="indent">Privacy Policy</a>
+      <a href="{{ url_for('info.terms') }}" class="indent">Terms & Conditions</a>
+      <a href="{{ url_for('info.terms') }}" class="indent">Privacy Policy</a>
     </div>
   </footer>
 
