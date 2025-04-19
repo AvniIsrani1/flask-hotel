@@ -20,7 +20,7 @@ class ReceiptGenerator:
         Created: April 6, 2025
         Modified: April 17, 2025
     """
-    
+
     def __init__(self):
         """
         Initialize the ReceiptGenerator with necessary directories and styling.
@@ -107,8 +107,8 @@ class ReceiptGenerator:
         Returns:
             str | BytesIO: The path to the saved PDF file or the PDF as a BytesIO object.
         """
-        room = booking.room
-        hotel = room.hotel
+        room = booking.rooms
+        hotel = room.hotels
         
         timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
         filename = f"Receipt_{booking.id}_{timestamp}.pdf"

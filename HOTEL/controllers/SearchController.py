@@ -1,6 +1,6 @@
 from sqlalchemy import DateTime, distinct, desc, asc, cast, func, not_, String, Computed
 from datetime import datetime, timedelta
-from ..entities import Hotel, Floor, Room, Bookings, Locations, YesNo, RoomType,Availability
+from ..entities import Hotel, Floor, Room, Booking, Locations, YesNo, RoomType,Availability
 from ..db import db
 
 class SearchController:
@@ -58,7 +58,7 @@ class SearchController:
             ending = datetime.strptime(str(end), "%B %d, %Y").replace(hour=11,minute=0,second=0) #check out is at 11:00 AM
             if not start: #impossible to have only end (must have at least start) (will never reach this condition)
                 starting = (ending - timedelta(days=1)).replace(hour=15,minute=0,second=0)
-        self.query = self.query.filter(not_(db.exists().where(Bookings.rid == Room.id).where(Bookings.check_in < ending).where(Bookings.check_out>starting)))
+        self.query = self.query.filter(not_(db.exists().where(Booking.rid == Room.id).where(Booking.check_in < ending).where(Booking.check_out>starting)))
         return starting,ending,valid
     
     def filter_search(self,room_type=None,bed_type=None,view=None,balcony=None,smoking_preference=None,accessibility=None,price_range=None):

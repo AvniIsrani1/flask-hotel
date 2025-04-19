@@ -3,7 +3,7 @@ from ..db import db
 from werkzeug.security import generate_password_hash, check_password_hash
 
 
-class Users(db.Model):
+class User(db.Model):
     """
     A table for storing user information and profile settings.
 
@@ -30,7 +30,7 @@ class Users(db.Model):
     first_login = db.Column(db.Enum(YesNo), nullable=False, default=YesNo.Y) 
     text_notifications = db.Column(db.Enum(YesNo), nullable=False, default=YesNo.N) 
     email_notifications = db.Column(db.Enum(YesNo), nullable=False, default=YesNo.N) 
-    bookings = db.relationship('Bookings', backref='users', lazy=True, cascade='all, delete-orphan') #user is keeping track of bookings
+    bookings = db.relationship('Booking', backref='users', lazy=True, cascade='all, delete-orphan') #user is keeping track of bookings
     
     @classmethod
     def get_user(cls, id):

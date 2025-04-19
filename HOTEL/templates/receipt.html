@@ -24,8 +24,8 @@
             </div>
             <div class="hotel-info">
                 <h2>Ocean Vista Hotel</h2>
-                <p>{{ booking.room.hotel.location.value }} Location</p>
-                <p>{{ booking.room.hotel.address }}</p>
+                <p>{{ booking.rooms.hotels.location.value }} Location</p>
+                <p>{{ booking.rooms.hotels.address }}</p>
             </div>
         </div>
 
@@ -74,11 +74,11 @@
                 </div>
                 <div class="info-row">
                     <span class="label">Room Type:</span>
-                    <span class="value">{{ booking.room.number_beds }}-Bedroom {{ booking.room.room_type.value }}
-                        {% if booking.room.wheelchair_accessible == YesNo.Y %}
+                    <span class="value">{{ booking.rooms.number_beds }}-Bedroom {{ booking.rooms.room_type.value }}
+                        {% if booking.rooms.wheelchair_accessible == YesNo.Y %}
                             <span> (Wheelchair Accessible) </span>
                         {% endif %}
-                        {% if booking.room.smoking == YesNo.N %}
+                        {% if booking.rooms.smoking == YesNo.N %}
                             <span>| Non-Smoking</span>
                         {% endif %}
                     </span>
@@ -101,7 +101,7 @@
                     </thead>
                     <tbody>
                         <tr>
-                            <td>{{ booking.room.number_beds }}-Bedroom {{ booking.room.room_type.value }}</td>
+                            <td>{{ booking.rooms.number_beds }}-Bedroom {{ booking.rooms.room_type.value }}</td>
                             <td>${{ room_rate }}.00</td>
                             <td>${{ total_room_charges }}.00</td>
                         </tr>

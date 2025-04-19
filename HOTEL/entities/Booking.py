@@ -4,7 +4,7 @@ from .Enums import YesNo
 from ..db import db
 
 
-class Bookings(db.Model):
+class Booking(db.Model):
     __tablename__ = 'bookings'
     """
     A table for storing reservation details. 
@@ -20,7 +20,7 @@ class Bookings(db.Model):
     """
     id = db.Column(db.Integer, primary_key=True, autoincrement=True) 
     uid = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    rid = db.Column(db.Integer, db.ForeignKey('room.id'), nullable=False)
+    rid = db.Column(db.Integer, db.ForeignKey('rooms.id'), nullable=False)
     check_in = db.Column(DateTime, nullable=False)
     check_out = db.Column(DateTime, nullable=False)
     fees = db.Column(db.Integer, default=50)
@@ -31,7 +31,7 @@ class Bookings(db.Model):
     email = db.Column(db.String(150),nullable=False)
     phone = db.Column(db.String(15),nullable=False)
     num_guests = db.Column(db.Integer, default=1)
-    services = db.relationship('Services', backref='users', lazy=True, cascade='all, delete-orphan')
+    services = db.relationship('Service', backref='users', lazy=True, cascade='all, delete-orphan')
 
     def update_booking(self, special_requests, name, email, phone, num_guests):
         """

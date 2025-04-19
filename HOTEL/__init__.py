@@ -7,7 +7,7 @@ from urllib.parse import quote
 import boto3
 from botocore.exceptions import ClientError
 import json
-from .entities import Users, Hotel, Room, FAQ, Locations
+from .entities import User, Hotel, Room, FAQ, Locations
 from .controllers import EmailController
 from .db import db
 
@@ -71,7 +71,7 @@ mail = Mail(app)
 email_controller = EmailController(mail)
 register_blueprints(app, email_controller)
 
-# model = [Users, Hotel, Floor, Room, Bookings, FAQ, YesNo, Locations, RoomType, Availability, Saved]
+# model = [User, Hotel, Floor, Room, Bookings, FAQ, YesNo, Locations, RoomType, Availability, Saved]
 admin = Admin(app, name="Admin", template_mode="bootstrap4")
 
 # Create all database tables (if they don't exist already)
@@ -108,10 +108,10 @@ def add_sample_data():
         print("Sample rooms added")
 
         users = []
-        avni = Users(name="avni", email="avni@gmail.com", password=generate_password_hash("avni"))
-        devansh = Users(name="devansh", email="devansh@gmail.com", password=generate_password_hash("devansh"))
-        elijah = Users(name="elijah", email="elijah@gmail.com", password=generate_password_hash("elijah"))
-        andrew = Users(name="andrew", email="andrew@gmail.com", password=generate_password_hash("andrew"))
+        avni = User(name="avni", email="avni@gmail.com", password=generate_password_hash("avni"))
+        devansh = User(name="devansh", email="devansh@gmail.com", password=generate_password_hash("devansh"))
+        elijah = User(name="elijah", email="elijah@gmail.com", password=generate_password_hash("elijah"))
+        andrew = User(name="andrew", email="andrew@gmail.com", password=generate_password_hash("andrew"))
         users.extend([avni, devansh, elijah, andrew])
         db.session.add_all(users)
         db.session.commit()

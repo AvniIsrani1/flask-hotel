@@ -6,7 +6,7 @@ from .Room import Room
 class Floor(db.Model):
     """
     A table for storing floor information. 
-    
+
     Has a 2-way relationship with the Rooms table.
     Has a unique constraint on the combined hid and floor_number
 
@@ -16,10 +16,11 @@ class Floor(db.Model):
         Created: March 9, 2025
         Modified: April 17, 2025
     """
+    __tablename__ = 'floors'
     id = db.Column(db.Integer, primary_key=True) 
-    hid = db.Column(db.Integer, db.ForeignKey('hotel.id'))
+    hid = db.Column(db.Integer, db.ForeignKey('hotels.id'))
     floor_number = db.Column(db.Integer,nullable=False)
-    rooms = db.relationship('Room', backref='floor', lazy=True, cascade='all, delete-orphan') #floor is keeping track of rooms
+    rooms = db.relationship('Room', backref='floors', lazy=True, cascade='all, delete-orphan') #floor is keeping track of rooms
 
     __table_args__ = (db.UniqueConstraint('hid', 'floor_number', name='hid_floor_number_unique'),)
 
