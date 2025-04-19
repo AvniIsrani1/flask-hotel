@@ -1,5 +1,17 @@
 from transformers import pipeline
 
+"""
+Module for AI text generation using Hugging Face transformers.
+
+The text generation model is tailored for hotel and vacation-related queries.
+
+Note:
+    Author: Elijah Cortez
+    Documentation: Elijah Cortez
+    Created: February 27, 2025
+    Modified: April 17, 2025
+"""
+
 def load_ai_model():
     """
     Load and return the AI model from Hugging Face for text generation.
@@ -8,7 +20,7 @@ def load_ai_model():
         None
 
     Returns:
-        Pipeline: A Hugging Face pipeline ready for text2text generation.
+        pipeline: A Hugging Face pipeline ready for text2text generation.
     """
     checkpoint = "MBZUAI/LaMini-Flan-T5-248M"
     return pipeline('text2text-generation', model=checkpoint)
@@ -23,6 +35,9 @@ def generate_ai_response(ai_model, question):
 
     Returns:
         str: A response string branded with 'Ocean Vista' or a fallback message.
+
+    Raises:
+        Exception: Caught internally and prints default message. 
     """
     
     prompt = (

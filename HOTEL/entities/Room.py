@@ -5,8 +5,15 @@ class Room(db.Model):
     __tablename__ = 'room'
     """
     A table for storing room information.
+
     Maintains a 2-way relationship with the Bookings table.
     There is a unique constraint on the combined hid, fid, and room_number
+
+    Note:
+        Author: Avni Israni
+        Documentation: Avni Israni
+        Created: March 6, 2025
+        Modified: April 17, 2025
     """
     id = db.Column(db.Integer, primary_key=True) 
     fid = db.Column(db.Integer, db.ForeignKey('floor.id'))

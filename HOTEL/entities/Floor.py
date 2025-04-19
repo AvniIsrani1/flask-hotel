@@ -6,8 +6,15 @@ from .Room import Room
 class Floor(db.Model):
     """
     A table for storing floor information. 
+    
     Has a 2-way relationship with the Rooms table.
     Has a unique constraint on the combined hid and floor_number
+
+    Note:
+        Author: Avni Israni
+        Documentation: Avni Israni
+        Created: March 9, 2025
+        Modified: April 17, 2025
     """
     id = db.Column(db.Integer, primary_key=True) 
     hid = db.Column(db.Integer, db.ForeignKey('hotel.id'))

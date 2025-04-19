@@ -7,6 +7,16 @@ from .controllers import SearchController, FormController, RoomAvailability
 from datetime import datetime
 from .Services import ReceiptGenerator
 
+"""
+Create routes for each page.
+
+Note:
+    Author: Avni Israni, Devansh Sharma, Elijah Cortez, Andrew Ponce
+    Documentation: Devansh Sharma
+    Created: March 2, 2025
+    Modified: April 17, 2025
+"""
+
 def auth_routes(email_controller):
     """
     Create authentication-related routes and register them to a blueprint.
@@ -16,6 +26,11 @@ def auth_routes(email_controller):
         
     Returns:
         Blueprint: The blueprint with authentication routes registered.
+
+    Note: 
+        Author: Devansh Sharma
+        Created: February 16, 2025
+        Modified: April 17, 2025
     """
     bp_auth = Blueprint('auth', __name__)
 
@@ -91,7 +106,7 @@ def auth_routes(email_controller):
                     return redirect(url_for('profile.profile'))
                 else:
                     flash("Logged in successfully!", "success")
-                    return redirect(url_for("home"))
+                    return redirect(url_for("info.home"))
             else:
                 flash("Invalid email or password.", "error")
                 return redirect(url_for("auth.login"))
@@ -108,7 +123,7 @@ def auth_routes(email_controller):
         """
         session.clear()
         flash("You have been logged out.", "info")
-        return redirect(url_for("home"))
+        return redirect(url_for("info.home"))
     
     return bp_auth
 
@@ -124,6 +139,11 @@ def profile():
     Returns:
         Template: The profile template with user data.
         Redirect: Redirect to login page if not logged in.
+
+    Note: 
+        Author: Avni Israni
+        Created: February 16, 2025
+        Modified: April 17, 2025
     """
     if "user_id" not in session:
         flash("Please log in first.", "error")
@@ -187,6 +207,11 @@ def booking_routes(email_controller):
         
     Returns:
         Blueprint: The blueprint with booking routes registered.
+
+    Note: 
+        Author: Avni Israni
+        Created: February 18, 2025
+        Modified: April 17, 2025
     """
     bp_bookings = Blueprint('bookings',__name__)
 
@@ -306,6 +331,11 @@ def reserve():
     Returns:
         Template: The reservation form template.
         Redirect: Redirect to search page if data is missing.
+
+    Note: 
+        Author: Avni Israni
+        Created: March 18, 2025
+        Modified: April 17, 2025
     """
     if "user_id" not in session:
         flash("Please log in first.", "error")
@@ -348,6 +378,11 @@ def request_services(bid):
     Returns:
         Template: The service request form template.
         Redirect: Redirect to bookings page after processing.
+
+    Note: 
+        Author: Avni Israni
+        Created: February 16, 2025
+        Modified: April 17, 2025
     """
     if "user_id" not in session:
         flash("Please log in first.", "error")
@@ -413,6 +448,11 @@ def search():
     
     Returns:
         Template: The search results template.
+
+    Note: 
+        Author: Avni Israni
+        Created: March 14, 2025
+        Modified: April 17, 2025
     """
     locations = db.session.query(distinct(Hotel.location)).all()
     roomtypes = db.session.query(distinct(cast(Room.room_type, String))).order_by(desc(cast(Room.room_type, String))).all()
@@ -448,6 +488,11 @@ def payment_routes(email_controller):
         
     Returns:
         Blueprint: The blueprint with payment routes registered.
+
+    Note: 
+        Author: Devansh Sharma
+        Created: March 11, 2025
+        Modified: April 17, 2025
     """
     bp_payment = Blueprint('payment', __name__)
 
@@ -720,6 +765,11 @@ def tasks():
     
     Returns:
         Template: The tasks template with all current service requests.
+
+    Note: 
+        Author: Avni Israni
+        Created: April 12, 2025
+        Modified: April 17, 2025
     """
     today = date.today()
     current_tasks = Services.query.filter(cast(Services.issued, Date) >= today).order_by(
@@ -731,24 +781,60 @@ def tasks():
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+# static pages 
 bp_info = Blueprint('info',__name__)
+
+@bp_info.route("/")
+def home():
+    """
+    Render the home page with a list of available hotel locations.
+    
+    Returns:
+        Template: The rendered home page template.
+    """
+    locations = db.session.query(distinct(Hotel.location)).all()
+    return render_template("home.html", locations=locations)
+
+@bp_info.route("/terms")
+def terms():
+    """
+    Render the terms and conditions page.
+    
+    Returns:
+        Template: The terms page template.
+    """
+    return render_template('terms.html')
+
+@bp_info.route("/events")
+def events():
+    """
+    Render the events page.
+    
+    Returns:
+        Template: The events page template.
+    """
+    return render_template('events.html')
+
+@bp_info.route("/menu")
+def menu():
+    """
+    Render the restaurant menu page.
+    
+    Returns:
+        Template: The menu page template.
+    """
+    return render_template('menus2.html')
+
+@bp_info.route("/about")
+def about():
+    """
+    Render the about page.
+    
+    Returns:
+        Template: The about page template.
+    """
+    return render_template('about.html')
+
 @bp_info.route("/faq")
 def faq():
     """

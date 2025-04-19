@@ -1,9 +1,7 @@
-from flask import Flask, jsonify, render_template, request, redirect, url_for, session, flash, get_flashed_messages
-from flask_mail import Mail, Message
-from flask_sqlalchemy import SQLAlchemy
+from flask import Flask, jsonify, render_template, request
+from flask_mail import Mail
 from sqlalchemy import DateTime, distinct, desc, asc, cast, func, not_, String, Computed
-from datetime import datetime
-from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.security import generate_password_hash
 from enum import Enum as PyEnum
 from urllib.parse import quote
 import boto3
@@ -14,13 +12,9 @@ from .controllers import EmailController
 from .db import db
 
 from flask_admin import Admin
-from flask_admin.contrib.sqla import ModelView
 from HOTEL.AImodels.csv_retriever import setup_csv_retrieval, get_answer_from_csv
 from HOTEL.AImodels.ai_model import load_ai_model, generate_ai_response
 from .Services.response import format_response  
-from io import BytesIO
-from .Services.ReceiptGenerator import ReceiptGenerator
-from flask import send_file
 from .blueprints import register_blueprints
 
 app = Flask(__name__,
@@ -85,57 +79,6 @@ with app.app_context():
     db.create_all()
 
 # ----- Routes -----
-
-@app.route("/")
-def home():
-    """
-    Render the home page with a list of available hotel locations.
-    
-    Returns:
-        Template: The rendered home page template.
-    """
-    locations = db.session.query(distinct(Hotel.location)).all()
-    return render_template("home.html", locations=locations)
-
-@app.route("/terms")
-def terms():
-    """
-    Render the terms and conditions page.
-    
-    Returns:
-        Template: The terms page template.
-    """
-    return render_template('terms.html')
-
-@app.route("/events")
-def events():
-    """
-    Render the events page.
-    
-    Returns:
-        Template: The events page template.
-    """
-    return render_template('events.html')
-
-@app.route("/menu")
-def menu():
-    """
-    Render the restaurant menu page.
-    
-    Returns:
-        Template: The menu page template.
-    """
-    return render_template('menus2.html')
-
-@app.route("/about")
-def about():
-    """
-    Render the about page.
-    
-    Returns:
-        Template: The about page template.
-    """
-    return render_template('about.html')
 
 def add_sample_data():
     """

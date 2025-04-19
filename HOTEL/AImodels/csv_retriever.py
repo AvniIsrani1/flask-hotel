@@ -4,6 +4,16 @@ import pandas as pd
 import os
 import numpy as np
 
+"""
+Module for retrieval of CSV information. 
+
+Note:
+    Author: Elijah Cortez
+    Documentation: Elijah Cortez
+    Created: February 27, 2025
+    Modified: April 17, 2025
+"""
+
 def setup_csv_retrieval():
     """
     Set up the CSV-based information retrieval system using FAISS and Hugging Face embeddings.
@@ -13,6 +23,9 @@ def setup_csv_retrieval():
 
     Returns:
         tuple: A tuple (db, df) where db is a FAISS vector store and df is the original CSV DataFrame.
+    
+    Raises:
+        Exception: Caught internally, and returns (None, None).
     """
     # Path construction
     current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -63,6 +76,9 @@ def get_answer_from_csv(db, df, question):
 
     Returns:
         str | None: The best matching text from the CSV or None if no suitable result is found.
+
+    Raises:
+        Exception: Caught internally, and returns None.
     """
     if db is None or df is None or df.empty:
         print("Database or DataFrame is None or empty")

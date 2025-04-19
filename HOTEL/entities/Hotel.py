@@ -6,7 +6,14 @@ from .Room import Room
 class Hotel(db.Model):
     """
     A table for storing hotel information.
+    
     Maintains a 2-way relationship with the Floors and Rooms tables.
+
+    Note:
+        Author: Avni Israni
+        Documentation: Avni Israni
+        Created: March 6, 2025
+        Modified: April 17, 2025
     """
     id = db.Column(db.Integer, primary_key=True)
     location = db.Column(db.Enum(Locations), nullable=False) 

@@ -7,6 +7,12 @@ class SearchController:
     """
     A class for handling search functionality throughout the application.
     This controller manages the querying and filtering of room availability based on various criteria.
+
+    Note: 
+        Author: Avni Israni
+        Documentation: Andrew Ponce
+        Created: March 17, 2025
+        Modified: April 17, 2025
     """
 
     def __init__(self):
@@ -24,9 +30,7 @@ class SearchController:
     def main_search(self,location=None,start=None,end=None):
         """
         Perform the main search based on location and date parameters.
-        
-        Sets up date ranges for search and filters rooms based on location and availability
-        during the specified date range.
+        Sets up date ranges for search and filters rooms based on location and availability during the specified date range.
         
         Args:
             location (str, optional): The location identifier to search for.
@@ -34,8 +38,10 @@ class SearchController:
             end (str, optional): The ending date in "Month Day, Year" format.
             
         Returns:
-            tuple: Contains the starting date (datetime), ending date (datetime), and a boolean 
-                  indicating whether search parameters were provided (True) or defaults used (False).
+            tuple: A tuple containing:
+                datetime: starting - The starting date.
+                datetime: ending - The ending date.
+                bool: valid - True if search parameters were provided, False if defaults were used. 
         """
         valid = True
         if not start and not end: #only time this can happen is when user clicks to search page via home search bar or search button (otherwise always have at least start)
@@ -121,7 +127,6 @@ class SearchController:
     def get_quantities(self):
         """
         Group the search results and count the number of rooms for each unique combination of characteristics.
-        
         This method modifies the query to include counts and minimum room IDs for each group.
         
         Args:

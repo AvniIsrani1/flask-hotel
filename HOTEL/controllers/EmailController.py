@@ -6,6 +6,11 @@ class EmailController:
     """
     A class for managing email sending operations throughout the application.
     This controller handles the creation and delivery of various types of email notifications.
+
+    Author: Avni Israni
+    Documentation: Andrew Ponce
+    Created: April 6, 2025
+    Modified: April 17, 2025
     """
     
     def __init__(self,mail):
@@ -18,19 +23,19 @@ class EmailController:
         Returns:
             None
         """
-        self.mail=mail
+        self.mail = mail
 
 
     
 
     def send_email(self,subject, recipients, body, body_template, user=None, booking=None,YesNo=YesNo, attachment=None, attachment_type=None):
         """
-        Initialize an EmailController object with the mail service.
+        Send email using Flask-Mail instance.
 
         Args:
             subject (str): The subject line of the email.
             recipients (list): List of recipient emails.
-            body (str): Text body of the email (used when body_template cannot be used)
+            body (str): Text body of the email (used when body_template cannot be used).
             body_template (str): Path to the HTML template for the email content.
             user (User, optional): User object to pass to the template.
             booking (Booking): Booking object to pass to the template.
@@ -76,7 +81,7 @@ class EmailController:
         Send a welcome email to a new user.
 
         Args:
-            user (User): The new user who just signed up
+            user (User): The new user who just signed up.
 
         Returns:
             str: A message indicating the email was sent.

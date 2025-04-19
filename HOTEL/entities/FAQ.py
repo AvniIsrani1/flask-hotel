@@ -4,6 +4,12 @@ class FAQ(db.Model):
     __tablename__ = 'faq'
     """
     A table for storing FAQ information.
+
+    Note:
+        Author: Avni Israni
+        Documentation: Avni Israni
+        Created: March 6, 2025
+        Modified: April 17, 2025
     """
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     question = db.Column(db.String(150), nullable=False)

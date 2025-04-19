@@ -1,5 +1,14 @@
 from .routes import bp_profile, bp_reserve, bp_request_services, bp_search, bp_staff, bp_info, booking_routes, auth_routes, payment_routes
 
+"""
+Register the blueprints so each route is accessible. 
+
+Note:
+    Author: Avni Israni, Devansh Sharma
+    Documentation: Avni Israni
+    Created: March 2, 2025
+    Modified: April 17, 2025
+"""
 def register_blueprints(app, email_controller):
     app.register_blueprint(bp_profile)
 
