@@ -19,7 +19,7 @@ class SearchController:
         """
         Initialize a SearchController object with a base query for available rooms.
         
-        Args:
+        Parameters:
             None
             
         Returns:
@@ -32,7 +32,7 @@ class SearchController:
         Perform the main search based on location and date parameters.
         Sets up date ranges for search and filters rooms based on location and availability during the specified date range.
         
-        Args:
+        Parameters:
             location (str, optional): The location identifier to search for.
             start (str, optional): The starting date in "Month Day, Year" format.
             end (str, optional): The ending date in "Month Day, Year" format.
@@ -65,7 +65,7 @@ class SearchController:
         """
         Apply additional filters to the search query based on various room criteria.
         
-        Args:
+        Parameters:
             room_type (str, optional): The type of room to filter by.
             bed_type (str, optional): The bed type or count to filter by.
             view (str, optional): The view type to filter by ('ocean' or 'city').
@@ -111,7 +111,7 @@ class SearchController:
         """
         Sort the search results based on specified criteria.
         
-        Args:
+        Parameters:
             sort (str): The sorting parameter ('priceL' for ascending price, 'priceH' for descending price).
             
         Returns:
@@ -129,7 +129,7 @@ class SearchController:
         Group the search results and count the number of rooms for each unique combination of characteristics.
         This method modifies the query to include counts and minimum room IDs for each group.
         
-        Args:
+        Parameters:
             None
             
         Returns:
@@ -147,7 +147,7 @@ class SearchController:
         """
         Execute the query and retrieve all matching results.
         
-        Args:
+        Parameters:
             None
             
         Returns:

@@ -37,7 +37,7 @@ class User(db.Model):
         """
         Retrieve a user by their unique ID.
 
-        Args: 
+        Parameters: 
             id (int): The unique ID of the user.
 
         Returns:
@@ -50,7 +50,7 @@ class User(db.Model):
         """
         Retrieve a user by their unique email address.
 
-        Args:
+        Parameters:
             email (str): The email address to check for.
         
         Returns:
@@ -63,7 +63,7 @@ class User(db.Model):
         """
         Check if the email specified is unique among all users.
         
-        Args:
+        Parameters:
             email (str): The email address to search for.
 
         Returns:
@@ -76,7 +76,7 @@ class User(db.Model):
         """
         Create a new User object with hashed password.
 
-        Args:
+        Parameters:
             name (str): The name of the user.
             email (str): The unique email address of the user.
             password (str): The password of the user in plaintext.
@@ -91,7 +91,7 @@ class User(db.Model):
         Update the user's profile information. 
         If name and phone are provided, the user's first_login is set to YesNo.N.
 
-        Args:
+        Parameters:
             name (str, optional): Updated name.
             phone (str, optional): Updated phone number.
             address_line1 (str, optional): Updated address line 1.
@@ -118,7 +118,7 @@ class User(db.Model):
         """
         Update the user's notification settings.
 
-        Args:
+        Parameters:
             text_notifications (YesNo): New text notification setting.
             email_notifications (YesNo): New email notification setting.
 
@@ -132,7 +132,7 @@ class User(db.Model):
         """
         Check if the user's saved password matches the entered password.
 
-        Args:
+        Parameters:
             entered_password (str): The plaintext password to verify.
 
         Returns:
@@ -144,7 +144,7 @@ class User(db.Model):
         """
         Update the user's password after hashing the new password.
 
-        Args:
+        Parameters:
             new_password (str): The plaintext password to update to.
 
         Returns:

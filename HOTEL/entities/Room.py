@@ -2,7 +2,6 @@ from .Enums import YesNo, Availability, RoomType
 from ..db import db
 
 class Room(db.Model):
-    __tablename__ = 'rooms'
     """
     A table for storing room information.
 
@@ -15,6 +14,7 @@ class Room(db.Model):
         Created: March 6, 2025
         Modified: April 17, 2025
     """
+    __tablename__ = 'rooms'
     id = db.Column(db.Integer, primary_key=True) 
     fid = db.Column(db.Integer, db.ForeignKey('floors.id'))
     hid = db.Column(db.Integer, db.ForeignKey('hotels.id'))
@@ -41,7 +41,7 @@ class Room(db.Model):
         """
         Retrieve the room by its unique ID.
 
-        Args:
+        Parameters:
             id: The unique ID of the room.
 
         Returns:
@@ -53,7 +53,7 @@ class Room(db.Model):
         """
         Retrieve the room number of the room.
 
-        Args:
+        Parameters:
             None
 
         Returns:
@@ -65,7 +65,7 @@ class Room(db.Model):
         """
         Retrieve the room's full location
 
-        Args:
+        Parameters:
             None
 
         Returns:
@@ -77,7 +77,7 @@ class Room(db.Model):
         """
         Retrieve the room's room type
 
-        Args:
+        Parameters:
             None
 
         Returns:
@@ -89,7 +89,7 @@ class Room(db.Model):
         """
         Retrieve the number of beds in the room.
 
-        Args:
+        Parameters:
             None
         
         Returns:
@@ -101,7 +101,7 @@ class Room(db.Model):
         """
         Retrieve the nightly rate of the room.
 
-        Args:
+        Parameters:
             None
 
         Returns:
@@ -113,7 +113,7 @@ class Room(db.Model):
         """
         Retrieve the balcony status of the room.
 
-        Args:
+        Parameters:
             None
 
         Returns:
@@ -125,7 +125,7 @@ class Room(db.Model):
         """
         Retrieve the city view status of the room.
 
-        Args:
+        Parameters:
             None
 
         Returns:
@@ -137,7 +137,7 @@ class Room(db.Model):
         """
         Retrieve the ocean view status of the room.
 
-        Args:
+        Parameters:
             None
 
         Returns:
@@ -149,7 +149,7 @@ class Room(db.Model):
         """
         Retrieve the smoking status of the room.
 
-        Args:
+        Parameters:
             None
 
         Returns:
@@ -161,7 +161,7 @@ class Room(db.Model):
         """
         Retrieve the guest capacity of the room.
 
-        Args:
+        Parameters:
             None
 
         Returns:
@@ -173,7 +173,7 @@ class Room(db.Model):
         """
         Retrieve the wheelchair accessibility status of the room.
 
-        Args:
+        Parameters:
             None
 
         Returns:
@@ -185,7 +185,7 @@ class Room(db.Model):
         """
         Retrieve the bookings held in the room.
 
-        Args:
+        Parameters:
             None
 
         Returns:

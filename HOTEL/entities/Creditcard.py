@@ -18,7 +18,7 @@ class Creditcard:
         """
         Initialize a credit card validation object.
         
-        Args:
+        Parameters:
             credit_card_number (str): The credit card number.
             exp_date (str): The expiration date in MM/YY format.
             cvv (str): The CVV code.

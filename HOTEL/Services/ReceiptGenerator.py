@@ -82,7 +82,7 @@ class ReceiptGenerator:
         """
         Format a number as USD currency.
         
-        Args:
+        Parameters:
             amount (float): The amount to format.
             
         Returns:
@@ -94,7 +94,7 @@ class ReceiptGenerator:
         """
         Generate a PDF receipt for a booking.
         
-        Args:
+        Parameters:
             booking (Booking): The booking object containing reservation details.
             room_rate (float): The rate per night for the room.
             total_room_charges (float): The total charges for the room stay.

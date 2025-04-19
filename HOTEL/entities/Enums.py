@@ -1,5 +1,3 @@
-from enum import Enum as PyEnum
-
 """
 Enums to simplify data representation. 
 
@@ -11,6 +9,9 @@ Note:
     Created: March 6, 2025
     Modified: April 17, 2025
 """
+
+from enum import Enum as PyEnum
+
 
 class YesNo(PyEnum):
     """

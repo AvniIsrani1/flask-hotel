@@ -34,7 +34,7 @@ class Hotel(db.Model):
         """
         Retrieve a hotel by its unique ID.
 
-        Args:
+        Parameters:
             hid (int): The unique ID of the hotel.
 
         Returns:
@@ -47,7 +47,7 @@ class Hotel(db.Model):
         """
         Retrieve a list of hotels at the specified location. 
 
-        Args: 
+        Parameters: 
             location (Locations): The location of the hotel.
         
         Returns:
@@ -59,7 +59,7 @@ class Hotel(db.Model):
         """
         Retrieve the location of the Hotel object.
 
-        Args:
+        Parameters:
             None
 
         Returns:
@@ -71,7 +71,7 @@ class Hotel(db.Model):
         """
         Retrieve the address of the Hotel object.
 
-        Args:
+        Parameters:
             None
 
         Returns:
@@ -83,7 +83,7 @@ class Hotel(db.Model):
         """
         Retrieve the services offered by the hotel.
 
-        Args:
+        Parameters:
             None
 
         Returns: 
@@ -101,7 +101,7 @@ class Hotel(db.Model):
         """
         Retrieve the hotel's floors. 
 
-        Args:
+        Parameters:
             None
         
         Returns:
@@ -113,7 +113,7 @@ class Hotel(db.Model):
         """
         Retrieve the hotel's rooms.
 
-        Args:
+        Parameters:
             None
 
         Returns:
@@ -125,7 +125,7 @@ class Hotel(db.Model):
         """
         Create floors in the hotel.
 
-        Args:
+        Parameters:
             number_floors: The number of floors to add.
             base_floor_number: The starting floor number upon which more floors will be added. 
         
@@ -142,7 +142,7 @@ class Hotel(db.Model):
         """
         Create and commit the layout for the hotel (floors and rooms) (each floor gets the same room layout)
 
-        Args:
+        Parameters:
             base_floor_number (int): The starting floor number upon which the room layout will be created.
             number_floors (int): The number of floors to recieve the room layout. 
             add_room_params (dict): A dictionary with keys - initial_room_base_number (int), rooms (list)

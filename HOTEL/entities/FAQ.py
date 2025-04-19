@@ -1,7 +1,6 @@
 from ..db import db
 
 class FAQ(db.Model):
-    __tablename__ = 'faq'
     """
     A table for storing FAQ information.
 
@@ -22,7 +21,7 @@ class FAQ(db.Model):
         """
         Adds and commits a list of FAQs to the table.
         
-        Args:
+        Parameters:
             f (list[dict]): A list of dictionaries with keys: question, answer, and subject
 
         Returns:

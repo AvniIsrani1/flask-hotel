@@ -18,7 +18,7 @@ class RoomAvailability:
         """
         Initialize a RoomAvailability object with optional start date, end date, and room ID.
 
-        Args:
+        Parameters:
             startdate (str, optional): The starting date for availability check in "Month Day, Year" format.
             enddate (str, optional): The ending date for availability check in "Month Day, Year" format.
             rid (str, optional): The room ID to check for availability.
@@ -41,7 +41,7 @@ class RoomAvailability:
         Check-in time is set to 15:00 (3:00 PM) on the start date.
         Check-out time is set to 11:00 (11:00 AM) on the end date.
 
-        Args:
+        Parameters:
             startdate (str): The starting date in "Month Day, Year" format.
             enddate (str): The ending date in "Month Day, Year" format.
 
@@ -57,7 +57,7 @@ class RoomAvailability:
         """
         Set the room ID and set the room attribute to the corresponding room object.
 
-        Args:
+        Parameters:
             rid (str): The room ID to set.
             
         Returns:
@@ -73,7 +73,7 @@ class RoomAvailability:
         """
         Retrieve rooms with similar characteristics to the current room.
 
-        Args:
+        Parameters:
             status (str): Specifies whether to return only available rooms ('open') or all rooms ('any').
 
         Returns:
@@ -97,7 +97,7 @@ class RoomAvailability:
         """
         Get the count of rooms with similar characteristics.
 
-        Args:
+        Parameters:
             status (str): Specifies whether to count only available rooms ('open') or all rooms ('any').
 
         Returns:
@@ -121,7 +121,7 @@ class RoomAvailability:
         """
         Get the duration of the stay in days.
 
-        Args:
+        Parameters:
             None
 
         Returns:
@@ -134,7 +134,7 @@ class RoomAvailability:
         """
         Get the starting datetime of the stay.
 
-        Args:
+        Parameters:
             None
 
         Returns:
@@ -147,7 +147,7 @@ class RoomAvailability:
         """
         Get the ending datetime of the stay.
 
-        Args:
+        Parameters:
             None
 
         Returns:

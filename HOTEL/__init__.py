@@ -31,7 +31,7 @@ def get_secrets(secret_name):
     """
     Retrieve secrets from AWS Secrets Manager.
     
-    Args:
+    Parameters:
         secret_name (str): The name of the secret to retrieve.
         
     Returns:
@@ -39,6 +39,12 @@ def get_secrets(secret_name):
         
     Raises:
         ClientError: If there is an error retrieving the secret.
+
+    Note:
+        Author: Avni Israni
+        Documentation: Devansh Sharma
+        Created: March 3, 2025
+        Modified: April 17, 2025
     """
     client = boto3.client(service_name='secretsmanager', region_name='us-west-1')
     try:
@@ -83,6 +89,12 @@ def add_sample_data():
     Add sample data to the database if tables are empty.
     
     Creates sample hotels, rooms, and users for testing.
+
+    Note:
+        Author: Avni Israni, Devansh Sharma
+        Documentation: Devansh Sharma
+        Created: March 1, 2025
+        Modified: April 17, 2025
     """
     # Check if we have any rooms
     if not Room.query.first():

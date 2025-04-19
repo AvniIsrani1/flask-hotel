@@ -28,7 +28,7 @@ class Floor(db.Model):
         """
         Create rooms in the hotel.
 
-        Args:
+        Parameters:
             number_rooms (int): The number of rooms to add.
             hid (int): The unique ID of the hotel.
             base_room_number (int): The starting room number upon which more rooms will be added.
@@ -73,7 +73,7 @@ class Floor(db.Model):
         """
         Retrieves the floor's hotel ID.
 
-        Args:
+        Parameters:
             None
 
         Returns:
@@ -85,7 +85,7 @@ class Floor(db.Model):
         """
         Retrieves the floor number.
 
-        Args:
+        Parameters:
             None
 
         Returns:
@@ -97,7 +97,7 @@ class Floor(db.Model):
         """
         Retrieves the floor's rooms.
 
-        Args:
+        Parameters:
             None
 
         Returns:

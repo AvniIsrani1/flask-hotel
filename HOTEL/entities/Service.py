@@ -49,7 +49,7 @@ class Service(db.Model):
         """
         Create a new item request service.
         
-        Args:
+        Parameters:
             bid (int): The booking ID associated with this service request.
             robes (int, optional): Number of robes requested. Defaults to 0.
             btowels (int, optional): Number of bath towels requested. Defaults to 0.
@@ -81,7 +81,7 @@ class Service(db.Model):
         """
         Create a new housekeeping service request.
         
-        Args:
+        Parameters:
             bid (int): The booking ID associated with this service request.
             housetime (time): The requested time for housekeeping.
             validate_check_out (datetime): The checkout date to validate against.
@@ -101,7 +101,7 @@ class Service(db.Model):
         """
         Create one or more wake-up call service requests.
         
-        Args:
+        Parameters:
             bid (int): The booking ID associated with this service request.
             calltime (time): The requested time for the wake-up call.
             recurrent (bool): Whether the call should recur daily until checkout.
@@ -131,7 +131,7 @@ class Service(db.Model):
         """
         Create a new trash pickup service request.
         
-        Args:
+        Parameters:
             bid (int): The booking ID associated with this service request.
             
         Returns:
@@ -144,7 +144,7 @@ class Service(db.Model):
         """
         Create a new dining reservation service request.
         
-        Args:
+        Parameters:
             bid (int): The booking ID associated with this service request.
             restaurant (str): The restaurant name for the reservation.
             
@@ -158,7 +158,7 @@ class Service(db.Model):
         """
         Create a new assistance service request.
         
-        Args:
+        Parameters:
             bid (int): The booking ID associated with this service request.
             assistance (Assistance): The type of assistance needed.
             
@@ -172,7 +172,7 @@ class Service(db.Model):
         """
         Create a new custom service request.
         
-        Args:
+        Parameters:
             bid (int): The booking ID associated with this service request.
             other (str): Description of the custom service request.
             
@@ -185,7 +185,7 @@ class Service(db.Model):
         """
         Update the status of a service request.
         
-        Args:
+        Parameters:
             new_status (Status): The new status to set.
             
         Returns:

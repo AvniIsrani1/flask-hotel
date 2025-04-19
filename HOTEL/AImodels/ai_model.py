@@ -16,7 +16,7 @@ def load_ai_model():
     """
     Load and return the AI model from Hugging Face for text generation.
 
-    Args:
+    Parameters:
         None
 
     Returns:
@@ -29,7 +29,7 @@ def generate_ai_response(ai_model, question):
     """
     Generate a dynamic AI response focused on hotel and vacation topics.
 
-    Args:
+    Parameters:
         ai_model (Pipeline): The loaded Hugging Face model for text generation.
         question (str): The user's original question input.
 

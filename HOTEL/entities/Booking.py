@@ -5,7 +5,6 @@ from ..db import db
 
 
 class Booking(db.Model):
-    __tablename__ = 'bookings'
     """
     A table for storing reservation details. 
 
@@ -18,6 +17,7 @@ class Booking(db.Model):
         Created: March 6, 2025
         Modified: April 17, 2025
     """
+    __tablename__ = 'bookings'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True) 
     uid = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     rid = db.Column(db.Integer, db.ForeignKey('rooms.id'), nullable=False)
@@ -37,7 +37,7 @@ class Booking(db.Model):
         """
         Update booking details.
 
-        Args: 
+        Parameters: 
             special_requests (str): The special requests made by the user.
             name (str): The name the booking is made under.
             email (str): The email address specified by the user.
@@ -57,7 +57,7 @@ class Booking(db.Model):
         """
         Check if a full refund should be issued upon cancellation.
 
-        Args:
+        Parameters:
             None
 
         Returns:
@@ -72,7 +72,7 @@ class Booking(db.Model):
         """
         Cancel the booking.
 
-        Args:
+        Parameters:
             None
 
         Returns:
@@ -87,7 +87,7 @@ class Booking(db.Model):
         """
         Creaate and commit a booking
         
-        Args:
+        Parameters:
             uid (int): The unique ID of the user.
             rid (int): The unique ID of the room to reserve.
             check_in (datetime): The check in date.
@@ -111,7 +111,7 @@ class Booking(db.Model):
         """
         Retrieve a booking by its unique ID.
 
-        Args:
+        Parameters:
             id (int): The unique ID of the booking.
 
         Returns:
@@ -124,7 +124,7 @@ class Booking(db.Model):
         """
         Retrieve a user's current (active) bookings.
         
-        Args:
+        Parameters:
             uid (int): The unique ID of the user.
         
         Returns:
@@ -138,7 +138,7 @@ class Booking(db.Model):
         """
         Retrieve a user's booking by its unique ID.
 
-        Args:
+        Parameters:
             uid (int): The unique ID of the user.
             bid (int): The unique ID of the booking.
 
@@ -153,7 +153,7 @@ class Booking(db.Model):
         """
         Retrieve a user's future bookings. 
 
-        Args:
+        Parameters:
             uid (int): The unique ID of the user.
         
         Returns:
@@ -167,7 +167,7 @@ class Booking(db.Model):
         """
         Retrieve a user's past, completed bookings.
 
-        Args:
+        Parameters:
             uid (int): The unique ID of the user.
 
         Returns:
@@ -181,7 +181,7 @@ class Booking(db.Model):
         """
         Retrieve a user's cancelled bookings. 
 
-        Args:
+        Parameters:
             uid (int): The unique ID of the user.
 
         Returns:

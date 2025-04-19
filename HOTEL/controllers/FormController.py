@@ -17,7 +17,7 @@ class FormController():
         """
         Retrieve signup information from the POST form on the signup page.
 
-        Args: 
+        Parameters: 
             None
 
         Returns:
@@ -38,7 +38,7 @@ class FormController():
         """
         Retrieve login information from the POST form on the login page.
 
-        Args: 
+        Parameters: 
             None
 
         Returns:
@@ -55,7 +55,7 @@ class FormController():
         """
         Retrieve profile information from the POST form on the profile page.
 
-        Args:
+        Parameters:
             None
 
         Returns:
@@ -82,7 +82,7 @@ class FormController():
         """
         Retrieve notification information from the POST form on the profile page. 
 
-        Args:
+        Parameters:
             None
         
         Returns:
@@ -99,7 +99,7 @@ class FormController():
         """
         Retrieve broad search information from the GET form on the search page. 
 
-        Args:
+        Parameters:
             None
 
         Returns:
@@ -118,7 +118,7 @@ class FormController():
         """
         Retrieve filters to be applied on the search from the GET form on the search page.
 
-        Args:
+        Parameters:
             None
 
         Returns:
@@ -145,7 +145,7 @@ class FormController():
         """
         Retrieve overarching booking reservation information from the GET form.
 
-        Args:
+        Parameters:
             None
 
         Returns:
@@ -166,7 +166,7 @@ class FormController():
         """
         Retrieve user-specific booking reservation details from the POST form.
 
-        Args:
+        Parameters:
             None
 
         Returns:
@@ -191,7 +191,7 @@ class FormController():
         """
         Retrieve all booking reservation details from the POST form.
 
-        Args:
+        Parameters:
             None
 
         Returns:
@@ -219,7 +219,7 @@ class FormController():
         """
         Retrieve booking reservation details from the form on the modify page. 
 
-        Args: 
+        Parameters: 
             booking (Booking): The booking object whose details should be defaulted to if missing information is provided. 
         
         Returns:
@@ -242,7 +242,7 @@ class FormController():
         """
         Retrieve service request information from the form on the request services page.
 
-        Args:
+        Parameters:
             None
 
         Returns:
@@ -299,7 +299,7 @@ class FormController():
         """
         Retrieve credit card information from POST form on payment page.
 
-        Args: 
+        Parameters: 
             None
 
         Returns:

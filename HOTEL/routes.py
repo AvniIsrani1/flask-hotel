@@ -1,3 +1,13 @@
+"""
+Create routes for each page.
+
+Note:
+    Author: Avni Israni, Devansh Sharma, Elijah Cortez, Andrew Ponce
+    Documentation: Devansh Sharma
+    Created: March 2, 2025
+    Modified: April 17, 2025
+"""
+
 from flask import Flask, Blueprint, jsonify, render_template, request, redirect, url_for, session, flash, get_flashed_messages, send_file
 from .db import db
 from sqlalchemy import DateTime, Date, cast, distinct, desc, asc, cast, func, not_, String, Computed
@@ -14,21 +24,12 @@ from .Services.response import format_response
 ai_model = load_ai_model()
 ai_db, ai_df = setup_csv_retrieval()
 
-"""
-Create routes for each page.
-
-Note:
-    Author: Avni Israni, Devansh Sharma, Elijah Cortez, Andrew Ponce
-    Documentation: Devansh Sharma
-    Created: March 2, 2025
-    Modified: April 17, 2025
-"""
 
 def auth_routes(email_controller):
     """
     Create authentication-related routes and register them to a blueprint.
     
-    Args:
+    Parameters:
         email_controller (EmailController): The email controller for sending notifications.
         
     Returns:
@@ -209,7 +210,7 @@ def booking_routes(email_controller):
     """
     Create booking-related routes and register them to a blueprint.
     
-    Args:
+    Parameters:
         email_controller (EmailController): The email controller for sending notifications.
         
     Returns:
@@ -251,7 +252,7 @@ def booking_routes(email_controller):
         """
         Modify an existing booking.
         
-        Args:
+        Parameters:
             bid (int): The booking ID to modify.
             
         Returns:
@@ -292,7 +293,7 @@ def booking_routes(email_controller):
         """
         Save changes to a booking or cancel it.
         
-        Args:
+        Parameters:
             bid (int): The booking ID to save changes for.
             
         Returns:
@@ -379,7 +380,7 @@ def request_services(bid):
     GET: Display the service request form.
     POST: Process the service request submissions.
     
-    Args:
+    Parameters:
         bid (int): The booking ID to request services for.
         
     Returns:
@@ -490,7 +491,7 @@ def payment_routes(email_controller):
     """
     Create payment-related routes and register them to a blueprint.
     
-    Args:
+    Parameters:
         email_controller (EmailController): The email controller for sending notifications.
         
     Returns:
@@ -657,7 +658,7 @@ def payment_routes(email_controller):
         """
         Display an HTML receipt for a booking.
         
-        Args:
+        Parameters:
             booking_id (int): The ID of the booking.
             
         Returns:
@@ -707,7 +708,7 @@ def payment_routes(email_controller):
         """
         Generate and download a PDF receipt for a booking.
         
-        Args:
+        Parameters:
             booking_id (int): The ID of the booking.
             
         Returns:
@@ -793,7 +794,7 @@ def process_query(user_question):
     """
     Process a user query using CSV data first, falling back to AI.
     
-    Args:
+    Parameters:
         user_question (str): The user's question.
         
     Returns:
@@ -819,7 +820,7 @@ def process_query(user_question):
     """
     Process a user query using CSV data first, falling back to AI.
     
-    Args:
+    Parameters:
         user_question (str): The user's question.
         
     Returns:
@@ -895,6 +896,10 @@ def home():
     
     Returns:
         Template: The rendered home page template.
+
+    Note:
+        Author: Devansh Sharma
+        Modified: April 17, 2025
     """
     locations = db.session.query(distinct(Hotel.location)).all()
     return render_template("home.html", locations=locations)
@@ -906,6 +911,10 @@ def terms():
     
     Returns:
         Template: The terms page template.
+
+    Note:
+        Author: Devansh Sharma
+        Modified: April 17, 2025
     """
     return render_template('terms.html')
 
@@ -916,6 +925,10 @@ def events():
     
     Returns:
         Template: The events page template.
+
+    Note:
+        Author: Elijah Cortez
+        Modified: April 17, 2025
     """
     return render_template('events.html')
 
@@ -926,6 +939,10 @@ def menu():
     
     Returns:
         Template: The menu page template.
+
+    Note:
+        Author: Andrew Ponce
+        Modified: April 17, 2025
     """
     return render_template('menus2.html')
 
@@ -936,6 +953,10 @@ def about():
     
     Returns:
         Template: The about page template.
+
+    Note:
+        Author: Devansh Sharma
+        Modified: April 17, 2025
     """
     return render_template('about.html')
 
@@ -946,6 +967,10 @@ def faq():
     
     Returns:
         Template: The FAQ page template with FAQs.
+
+    Note:
+        Author: Avni Israni
+        Modified: April 17, 2025
     """
     faqs = FAQ.query.all()
     return render_template('faq.html', faqs=faqs)

@@ -17,7 +17,7 @@ class EmailController:
         """
         Initialize the EmailController with a Flask-Mail instance.
 
-        Args:
+        Parameters:
             mail: The mail object to use for sending emails.
 
         Returns:
@@ -32,7 +32,7 @@ class EmailController:
         """
         Send email using Flask-Mail instance.
 
-        Args:
+        Parameters:
             subject (str): The subject line of the email.
             recipients (list): List of recipient emails.
             body (str): Text body of the email (used when body_template cannot be used).
@@ -80,7 +80,7 @@ class EmailController:
         """
         Send a welcome email to a new user.
 
-        Args:
+        Parameters:
             user (User): The new user who just signed up.
 
         Returns:
@@ -95,7 +95,7 @@ class EmailController:
         """
         Send a booking confirmation email when a new booking is created.
     
-        Args:
+        Parameters:
             user (User): The user who created the booking.
             bookings (Booking): The booking object containing reservation details.
             YesNo (enum): The YesNo enum to use in the template.
@@ -112,7 +112,7 @@ class EmailController:
         """
         Send a notification email when a booking is updated.
     
-        Args:
+        Parameters:
             user (User): The user whose booking was updated.
             booking (Booking): The updated booking object.
             YesNo (enum): The YesNo enum to use in the template.
@@ -129,7 +129,7 @@ class EmailController:
         """
         Send a notification email when a booking is canceled.
     
-        Args:
+        Parameters:
             user (User): The user whose booking was canceled.
             booking (Booking): The canceled booking object.
             YesNo (enum): The YesNo enum to use in the template.

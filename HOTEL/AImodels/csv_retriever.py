@@ -18,7 +18,7 @@ def setup_csv_retrieval():
     """
     Set up the CSV-based information retrieval system using FAISS and Hugging Face embeddings.
 
-    Args:
+    Parameters:
         None
 
     Returns:
@@ -69,7 +69,7 @@ def get_answer_from_csv(db, df, question):
     """
     Get the most relevant answer from the CSV dataset based on the user's question using FAISS similarity.
 
-    Args:
+    Parameters:
         db (FAISS): The vector database of embedded CSV content.
         df (DataFrame): The raw CSV content as a Pandas DataFrame.
         question (str): The user's input question.
