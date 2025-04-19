@@ -15,9 +15,6 @@ def format_response(answer, question):
     # If answer from CSV not found fallback model
     if not answer:
         return None
-        
-    # Check if the answer follows the pattern: "category sub_category combined"
-    # Example: "rooms standard rooms - standard: there are 200 standard rooms in total."
     
     # First, try to extract description from format with "description:" label
     if "description:" in answer.lower():

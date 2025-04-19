@@ -1,4 +1,6 @@
 ﻿category,sub_category,description
+greeting, hello hi hey,Welcome to the Ocean Vista Hotel in Malibu! We are delighted to have you here. Our staff is dedicated to making your stay as enjoyable as possible. Please ask me any questions you may have regarding Ocean Vista.
+conversation, how are you, I am doing great and I hope you are as well! How can I assist you today?
 rooms,suite,Our luxury suites feature ocean views you can experience from your own private balcony o king-size bed. We have 50 suites available occupying the Malibu location.
 rooms,standard,Our comfortable standard rooms include have all that you need to enjoy your stay in Malibu. There are currently 200 standard rooms in total at the Malibu location.
 rooms,deluxe,Our spacious deluxe rooms offers beautiful ocean views with extra amenities to make your stay even more perfect. We currently have 150 deluxe rooms available at the Malibu location.
@@ -8,9 +10,9 @@ amenities,parking,Self-parking is available for $25 per night. Valet parking is 
 amenities,fitness,Our 24-hour fitness center features state-of-the-art equipment including free weights and cardio machines. Personal training sessions can be arranged through the concierge.
 amenities,business,Our business center offers computers and printing services. Through the concierge you are also able to reserve a private meeting spaces available.
 amenities,spa,The Ocean Vista Spa offers full massages and other services at our fully staffed salon boutique. Open daily from 9AM to 7PM. Reservations recommended.
-pool,hours,The main pool is open from 8AM to 8PM daily. Seasonal hours may vary.
+pool,hours,The main pool is open from 8AM to 8PM daily with lifeguard on duty. Seasonal hours may vary.
 pool,towels,Pool towels are complimentary and available at the pool gate. Please return used towels to the designated bins.
-pool,size,Our main pool measures 50ft x 35ft with depths ranging from 3ft to 9ft.
+pool,size,Our main pool measures 50ft x 35ft with depths ranging from 3ft to 12ft.
 pool,kiddie,A separate kiddie pool for children is located adjacent to the main pool. The depth is 1.5ft.
 pool,jacuzzi,Our heated jacuzzi accommodates up to 12 people and is open from 8AM to 10PM daily.
 dining,oceanview,Our signature restaurant "Ocean View" serves California coastal cuisine with stunning views. Open for all three meals of the day.
@@ -35,7 +37,7 @@ checkin,requirements,Please present a valid ID and credit card upon check-in. Th
 checkin,mobile,Mobile check-in is available through our app 24 hours before arrival.
 pets,policy,We welcome pets under 40 pounds. A $75 non-refundable pet fee applies per stay by request arrangements prior either via email or over the phone.
 pets,amenities, Pet appliances such bowls/bags/treats are available upon request for rooms.
-activities,local,Surfing lessons are available at Zuma Beach. Our concierge can arrange lessons for all skill levels.
+activities,local,Surfing or ocean kayaking lessons are available at the beach front right outside the hotel. Our concierge can arrange lessons for all skill levels. Additionally you can take a ride up to Paradise Cove is another popular local beach spot for swimming and sunbathing.
 activities,downtown,Explore the Galleria shopping center in downtown Los Angeles. There is also the famous Hollywood walk of fame. Or check out Santa Monica pier and ride the roller coaster right aboce the ocean waves.
 activities,hiking,The Santa Monica Mountains offer beautiful hiking trails with ocean views. Trail maps available at the concierge desk.
 activities,biking,Rent bicycles from our activity center to explore the Malibu coastline. $25 for 2 hours and $40 for a full day.
