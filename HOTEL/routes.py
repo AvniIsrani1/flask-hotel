@@ -497,7 +497,7 @@ def payment_routes(email_controller):
         Blueprint: The blueprint with payment routes registered.
 
     Note: 
-        Author: Devansh Sharma
+        Author: Devansh Sharma and Andrew Ponce
         Created: March 11, 2025
         Modified: April 17, 2025
     """
@@ -785,6 +785,10 @@ def tasks():
     print(current_tasks)
     return render_template('tasks.html', current_tasks=current_tasks, Status=Status, SType=SType)
 
+
+
+
+
 def process_query(user_question):
     """
     Process a user query using CSV data first, falling back to AI.
@@ -877,3 +881,71 @@ def chat_routes():
             return jsonify({"response": "An error occurred while processing your request."}), 500
             
     return bp_chat
+
+
+
+
+# static pages 
+bp_info = Blueprint('info',__name__)
+
+@bp_info.route("/")
+def home():
+    """
+    Render the home page with a list of available hotel locations.
+    
+    Returns:
+        Template: The rendered home page template.
+    """
+    locations = db.session.query(distinct(Hotel.location)).all()
+    return render_template("home.html", locations=locations)
+
+@bp_info.route("/terms")
+def terms():
+    """
+    Render the terms and conditions page.
+    
+    Returns:
+        Template: The terms page template.
+    """
+    return render_template('terms.html')
+
+@bp_info.route("/events")
+def events():
+    """
+    Render the events page.
+    
+    Returns:
+        Template: The events page template.
+    """
+    return render_template('events.html')
+
+@bp_info.route("/menu")
+def menu():
+    """
+    Render the restaurant menu page.
+    
+    Returns:
+        Template: The menu page template.
+    """
+    return render_template('menus2.html')
+
+@bp_info.route("/about")
+def about():
+    """
+    Render the about page.
+    
+    Returns:
+        Template: The about page template.
+    """
+    return render_template('about.html')
+
+@bp_info.route("/faq")
+def faq():
+    """
+    Render the FAQ page with all FAQs from the database.
+    
+    Returns:
+        Template: The FAQ page template with FAQs.
+    """
+    faqs = FAQ.query.all()
+    return render_template('faq.html', faqs=faqs)
