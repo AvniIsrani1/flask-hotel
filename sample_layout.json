@@ -4,7 +4,7 @@
          {
               "num_rooms": "7", 
               "img": "../static/images/roomImgs/standard 1.jpg",
-              "modPath": "/static/assets/highly_detailed_opti_0225234237_texture.glb",
+              "modPath": "/static/assets/standard.glb",
               "room_type": "Standard",
               "number_beds": "1",
               "rate": "150",
@@ -19,7 +19,7 @@
          {
               "num_rooms": "2", 
               "img": "../static/images/roomImgs/standard 2.jpg",
-              "modPath": "/static/assets/highly_detailed_opti_0225234237_texture.glb",
+              "modPath": "/static/assets/standard.glb",
               "room_type": "Standard",
               "number_beds": "1",
               "rate": "150",
@@ -34,7 +34,7 @@
          {
               "num_rooms": "3", 
               "img": "../static/images/roomImgs/standard 3.jpg",
-              "modPath": "/static/assets/highly_detailed_opti_0225234237_texture.glb",
+              "modPath": "/static/assets/standard.glb",
               "room_type": "Standard",
               "number_beds": "1",
               "rate": "175",
@@ -49,7 +49,7 @@
          {
               "num_rooms": "1", 
               "img": "../static/images/roomImgs/standard 4.jpg",
-              "modPath": "/static/assets/highly_detailed_opti_0225234237_texture.glb",
+              "modPath": "/static/assets/standard.glb",
               "room_type": "Standard",
               "number_beds": "1",
               "rate": "250",
@@ -64,7 +64,7 @@
          {
               "num_rooms": "1", 
               "img": "../static/images/roomImgs/standard 5.jpg",
-              "modPath": "/static/assets/highly_detailed_opti_0225234237_texture.glb",
+              "modPath": "/static/assets/standard.glbb",
               "room_type": "Standard",
               "number_beds": "1",
               "rate": "300",
@@ -79,7 +79,7 @@
          {
               "num_rooms": "3", 
               "img": "../static/images/roomImgs/standard 6.jpg",
-              "modPath": "/static/assets/highly_detailed_opti_0225234237_texture.glb",
+              "modPath": "/static/assets/standard.glb",
               "room_type": "Standard",
               "number_beds": "1",
               "rate": "350",
@@ -94,7 +94,7 @@
          {
               "num_rooms": "2", 
               "img": "../static/images/roomImgs/standard2bed 1.jpg",
-              "modPath": "/static/assets/highly_detailed_opti_0225234237_texture.glb",
+              "modPath": "/static/assets/standard2bed.glb",
               "room_type": "Standard",
               "number_beds": "2",
               "rate": "225",
@@ -109,7 +109,7 @@
          {
               "num_rooms": "1", 
               "img": "../static/images/roomImgs/standard2bed 1.jpg",
-              "modPath": "/static/assets/highly_detailed_opti_0225234237_texture.glb",
+              "modPath": "/static/assets/standard2bed.glb",
               "room_type": "Standard",
               "number_beds": "2",
               "rate": "225",
@@ -124,7 +124,7 @@
          {
               "num_rooms": "1", 
               "img": "../static/images/roomImgs/standard2bed 1.jpg",
-              "modPath": "/static/assets/highly_detailed_opti_0225234237_texture.glb",
+              "modPath": "/static/assets/standard2bed.glb",
               "room_type": "Standard",
               "number_beds": "2",
               "rate": "325",
@@ -139,7 +139,7 @@
          {
               "num_rooms": "1", 
               "img": "../static/images/roomImgs/standard2bed 1.jpg",
-              "modPath": "/static/assets/highly_detailed_opti_0225234237_texture.glb",
+              "modPath": "/static/assets/standard2bed.glb",
               "room_type": "Standard",
               "number_beds": "2",
               "rate": "425",
@@ -154,7 +154,7 @@
          {
               "num_rooms": "3", 
               "img": "../static/images/roomImgs/suite 1.jpg",
-              "modPath": "/static/assets/highly_detailed_opti_0225234237_texture.glb",
+              "modPath": "/static/assets/suite.glb",
               "room_type": "Suite",
               "number_beds": "1",
               "rate": "350",
@@ -169,7 +169,7 @@
          {
               "num_rooms": "1", 
               "img": "../static/images/roomImgs/suite 2.jpg",
-              "modPath": "/static/assets/highly_detailed_opti_0225234237_texture.glb",
+              "modPath": "/static/assets/suite.glb",
               "room_type": "Suite",
               "number_beds": "1",
               "rate": "500",
@@ -184,7 +184,7 @@
          {
               "num_rooms": "1", 
               "img": "../static/images/roomImgs/suite 3.jpg",
-              "modPath": "/static/assets/highly_detailed_opti_0225234237_texture.glb",
+              "modPath": "/static/assets/suite.glb",
               "room_type": "Suite",
               "number_beds": "1",
               "rate": "550",
@@ -199,7 +199,7 @@
          {
               "num_rooms": "1", 
               "img": "../static/images/roomImgs/suite 4.jpg",
-              "modPath": "/static/assets/highly_detailed_opti_0225234237_texture.glb",
+              "modPath": "/static/assets/suite.glb",
               "room_type": "Suite",
               "number_beds": "1",
               "rate": "350",
@@ -214,7 +214,7 @@
          {
               "num_rooms": "2", 
               "img": "../static/images/roomImgs/suite2bed 1.jpg",
-              "modPath": "/static/assets/highly_detailed_opti_0225234237_texture.glb",
+              "modPath": "/static/assets/suite2bed.glb",
               "room_type": "Suite",
               "number_beds": "2",
               "rate": "425",
@@ -229,7 +229,7 @@
          {
               "num_rooms": "1", 
               "img": "../../static/images/roomImgs/suite2bed 1.jpg",
-              "modPath": "/static/assets/highly_detailed_opti_0225234237_texture.glb",
+              "modPath": "/static/assets/suite2bed.glb",
               "room_type": "Suite",
               "number_beds": "2",
               "rate": "500",
@@ -244,7 +244,7 @@
          {
               "num_rooms": "1", 
               "img": "../static/images/roomImgs/suite2bed 1.jpg",
-              "modPath": "/static/assets/highly_detailed_opti_0225234237_texture.glb",
+              "modPath": "/static/assets/suite2bed.glb",
               "room_type": "Suite",
               "number_beds": "2",
               "rate": "625",
@@ -259,7 +259,7 @@
          {
               "num_rooms": "2", 
               "img": "../static/images/roomImgs/deluxe 1.jpg",
-              "modPath": "/static/assets/highly_detailed_opti_0225234237_texture.glb",
+              "modPath": "/static/assets/deluxe.glb",
               "room_type": "Deluxe",
               "number_beds": "1",
               "rate": "500",
@@ -274,7 +274,7 @@
          {
               "num_rooms": "1", 
               "img": "../static/images/roomImgs/deluxe 2.jpg",
-              "modPath": "/static/assets/highly_detailed_opti_0225234237_texture.glb",
+              "modPath": "/static/assets/deluxe.glb",
               "room_type": "Deluxe",
               "number_beds": "1",
               "rate": "650",
@@ -289,7 +289,7 @@
          {
               "num_rooms": "1", 
               "img": "../static/images/roomImgs/deluxe 3.jpg",
-              "modPath": "/static/assets/highly_detailed_opti_0225234237_texture.glb",
+              "modPath": "/static/assets/deluxe.glb",
               "room_type": "Deluxe",
               "number_beds": "1",
               "rate": "700",
@@ -304,7 +304,7 @@
          {
               "num_rooms": "2", 
               "img": "../static/images/roomImgs/deluxe2bed 1.jpg",
-              "modPath": "/static/assets/highly_detailed_opti_0225234237_texture.glb",
+              "modPath": "/static/assets/deluxe2bed.glb",
               "room_type": "Deluxe",
               "number_beds": "2",
               "rate": "575",
@@ -319,7 +319,7 @@
          {
               "num_rooms": "1", 
               "img": "../static/images/roomImgs/deluxe2bed 1.jpg",
-              "modPath": "/static/assets/highly_detailed_opti_0225234237_texture.glb",
+              "modPath": "/static/assets/deluxe2bed.glb",
               "room_type": "Deluxe",
               "number_beds": "2",
               "rate": "725",
@@ -334,7 +334,7 @@
          {
               "num_rooms": "1", 
               "img": "../static/images/roomImgs/deluxe2bed 1.jpg",
-              "modPath": "/static/assets/highly_detailed_opti_0225234237_texture.glb",
+              "modPath": "/static/assets/deluxe2bed.glb",
               "room_type": "Deluxe",
               "number_beds": "2",
               "rate": "775",
