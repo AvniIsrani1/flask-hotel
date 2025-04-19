@@ -79,7 +79,7 @@ class RoomAvailability:
         Returns:
             Query: A SQLAlchemy query object containing similar rooms matching the criteria.
         """
-        from ..entities import Availability, Bookings, Room, Hotel
+        from ..entities import Availability, Booking, Room, Hotel
         if not self.room:
             print("MUST SET ROOM ID!!!!!")
             return None
@@ -88,7 +88,7 @@ class RoomAvailability:
             Room.ocean_view==self.room.ocean_view, Room.smoking==self.room.smoking, Room.max_guests==self.room.max_guests, Room.wheelchair_accessible==self.room.wheelchair_accessible
         )
         if status == 'open':
-            similar_rooms = similar_rooms.filter(not_(db.exists().where(Bookings.rid == Room.id).where(Bookings.check_in < self.ending).where(Bookings.check_out>self.starting))).order_by(asc(Room.room_number))
+            similar_rooms = similar_rooms.filter(not_(db.exists().where(Booking.rid == Room.id).where(Booking.check_in < self.ending).where(Booking.check_out>self.starting))).order_by(asc(Room.room_number))
         return similar_rooms
 
 

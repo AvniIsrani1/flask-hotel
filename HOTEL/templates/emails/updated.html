@@ -23,21 +23,21 @@
     <p>Room Details: </p>
     <ul>
         <li><span style="text-decoration:underline;">Room Description</span>: 
-            {{booking.room.number_beds}}-Bedroom {{booking.room.room_type.value}}
-                {% if booking.room.wheelchair_accessible==YesNo.Y %}
+            {{booking.rooms.number_beds}}-Bedroom {{booking.rooms.room_type.value}}
+                {% if booking.rooms.wheelchair_accessible==YesNo.Y %}
                     <span> (Wheelchair Accessible) </span>
                 {% endif %}
-                {% if booking.room.balcony==YesNo.Y %}
+                {% if booking.rooms.balcony==YesNo.Y %}
                     <span> with Balcony</span>
                 {% endif %}
-                {% if booking.room.ocean_view==YesNo.Y and booking.room.city_view==YesNo.Y %}
+                {% if booking.rooms.ocean_view==YesNo.Y and booking.rooms.city_view==YesNo.Y %}
                     <span> - Ocean View, City View</span>
-                {% elif booking.room.ocean_view==YesNo.Y %}
+                {% elif booking.rooms.ocean_view==YesNo.Y %}
                     <span> - Ocean View</span>
-                {% elif booking.room.city_view==YesNo.Y %}
+                {% elif booking.rooms.city_view==YesNo.Y %}
                     <span> - City View</span>
                 {% endif %}
-                {% if booking.room.smoking==YesNo.N %}
+                {% if booking.rooms.smoking==YesNo.N %}
                     <span>| Non-Smoking</span>
                 {% endif %}
         </li>

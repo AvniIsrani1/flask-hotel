@@ -6,7 +6,7 @@ from .Room import Room
 class Hotel(db.Model):
     """
     A table for storing hotel information.
-    
+
     Maintains a 2-way relationship with the Floors and Rooms tables.
 
     Note:
@@ -15,6 +15,7 @@ class Hotel(db.Model):
         Created: March 6, 2025
         Modified: April 17, 2025
     """
+    __tablename__ = 'hotels'
     id = db.Column(db.Integer, primary_key=True)
     location = db.Column(db.Enum(Locations), nullable=False) 
     address = db.Column(db.String(200), nullable=False)
@@ -24,8 +25,8 @@ class Hotel(db.Model):
     pool = db.Column(db.Enum(YesNo), nullable=False, default=YesNo.N) 
     gym = db.Column(db.Enum(YesNo), nullable=False, default=YesNo.N) 
     golf = db.Column(db.Enum(YesNo), nullable=False, default=YesNo.N) 
-    floors = db.relationship('Floor', backref='hotel', lazy=True, cascade='all, delete-orphan') #hotel is keeping track of floors
-    rooms = db.relationship('Room', backref='hotel', lazy=True, cascade='all, delete-orphan') #hotel is keeping track of floors
+    floors = db.relationship('Floor', backref='hotels', lazy=True, cascade='all, delete-orphan') #hotel is keeping track of floors
+    rooms = db.relationship('Room', backref='hotels', lazy=True, cascade='all, delete-orphan') #hotel is keeping track of floors
 
 
     @classmethod

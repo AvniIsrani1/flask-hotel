@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 from .Enums import YesNo, Assistance, SType, Status
 
 
-class Services(db.Model):
+class Service(db.Model):
     """
     Model representing service requests for bookings.
     
@@ -65,7 +65,7 @@ class Services(db.Model):
             sheets (int, optional): Number of sheet sets requested. Defaults to 0.
             
         Returns:
-            Services: A new service request object for items.
+            Service: A new service request object for items.
         """
         today = datetime.now()
         return cls(
@@ -87,7 +87,7 @@ class Services(db.Model):
             validate_check_out (datetime): The checkout date to validate against.
             
         Returns:
-            Services: A new service request object for housekeeping if valid, None otherwise.
+            Service: A new service request object for housekeeping if valid, None otherwise.
         """
         today = datetime.now()
         housedatetime = datetime.combine(today.date(), housetime)
@@ -135,7 +135,7 @@ class Services(db.Model):
             bid (int): The booking ID associated with this service request.
             
         Returns:
-            Services: A new service request object for trash pickup.
+            Service: A new service request object for trash pickup.
         """
         return cls(bid=bid, issued=datetime.now(), stype=SType.T, trash=YesNo.Y)
 
@@ -149,7 +149,7 @@ class Services(db.Model):
             restaurant (str): The restaurant name for the reservation.
             
         Returns:
-            Services: A new service request object for dining reservation.
+            Service: A new service request object for dining reservation.
         """
         return cls(bid=bid, issued=datetime.now(), stype=SType.D, restaurant=restaurant)
     
@@ -163,7 +163,7 @@ class Services(db.Model):
             assistance (Assistance): The type of assistance needed.
             
         Returns:
-            Services: A new service request object for assistance.
+            Service: A new service request object for assistance.
         """
         return cls(bid=bid, issued=datetime.now(), stype=SType.A, assistance=assistance)
 
@@ -177,7 +177,7 @@ class Services(db.Model):
             other (str): Description of the custom service request.
             
         Returns:
-            Services: A new service request object for other services.
+            Service: A new service request object for other services.
         """
         return cls(bid=bid, issued=datetime.now(), stype=SType.O, other=other)
 

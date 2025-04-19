@@ -11,6 +11,7 @@ class FAQ(db.Model):
         Created: March 6, 2025
         Modified: April 17, 2025
     """
+    __tablename__ = 'faqs'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     question = db.Column(db.String(150), nullable=False)
     answer = db.Column(db.String(500), nullable=False)

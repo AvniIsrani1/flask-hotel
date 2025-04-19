@@ -2,7 +2,7 @@ from flask import Flask, Blueprint, jsonify, render_template, request, redirect,
 from .db import db
 from sqlalchemy import DateTime, Date, cast, distinct, desc, asc, cast, func, not_, String, Computed
 from datetime import datetime, date, timedelta
-from .entities import Users, Bookings, Services, Hotel, Floor, Room, YesNo, Assistance, Locations, Availability, RoomType, Status, SType, Creditcard, FAQ
+from .entities import User, Booking, Service, Hotel, Floor, Room, YesNo, Assistance, Locations, Availability, RoomType, Status, SType, Creditcard, FAQ
 from .controllers import SearchController, FormController, RoomAvailability
 from datetime import datetime
 from .Services import ReceiptGenerator
@@ -62,12 +62,12 @@ def auth_routes(email_controller):
                 return redirect(url_for("auth.sign_up"))
             
             # Check if email already exists
-            if not Users.unique_email(email):
+            if not User.unique_email(email):
                 flash("Email already registered. Please use a different email or login.", "error")
                 return redirect(url_for("auth.sign_up"))
             
             # Create a new user
-            user = Users.create_initial_user(name, email, password)
+            user = User.create_initial_user(name, email, password)
             
             try:
                 # Save the new user to the database
@@ -102,7 +102,7 @@ def auth_routes(email_controller):
             email, password = FormController.get_login_information()
             
             # Find user by email
-            user = Users.get_user_by_email(email)
+            user = User.get_user_by_email(email)
 
             # Check if user exists and if the password is correct
             if user and user.verify_password(password):
@@ -156,7 +156,7 @@ def profile():
         flash("Please log in first.", "error")
         return redirect(url_for("auth.login"))
     
-    user = Users.query.get(session["user_id"])
+    user = User.query.get(session["user_id"])
     if not user:
         flash('Account not found','error')
         session.clear()
@@ -235,14 +235,14 @@ def booking_routes(email_controller):
             flash("Please log in first.", "error")
             return redirect(url_for("auth.login"))
         user_id = session["user_id"]
-        user = Users.get_user(user_id)
+        user = User.get_user(user_id)
 
-        current = Bookings.get_current_user_bookings(user_id)
+        current = Booking.get_current_user_bookings(user_id)
         print(current)
-        future = Bookings.get_future_user_bookings(user_id)
+        future = Booking.get_future_user_bookings(user_id)
         print(future)
-        past = Bookings.get_past_user_bookings(user_id)
-        canceled = Bookings.get_canceled_user_bookings(user_id)
+        past = Booking.get_past_user_bookings(user_id)
+        canceled = Booking.get_canceled_user_bookings(user_id)
 
         return render_template('bookings.html', current=current, future=future, past=past, canceled=canceled, YesNo=YesNo)
 
@@ -263,8 +263,8 @@ def booking_routes(email_controller):
             flash("Please log in first.", "error")
             return redirect(url_for("auth.login"))
         user_id = session["user_id"]
-        user = Users.get_user(user_id)
-        booking = Bookings.get_booking(bid)
+        user = User.get_user(user_id)
+        booking = Booking.get_booking(bid)
 
         if not booking:
             flash('Unable to modify booking. Please try again later', 'error')
@@ -301,8 +301,8 @@ def booking_routes(email_controller):
         if "user_id" not in session:
             flash("Please log in first.", "error")
             return redirect(url_for("auth.login"))
-        user = Users.query.get(session["user_id"])
-        booking = Bookings.query.get(bid)
+        user = User.query.get(session["user_id"])
+        booking = Booking.query.get(bid)
         message = status = ''
         if booking:
             canceled = request.form.get('canceled', 'false')
@@ -347,7 +347,7 @@ def reserve():
     if "user_id" not in session:
         flash("Please log in first.", "error")
         return redirect(url_for("auth.login"))
-    user = Users.query.get(session["user_id"])
+    user = User.query.get(session["user_id"])
     if request.method=='GET' or request.method=='POST':
         rid, location_type, startdate, enddate = FormController.get_booking_reservation_information()
         if not startdate or not enddate:
@@ -394,10 +394,10 @@ def request_services(bid):
     if "user_id" not in session:
         flash("Please log in first.", "error")
         return redirect(url_for("auth.login"))
-    user = Users.query.get(session["user_id"])
+    user = User.query.get(session["user_id"])
     if request.method == 'POST':
         #making sure user has active bid
-        booking = Bookings.get_specific_current_user_bookings(uid=user.id, bid=bid)
+        booking = Booking.get_specific_current_user_bookings(uid=user.id, bid=bid)
         if not booking:
             flash("You do not have an active booking for this request.",'error')
             return redirect(url_for('bookings.bookings'))
@@ -405,31 +405,31 @@ def request_services(bid):
         print(robes,btowels,htowels,soap,shampoo,conditioner,wash,lotion,hdryer,pillows,blankets,sheets)
         services = []
         if robes or btowels or htowels or soap or shampoo or conditioner or wash or lotion or hdryer or pillows or blankets or sheets:
-            services.append(Services.add_item(bid=bid, robes=robes, btowels=btowels, htowels=htowels, soap=soap, shampoo=shampoo,
+            services.append(Service.add_item(bid=bid, robes=robes, btowels=btowels, htowels=htowels, soap=soap, shampoo=shampoo,
                                                     conditioner=conditioner, wash=wash, lotion=lotion, hdryer=hdryer, pillows=pillows,
                                                     blankets=blankets, sheets=sheets))
         if housetime:
             print('before',housetime)
             housetime = datetime.strptime(housetime,"%H:%M").time()
             print('after',housetime)
-            services.append(Services.add_housekeeping(bid=bid, housetime=housetime, validate_check_out=booking.check_out))
+            services.append(Service.add_housekeeping(bid=bid, housetime=housetime, validate_check_out=booking.check_out))
         if trash:
-            services.append(Services.add_trash(bid=bid))
+            services.append(Service.add_trash(bid=bid))
         if calltime:
             print('before',calltime)
             calltime = datetime.strptime(calltime, "%H:%M").time()
             print('after',calltime)
             if recurrent:
-                services.extend(Services.add_call(bid=bid, calltime=calltime, recurrent=True, validate_check_out=booking.check_out))
+                services.extend(Service.add_call(bid=bid, calltime=calltime, recurrent=True, validate_check_out=booking.check_out))
             else:
-                services.extend(Services.add_call(bid=bid, calltime=calltime, recurrent=False, validate_check_out=booking.check_out))
+                services.extend(Service.add_call(bid=bid, calltime=calltime, recurrent=False, validate_check_out=booking.check_out))
         if restaurant:
-            services.append(Services.add_dining(bid=bid, restaurant=restaurant))
+            services.append(Service.add_dining(bid=bid, restaurant=restaurant))
         if assistance:
             assistance = Assistance(assistance)
-            services.append(Services.add_assistance(bid=bid, assistance=assistance))
+            services.append(Service.add_assistance(bid=bid, assistance=assistance))
         if other:
-            services.append(Services.add_other(bid=bid, other=other))
+            services.append(Service.add_other(bid=bid, other=other))
         try:
             db.session.add_all(services)
             db.session.commit()
@@ -517,7 +517,7 @@ def payment_routes(email_controller):
         if "user_id" not in session:
             flash("Please log in first.", "error")
             return redirect(url_for("auth.login"))
-        user = Users.query.get(session["user_id"])
+        user = User.query.get(session["user_id"])
         if user is None:
             flash("User is not valid","error")
             return redirect(url_for("auth.login"))
@@ -555,7 +555,7 @@ def payment_routes(email_controller):
             flash("Please log in first.", "error")
             return redirect(url_for("auth.login"))
         
-        user = Users.query.get(session["user_id"])
+        user = User.query.get(session["user_id"])
         
         # Extract payment information from the form
         credit_card_number, exp_date, cvv = FormController.get_payment_information()
@@ -617,7 +617,7 @@ def payment_routes(email_controller):
                 new_bookings = []
                 for room in rooms_to_book:
                     new_bookings.append(
-                        Bookings(
+                        Booking(
                             uid=user_id,
                             rid=room.id, 
                             check_in=check_in_date,
@@ -667,7 +667,7 @@ def payment_routes(email_controller):
             flash("Please log in first.", "error")
             return redirect(url_for("auth.login"))
         
-        booking = Bookings.query.get(booking_id)
+        booking = Booking.query.get(booking_id)
         
         if not booking:
             flash("Booking not found.", "error")
@@ -683,7 +683,7 @@ def payment_routes(email_controller):
         if num_nights == 0:
             num_nights = 1
         
-        room_rate = booking.room.rate
+        room_rate = booking.rooms.rate
         total_room_charges = room_rate * num_nights
         resort_fee = 30.00 * num_nights
         tax_amount = total_room_charges * 0.15
@@ -717,7 +717,7 @@ def payment_routes(email_controller):
             flash("Please log in first.", "error")
             return redirect(url_for("auth.login"))
         
-        booking = Bookings.query.get(booking_id)
+        booking = Booking.query.get(booking_id)
         
         if not booking:
             flash("Booking not found.", "error")
@@ -733,7 +733,7 @@ def payment_routes(email_controller):
         if num_nights == 0:
             num_nights = 1
 
-        room_rate = booking.room.rate
+        room_rate = booking.rooms.rate
         total_room_charges = room_rate * num_nights
         resort_fee = 30.00 * num_nights
         tax_amount = total_room_charges * 0.15
@@ -779,8 +779,8 @@ def tasks():
         Modified: April 17, 2025
     """
     today = date.today()
-    current_tasks = Services.query.filter(cast(Services.issued, Date) >= today).order_by(
-            asc(Services.issued), asc(Services.bid), asc(Services.stype)
+    current_tasks = Service.query.filter(cast(Service.issued, Date) >= today).order_by(
+            asc(Service.issued), asc(Service.bid), asc(Service.stype)
         ).all()
     print(current_tasks)
     return render_template('tasks.html', current_tasks=current_tasks, Status=Status, SType=SType)
