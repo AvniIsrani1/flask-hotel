@@ -193,3 +193,20 @@ class Room(db.Model):
         """
         return self.bookings
     
+    def get_room_description(self):
+        desc = str(self.number_beds) + '-Bedroom ' + self.room_type.value
+        if self.wheelchair_accessible==YesNo.Y:
+            desc = desc + " (Wheelchair Accessible)"
+        if self.balcony==YesNo.Y:
+            desc = desc + " with Balcony"
+        if self.ocean_view==YesNo.Y and self.city_view==YesNo.Y:
+            desc = desc + " - Ocean View, City View"
+        elif self.ocean_view==YesNo.Y:
+            desc = desc + " - Ocean View"
+        elif self.city_view==YesNo.Y:
+            desc = desc+ " - City View"
+        if self.smoking == YesNo.N:
+            desc = desc + " | Non-Smoking"
+        return desc
+
+

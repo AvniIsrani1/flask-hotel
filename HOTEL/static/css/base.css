@@ -103,15 +103,19 @@ a p{
     position:absolute;
     top:100%;
     left:0;
-    padding:5px 10px;
+    padding:5px 10px 10px 10px;
     background-color:#002B5A;
     font-size:0.8rem;
 }
 
 .profile-info a {
+    display:flex;
+    justify-content: left;
+    align-items: center;
     border-radius:0px !important;
     border-left-style:solid;
     border-color:#002B5A;
+    width:100%;
 }
 
 .profile-info:hover nav {
@@ -122,6 +126,7 @@ a p{
     background-color:#002B5A !important;
     border-left-style:solid;
     border-color:#F1DF75 !important;
+    
 }
 
 .main-content {

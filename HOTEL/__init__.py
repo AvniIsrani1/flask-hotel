@@ -7,7 +7,7 @@ from urllib.parse import quote
 import boto3
 from botocore.exceptions import ClientError
 import json
-from .entities import User, Hotel, Room, FAQ, Locations
+from .entities import User, Staff, Hotel, Room, FAQ, Locations, Position
 from .controllers import EmailController
 from .db import db
 
@@ -118,10 +118,10 @@ def add_sample_data():
         print("Sample rooms added")
 
         users = []
-        avni = User(name="avni", email="avni@gmail.com", password=generate_password_hash("avni"))
-        devansh = User(name="devansh", email="devansh@gmail.com", password=generate_password_hash("devansh"))
-        elijah = User(name="elijah", email="elijah@gmail.com", password=generate_password_hash("elijah"))
-        andrew = User(name="andrew", email="andrew@gmail.com", password=generate_password_hash("andrew"))
+        avni = Staff(name="avni", email="avni@gmail.com", password=generate_password_hash("avni"), position=Position.MANAGER)
+        devansh = Staff(name="devansh", email="devansh@gmail.com", password=generate_password_hash("devansh"), position=Position.CONCIERGE, supervisor_id=1)
+        elijah = Staff(name="elijah", email="elijah@gmail.com", password=generate_password_hash("elijah"), position=Position.MANAGER, supervisor_id=1)
+        andrew = Staff(name="andrew", email="andrew@gmail.com", password=generate_password_hash("andrew"), position=Position.MAINTENANCE, supervisor_id=3)
         users.extend([avni, devansh, elijah, andrew])
         db.session.add_all(users)
         db.session.commit()

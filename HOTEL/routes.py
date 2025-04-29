@@ -10,12 +10,12 @@ Note:
 
 from flask import Flask, Blueprint, jsonify, render_template, request, redirect, url_for, session, flash, get_flashed_messages, send_file
 from .db import db
-from sqlalchemy import DateTime, Date, cast, distinct, desc, asc, cast, func, not_, String, Computed
+from sqlalchemy import DateTime, Date, cast, distinct, desc, asc, cast, func, not_, or_, String, Computed
 from datetime import datetime, date, timedelta
-from .entities import User, Booking, Service, Hotel, Floor, Room, YesNo, Assistance, Locations, Availability, RoomType, Status, SType, Creditcard, FAQ
+from .entities import User, Staff, Booking, Service, Hotel, Floor, Room, YesNo, Assistance, Locations, Availability, RoomType, Status, SType, Creditcard, FAQ
 from .controllers import SearchController, FormController, RoomAvailability
 from datetime import datetime
-from .Services import ReceiptGenerator
+from .Services import ReceiptGenerator, ReportGenerator
 from flask import Blueprint, jsonify, render_template
 from HOTEL.AImodels.csv_retriever import setup_csv_retrieval, get_answer_from_csv
 from HOTEL.AImodels.ai_model import load_ai_model, generate_ai_response
@@ -110,6 +110,10 @@ def auth_routes(email_controller):
                 # Save user's id and name in session so we know they are logged in
                 session["user_id"] = user.id
                 session["user_name"] = user.name
+                is_staff = user.type == 'staff'
+                session["staff"] = is_staff
+                session["staff_position"] = user.position.label if is_staff and user.position else ''
+
                 if user.first_login == YesNo.Y:
                     return redirect(url_for('profile.profile'))
                 else:
@@ -441,9 +445,6 @@ def request_services(bid):
             flash(f"An error occurred: {str(e)}. Please try again later.", "error")
         return redirect(url_for('bookings.bookings'))
     return render_template('request_services.html')
-
-
-
 
 
 bp_search = Blueprint('search',__name__)
@@ -779,14 +780,48 @@ def tasks():
         Created: April 12, 2025
         Modified: April 17, 2025
     """
+    if "user_id" not in session:
+        flash("Please log in first.", "error")
+        return redirect(url_for("auth.login"))
+    staff = Staff.get_user(session["user_id"])
+    if not staff:
+        flash("You don't have permission to view this resource.", "error")
+        return redirect(url_for("info.home"))
+    if request.method == "POST":
+        try:
+            for key in request.form.keys():
+                if key.startswith("staffList_"):
+                    sid = int(key.split("_")[1]) #service id
+                    service = Service.query.get(sid)
+                    if service:
+                        staff_id = int(request.form.get(f'staffList_{sid}'))
+                        status = request.form.get(f'statusType_{sid}')
+
+                        print(staff_id, status)
+                        service.staff_in_charge = staff_id
+                        service.status = Status(status)
+            db.session.commit()
+            flash("Tasks updated successfully","success")
+        except Exception as e:
+            db.session.rollback()
+            print(f"Error updating tasks: {str(e)}")
+            flash("Unable to update tasks. Please try again later.","error")
     today = date.today()
     current_tasks = Service.query.filter(cast(Service.issued, Date) >= today).order_by(
-            asc(Service.issued), asc(Service.bid), asc(Service.stype)
-        ).all()
+            asc(Service.issued), asc(Service.bid), asc(Service.stype)).all()
     print(current_tasks)
-    return render_template('tasks.html', current_tasks=current_tasks, Status=Status, SType=SType)
+    assignable_staff = Staff.query.filter(or_(Staff.supervisor_id==staff.id, Staff.id==staff.id)).all()
+    
+    return render_template('tasks.html', current_tasks=current_tasks, assignable_staff=assignable_staff, Status=Status, SType=SType)
 
 
+@bp_staff.route("/reports", methods=["GET", "POST"])
+def reports():
+    service_graph = ReportGenerator.get_service_stats()
+    completed_booking_graph, pending_booking_graph = ReportGenerator.get_booking_stats()
+    room_popularity_graph = ReportGenerator.get_room_popularity_stats()
+    return render_template('reports.html', service_graph=service_graph, completed_booking_graph=completed_booking_graph,
+                           pending_booking_graph=pending_booking_graph, room_popularity_graph=room_popularity_graph)
 
 
 
@@ -886,7 +921,7 @@ def chat_routes():
 
 
 
-# static pages 
+# static pages -----------------------------------------------------------------------------------------
 bp_info = Blueprint('info',__name__)
 
 @bp_info.route("/")

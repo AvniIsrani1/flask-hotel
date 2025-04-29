@@ -37,6 +37,18 @@
             <i class="fa-solid fa-calendar-check"></i>
             <p>My Reservations</p>
           </a>
+          {% if session.get('staff') %}
+          <a href="{{ url_for('staff.tasks') }}">
+            <i class="fa-solid fa-list-check"></i>
+            <p>Tasks</p>
+          </a>
+          {% if session.get('staff_position') == 'Manager' %}
+            <a href="{{ url_for('staff.reports') }}">
+              <i class="fa-solid fa-chart-simple"></i>
+              <p>Reports</p>
+            </a>
+          {% endif %}
+          {% endif %}
         </nav>
       </div>
         <a href="{{ url_for('auth.logout') }}">

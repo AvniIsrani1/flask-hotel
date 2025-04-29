@@ -126,6 +126,8 @@ p {
 .placard {
     border-style:solid;
     border-width:1px;
+    border-radius:10px;
+    overflow:hidden;
 }
 
 .details, .links {
