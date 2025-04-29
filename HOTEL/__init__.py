@@ -118,10 +118,10 @@ def add_sample_data():
         print("Sample rooms added")
 
         users = []
-        avni = Staff(name="avni", email="avni@gmail.com", password=generate_password_hash("avni"), position=Position.MANAGER)
-        devansh = Staff(name="devansh", email="devansh@gmail.com", password=generate_password_hash("devansh"), position=Position.CONCIERGE, supervisor_id=1)
-        elijah = Staff(name="elijah", email="elijah@gmail.com", password=generate_password_hash("elijah"), position=Position.MANAGER, supervisor_id=1)
-        andrew = Staff(name="andrew", email="andrew@gmail.com", password=generate_password_hash("andrew"), position=Position.MAINTENANCE, supervisor_id=3)
+        avni = User(name="avni", email="avni@gmail.com", password=generate_password_hash("avni"))
+        devansh = User(name="danny", email="devansh@gmail.com", password=generate_password_hash("1230"))
+        elijah = User(name="elijah", email="elijah@gmail.com", password=generate_password_hash("elijah"))
+        andrew = User(name="andrew", email="andrew@gmail.com", password=generate_password_hash("andrew"))
         users.extend([avni, devansh, elijah, andrew])
         db.session.add_all(users)
         db.session.commit()

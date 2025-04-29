@@ -23,6 +23,7 @@ pip install langchain-huggingface
 pip install langchain-community
 pip install faiss-cpu
 pip install reportlab 
+pip install qrcode[pil]    
 pip install plotly
 
 TO RUN
