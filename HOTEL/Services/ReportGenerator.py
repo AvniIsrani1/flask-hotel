@@ -58,3 +58,14 @@ class ReportGenerator():
         popularity_figure = px.bar(popularity_list, x="room",y="count",title="Room Popularity",labels={'room':'Room','count':'Number of Bookings'}, color="room")
         popularity_figure = json.dumps(popularity_figure, cls=plotly.utils.PlotlyJSONEncoder)
         return popularity_figure
+    
+    def get_staff_insights():
+        from ..entities import Service
+        from ..entities import Staff
+        from ..entities import Status
+
+        staff_insights = Service.get_staff_insights()
+        staff_insights_list = [{"staff":Staff.get_staff(row[0]).get_name().upper() if row[0] else 'Unknown', 'status':row[1].value,'count':row[2]} for row in staff_insights]
+        staff_figure = px.bar(staff_insights_list, x="staff",y="count",title="Staff Efficiency", labels={'staff':'Staff','count':'Activity', 'status':'Status'}, color="status")
+        staff_figure = json.dumps(staff_figure, cls=plotly.utils.PlotlyJSONEncoder)
+        return staff_figure

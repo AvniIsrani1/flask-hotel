@@ -48,6 +48,12 @@
               <p>Reports</p>
             </a>
           {% endif %}
+          {% if session.get('staff_position') == 'Manager' %}
+            <a href="{{ url_for('staff.staff_reports') }}">
+              <i class="fa-solid fa-users-between-lines"></i>
+              <p>Staff Insights</p>
+            </a>
+          {% endif %}
           {% endif %}
         </nav>
       </div>

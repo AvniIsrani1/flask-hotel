@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block title %} Reports {% endblock %}
+
+{% block styles %} 
+<script src="https://cdn.plot.ly/plotly-3.0.1.min.js" charset="utf-8"></script>
+<link rel="stylesheet" href="../static/css/reports.css" />
+{% endblock %}
+
+{% block content %}
+<div class="content">
+    <p class="title">Staff Reports</p>
+    <form>
+        <div class="selection">
+            <label for="start">Start Period: </label>
+            <input type="date" id="start" name="start">
+            <label for="end">End Period:</label>
+            <input type="date" id="end" name="end">
+            <input type="submit">
+            <div id="staff-chart"></div>
+        </div>
+    </form>
+    
+    <script>
+        var staff_graph = JSON.parse('{{ staff_graph | safe }}');
+        Plotly.newPlot('staff-chart', staff_graph.data, staff_graph.layout);
+    </script>
+</div>
+
+
+
+{% endblock %}

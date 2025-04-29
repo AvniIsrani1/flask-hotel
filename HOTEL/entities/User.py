@@ -51,6 +51,18 @@ class User(db.Model):
         """
         return cls.query.filter(cls.id==id).first()
     
+    def get_name(self):
+        """
+        Retrieve a user's name.
+
+        Parameters: 
+            None
+
+        Returns:
+            str | None: The name of the user if found, else None.
+        """
+        return self.name
+    
     @classmethod
     def get_user_by_email(cls,email):
         """

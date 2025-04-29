@@ -26,3 +26,17 @@ class Staff(User):
     __mapper_args__ = {
         'polymorphic_identity': 'staff'
     }
+
+
+    @classmethod
+    def get_staff(cls, id):
+        """
+        Retrieve a staff member by their unique ID.
+
+        Parameters: 
+            id (int): The unique ID of the staff member.
+
+        Returns:
+            Staff | None: The Staff object if found, else None.
+        """
+        return cls.query.filter(cls.id==id).first()

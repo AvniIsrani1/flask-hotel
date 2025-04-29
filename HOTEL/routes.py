@@ -824,6 +824,12 @@ def reports():
                            pending_booking_graph=pending_booking_graph, room_popularity_graph=room_popularity_graph)
 
 
+@bp_staff.route("/staff-reports", methods=["GET", "POST"])
+def staff_reports():
+    staff_graph = ReportGenerator.get_staff_insights()
+    return render_template('reports_staff.html', staff_graph=staff_graph)
+
+
 
 def process_query(user_question):
     """

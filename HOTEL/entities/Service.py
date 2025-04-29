@@ -208,3 +208,9 @@ class Service(db.Model):
         stats = cls.query.group_by(cls.stype)
         stats = stats.with_entities(cls.stype, func.count(distinct(cls.id)).label('count'))
         return stats.all()
+    
+    @classmethod
+    def get_staff_insights(cls):
+        stats = cls.query.group_by(cls.staff_in_charge, cls.status)
+        stats = stats.with_entities(cls.staff_in_charge, cls.status, func.count(distinct(cls.id).label('count')))
+        return stats.all()
