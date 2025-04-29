@@ -119,7 +119,7 @@ def add_sample_data():
 
         users = []
         avni = User(name="avni", email="avni@gmail.com", password=generate_password_hash("avni"))
-        devansh = User(name="devansh", email="devansh@gmail.com", password=generate_password_hash("devansh"))
+        devansh = User(name="Danny", email="devansh@gmail.com", password=generate_password_hash("1230"))
         elijah = User(name="elijah", email="elijah@gmail.com", password=generate_password_hash("elijah"))
         andrew = User(name="andrew", email="andrew@gmail.com", password=generate_password_hash("andrew"))
         users.extend([avni, devansh, elijah, andrew])
