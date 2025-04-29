@@ -56,49 +56,57 @@
             price: "$12.50",
             image: "../static/images/imgMenu/FrenchToast.webp",
             info: "<p>(5 pieces of toast per serving)</p>Ingredients: Bread challah, eggs, milk, vanilla, cinnamon, butter, maple syrup, strawberries, blueberries.",
-            nutrition: "Calories: 450 | Protein: 10g | Carbs: 20g"
+            nutrition: "Calories: 450 | Protein: 10g | Carbs: 20g",
+            allergens: [ "eggs", "wheat", "dairy"]
         },
         {
             name: "Eggs Benedict",
             price: "$10",
             image: "../static/images/imgMenu/eggsBenedict.webp",
             info: "Ingredients: English muffins, Canadian bacon/ham, eggs, butter, lemon juice, salt, cayenne pepper.",
-            nutrition: "Calories: 550 | Protein: 33g | Carbs: 25g"
+            nutrition: "Calories: 550 | Protein: 33g | Carbs: 25g",
+            allergens: ["eggs"]
+
         },
         {
             name: "Banana and Waffles",
             price: "$17.25",
             image: "../static/images/imgMenu/bananaWaffles.webp",
             info: "<p>(2 waffles per serving)</p>Ingredients: Flour, eggs, milk, baking powder, sugar, butter, bananas, walnuts, maple syrup, whipped cream.",
-            nutrition: "Calories: 700 | Protein: 15g | Carbs: 90g"
+            nutrition: "Calories: 700 | Protein: 15g | Carbs: 90g",
+            allergens: ["eggs", "dairy"]
         },
         {
             name: "Fiddle Head and Bacon Omelette",
             price: "$15.50",
             image: "../static/images/imgMenu/FiddleheadandBaconOmelette.webp",
             info: "Ingredients: Eggs, butter, cheese, tomatoes, onions, celantro, chives, salt, pepper, bacon.",
-            nutrition: "Calories: 450 | Protein: 10g | Carbs: 20g"
+            nutrition: "Calories: 450 | Protein: 10g | Carbs: 20g",
+            allergens: ["eggs"]
         },
         {
             name: "Yogurt Parfait",
             price: "$8",
             image: "../static/images/imgMenu/YogurtParfait.webp",
             info: "Ingredients: Greek yogurt, granola, fresh strawberries, mangoes, banana, peaches, honey as a sweetener.",
-            nutrition: "Calories: 270 | Protein: 40g | Carbs: 15g"
+            nutrition: "Calories: 270 | Protein: 40g | Carbs: 15g",
+            allergens: ["eggs", "dairy"]
         },
         {
             name: "Banana Pancakes",
             price: "$13.25",
             image: "../static/images/imgMenu/BananaPancakes.webp",
             info: "<p>(3 pancakes per serving)</p>A layered yogurt parfait served in a clear glass. Contains layers of white yogurt, fresh fruit (strawberries, mango, peach, banana), and granola.",
-            nutrition: "Calories: 600 | Protein: 90g | Carbs: 15g"
+            nutrition: "Calories: 600 | Protein: 90g | Carbs: 15g",
+            allergens: ["eggs", "dairy"]
         },
         {
             name: "SouthWest BreakFast Burritos",
             price: "$12",
             image: "../static/images/imgMenu/SouthwestBreakFastBurritos.webp",
             info: "Ingredients: Flour tortilla, eggs, ground beef or sausage, beans (likely pinto or black), cheddar cheese, tomatoes, green bell peppers, onions, spices like cumin and chili powder, possibly sour cream.",
-            nutrition: "Calories: 550 | Protein: 30g | Carbs: 50g"
+            nutrition: "Calories: 550 | Protein: 30g | Carbs: 50g",
+            allergens: ["eggs", "dairy"]
         }
         ]
         },
@@ -111,77 +119,88 @@
             price: "$18.70",
             image: "../static/images/imgMenu/FrenchPorkRillettes.webp",
             info: "Ingredients: Pork, herbs, spices, garlic, shallots, butter or fat, baguette, olive oil.",
-            nutrition: "Calories: 400 | Protein: 15g | Carbs: 30g"
+            nutrition: "Calories: 400 | Protein: 15g | Carbs: 30g",
+            allergens: []
         },
         {
             name: "Crab Cakes",
             price: "$17",
             image: "../static/images/imgMenu/CrabCakes.webp",
             info: "Ingredients: Lump crab meat, breadcrumbs, mayonnaise, Dijon mustard, egg, bell peppers, green onions, Old Bay seasoning, lemon.",
-            nutrition: "Calories: 325 | Protein: 25g | Carbs: 15g"
+            nutrition: "Calories: 325 | Protein: 25g | Carbs: 15g",
+            allergens: ["eggs", "shellfish"]
         },
         {
             name: "Steamed Mussels in White Wine",
             price: "$18",
             image: "../static/images/imgMenu/SteamedMusselsInWhiteWine.webp",
             info: "Ingredients: Fresh mussels, white wine, garlic, shallots, butter, fresh herbs (parsley, thyme), lemon, black pepper, crusty bread.",
-            nutrition: "Calories: 200 | Protein: 20g | Carbs: 8g"
+            nutrition: "Calories: 200 | Protein: 20g | Carbs: 8g",
+            allergens: ["eggs", "shellfish"]
         },
         {
             name: "Crispy Fried Oyster",
             price: "$20",
             image: "../static/images/imgMenu/CrispyFriedOyster.webp",
             info: "(Per serving of 6 oysters) Ingredients: Fresh oysters, cornmeal, flour, eggs, seasoning (likely cayenne, salt, pepper), vegetable oil for frying.",
-            nutrition: "Calories: 400 | Protein: 25g | Carbs: 30g"
+            nutrition: "Calories: 400 | Protein: 25g | Carbs: 30g",
+            allergens: ["eggs", "shellfish"]
         },
         {
             name: "Shrimp Ceviche",
             price: "$15",
             image: "../static/images/imgMenu/ShrimpCeviche.webp",
             info: "Ingredients: Shrimp, lime juice, lemon juice, tomatoes, red onion, jalapeño and serrano peppers, avocado, cilantro, salt, black pepper, corn tortilla chips.",
-            nutrition: "Calories: 225 | Protein: 25g | Carbs: 15g"
+            nutrition: "Calories: 225 | Protein: 25g | Carbs: 15g",
+            allergens: ["shellfish"]
         },
         {
             name: "Salmon with Potatoes Spinach CiderCream",
             price: "$20",
             image: "../static/images/imgMenu/SalmonwithPotatoesSpinachCiderCream.webp",
             info: "Ingredients: Salmon fillet, olive oil, salt, pepper, potatoes, leafy greens, garlic, lemon.",
-            nutrition: "Calories: 450 | Protein: 35g | Carbs: 25g"
+            nutrition: "Calories: 450 | Protein: 35g | Carbs: 25g",
+            allergens: ["fish"]
         },
         {
             name: "Beef Wellington",
             price: "$22",
             image: "../static/images/imgMenu/BeefWellington.webp",
             info: "Ingredients: Beef tenderloin, puff pastry, mushrooms, shallots, herbs (thyme, parsley), prosciutto or ham, Dijon mustard, egg wash.",
-            nutrition: "Calories: 700 | Protein: 45g | Carbs: 30g"
+            nutrition: "Calories: 700 | Protein: 45g | Carbs: 30g",
+            allergens: ["eggs"]
         },
         {
             name: "Baked Stuffed Lobster",
             price: "$40",
             image: "../static/images/imgMenu/BakedStuffedLobster.webp",
             info: "Ingredients: Lobster, butter, breadcrumbs, herbs (likely parsley), garlic, lemon, possibly white wine or brandy.",
-            nutrition: "Calories: 400 | Protein: 35g | Carbs: 8g"
+            nutrition: "Calories: 400 | Protein: 35g | Carbs: 8g",
+            allergens: ["shellfish"]
         },
         {
             name: "Herb Broiled Chicken",
             price: "$27",
             image: "../static/images/imgMenu/Herb BroiledChickenRecipe.webp",
             info: "Ingredients: Whole chicken, olive oil, salt, pepper, herbs, garlic, parsley, cilantro, oregano, red pepper flakes, vinegar, lemon.",
-            nutrition: "(per serving, 1/4 chicken): Calories: 350 | Protein: 45g | Carbs: 4g"
+            nutrition: "(per serving, 1/4 chicken): Calories: 350 | Protein: 45g | Carbs: 4g",
+            allergens: ["eggs"]
         },
         {
             name: "Seafood Paella with Pork and Chicken",
             price: "$26",
             image: "../static/images/imgMenu/SeafoodPaellaWithPorkandChicken.webp",
-            info: "Ingredients: Short-grain rice, saffron, olive oil, onions, garlic, bell peppers, tomatoes, green peas, shrimp, mussels, white wine, fish or chicken stock, parsley, salt, pepper, paprika.",
-            nutrition: "Calories: 500 | Protein: 70g | Carbs: 25g"
+            info: "Ingredients: Short-grain rice, saffron, olive oil, onions, garlic, bell peppers, tomatoes, green peas, shrimp, mussels, white wine, salman or chicken stock, parsley, salt, pepper, paprika.",
+            nutrition: "Calories: 500 | Protein: 70g | Carbs: 25g",
+            allergens: ["eggs", "fish"]
         },
         {
             name: "Roasted Rack of Lamb",
             price: "$26.50",
             image: "../static/images/imgMenu/RoastedRackofLamb.webp",
             info: "Ingredients: Rack of lamb, herbs (rosemary, thyme, parsley), breadcrumbs, Dijon mustard, garlic, olive oil.",
-            nutrition: "(per 2-3 chops): Calories: 400 | Protein: 40g | Carbs: 8g"
+            nutrition: "(per 2-3 chops): Calories: 400 | Protein: 40g | Carbs: 8g",
+            allergens: []
         }
         ]
         },
@@ -195,56 +214,64 @@
             price: "$8",
             image: "../static/images/imgMenu/BakedAlaska.webp",
             info: "Ingredients: Egg whites, sugar, vanilla extract, pink strawberry or raspberry ice cream, vanilla ice cream, sponge cake, and a touch of liqueur.",
-            nutrition: "Calories: 400 | Protein: 8g | Carbs: 55g"
+            nutrition: "Calories: 400 | Protein: 8g | Carbs: 55g",
+            allergens: ["eggs", "dairy"]
         },
         {
             name: "Caramel Flan",
             price: "$9",
             image: "../static/images/imgMenu/CaramelFlan.webp",
             info: "Ingredients: Heavy cream, egg yolks, sugar, vanilla bean or extract.",
-            nutrition: "Calories: 300 | Protein: 5g | Carbs: 30g"
+            nutrition: "Calories: 300 | Protein: 5g | Carbs: 30g",
+            allergens: ["eggs"]
         },
         {
             name: "Lemon Creme Brulee",
             price: "$10",
             image: "../static/images/imgMenu/LemonCremeBrulee.webp",
             info: "Heavy cream, Egg yolks, Granulated sugar, Vanilla extract, Fresh lemon juice, Lemon zest, Salt, Turbinado",
-            nutrition: "Calories: 380 | Protein: 5g | Carbs: 32g"
+            nutrition: "Calories: 380 | Protein: 5g | Carbs: 32g",
+            allergens: ["eggs", "dairy"]
         },
         {
             name: "Dark Chocolate Molten Lava cake",
             price: "$7",
             image: "../static/images/imgMenu/DarkChocolateMoltenLavacake.webp",
             info: "Ingredients: Dark chocolate, butter, eggs, sugar, flour, vanilla extract, vanilla ice cream.",
-            nutrition: "Calories: 270 | Protein: 40g | Carbs: 15g"
+            nutrition: "Calories: 270 | Protein: 40g | Carbs: 15g",
+            allergens: ["eggs", "dairy"]
         },
         {
             name: "Lemon Blueberry Scones",
             price: "$5",
             image: "../static/images/imgMenu/LemonBlueberryScones.webp",
             info: "Ingredients: Flour, butter, sugar, baking powder, eggs, cream or milk, vanilla, blueberries, lemon (zest and juice), powdered sugar.",
-            nutrition: "Calories: 300 | Protein: 5g | Carbs: 40g"
+            nutrition: "Calories: 300 | Protein: 5g | Carbs: 40g",
+            allergens: ["eggs", "dairy"]
         },
         {
             name: "New York Cheesecake",
             price: "$8",
             image: "../static/images/imgMenu/NewYorkChessecake.avif",
             info: "Cream cheese (the primary ingredient, providing the dense texture), Sugar, Eggs, Heavy cream, Vanilla extract, Graham cracker crust (typically made with graham crackers, butter, and sugar)",
-            nutrition: "Calories: 500 | Protein: 9g | Carbs: 30g"
+            nutrition: "Calories: 500 | Protein: 9g | Carbs: 30g",
+            allergens: ["eggs", "dairy"]
         },
         {
             name: "Holy Cannoli's",
             price: "$11",
             image: "../static/images/imgMenu/HolyCannoli_s.avif",
             info: "Ingredients: Chocolate cake, sweetened cream/mascarpone filling, whipped cream, cherry garnish",
-            nutrition: "Calories: 500 | Protein: 8g | Carbs: 50g"
+            nutrition: "Calories: 500 | Protein: 8g | Carbs: 50g",
+            allergens: ["eggs", "dairy"]
         },
         {
             name: "StrawBerry Cheesecake",
             price: "$8",
             image: "../static/images/imgMenu/StrawBerryChessecake.avif",
             info: "Cream cheese, sugar, eggs, vanilla extract, graham crackers, butter, fresh strawberries, heavy cream, sour cream (sometimes), cornstarch (for glazes), lemon juice",
-            nutrition: "Calories: 500 | Protein: 9g | Carbs: 35g"
+            nutrition: "Calories: 500 | Protein: 9g | Carbs: 35g",
+            allergens: ["eggs", "dairy, "]
         }
         ]
         },
@@ -257,7 +284,8 @@
             price: "$12.50",
             image: "../static/images/imgMenu/grilledcheese.jpg",
             info: "Ingredients: White bread, butter, American or cheddar cheese",
-            nutrition: "Calories: 300 | Protein: 12g | Carbs: 30g"
+            nutrition: "Calories: 300 | Protein: 12g | Carbs: 30g",
+            allergens: ["dairy"]
         },
         {
             name: "Chicken Tenders with Fries",
@@ -265,13 +293,15 @@
             image: "../static/images/imgMenu/TendersFries.jpg",
             info: "<p>(4 pieces tender per serving)</p>Ingredients: For chicken tenders: Chicken breast, flour, eggs, breadcrumbs, salt, pepper, various spicesfor french fries: Potatoes, vegetable oil, salt",
             nutrition: "Tenders Calories: 450 | Protein: 40g | Carbs: 20g",
-            nutrition: "Fries Calories: 300 | Protein: 5g | Carbs: 40g"
+            nutrition: "Fries Calories: 300 | Protein: 5g | Carbs: 40g",
+            allergens: ["eggs"]
         },
         {
             name: "Pizza Slice",
             price: "$7.25",
             image: "../static/images/imgMenu/pepperoni-pizza.webp",
             info: "<p>(1 slice)</p> Types: Cheese , Pepperoni , Hawiian , MeatLovers ",
+            allergens: ["dairy", "Wheat"]
         },
         ]
         },
@@ -396,6 +426,18 @@
             
             // Check if the item has info to display on the front and back
             if (item.info) {
+
+                let foodAllergyIcons  = '';
+                    if (item.allergens && item.allergens.length > 0) {
+                        foodAllergyIcons  = '<div class="allergen-icons">';
+                        item.allergens.forEach(allergen => {
+                            if (allergyIcons[allergen]) {
+                                foodAllergyIcons  += `<img src="${allergyIcons[allergen]}" alt="${allergen}" class="allergen-icon" title="${allergen}">`;
+                            }
+                        });
+                        foodAllergyIcons  += '</div>';
+                    }
+
                 menuItem.innerHTML = `
                     <div class="flipper">
                         <div class="front">
@@ -404,11 +446,13 @@
                             </div>
                             <h3 class="item-title">${item.name}</h3>
                             <span class="item-price">${item.price}</span>
+                                <!-- add a counter  -->
                             <h4 class="ClickHere">click for info</h4>
                         </div>
                         <div class="Back">
                             <div class="Back-card">
                                 <div class="item-title">${item.name}</div>
+                                ${foodAllergyIcons}
                                 <div class="Food-info">
                                     ${item.info}
                                 </div>
@@ -490,10 +534,25 @@
 
         document.addEventListener('DOMContentLoaded', renderMenu);
 
+            //Allerfies icons list
+        const allergyIcons = {
+            dairy: '../static/images/imgMenu/Icon_dairy.png' ,
+            eggs: '../static/images/imgMenu/Icon_eggs.png',
+            wheat: '../static/images/imgMenu/Icon_wheats.png' ,
+            soy: '../static/images/imgMenu/Icon_soys.png' ,
+            fish: '../static/images/imgMenu/Icon_fishs.png' ,
+            shellfish: '../static/images/imgMenu/Icon_shell.png' ,
+            seasame:  '../static/images/imgMenu/Icon_sesame.png'
+        };
+
+
+
     </script>
 
                 <!-- script to flip the cards around -->
         <script src="../static/js/cardFlip.js"></script> 
+
+
 
 </div>
 
