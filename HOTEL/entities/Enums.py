@@ -7,7 +7,7 @@ Note:
     Author: Avni Israni
     Documentation: Devansh Sharma
     Created: March 6, 2025
-    Modified: April 17, 2025
+    Modified: April 28, 2025
 """
 
 from enum import Enum as PyEnum
@@ -85,3 +85,21 @@ class Status(PyEnum):
     N = 'Not Started'
     I = 'In-Progress'
     C = 'Complete'
+
+class Position(PyEnum):
+    """
+    Enum representing position types for staff. 
+
+    Defines the types of positions staff can hold and associated colors for each position. 
+    """
+    MANAGER = ("Manager","blue")
+    FRONT_DESK = ("Front Desk", "green")
+    HOUSEKEEPING = ("Housekeeping", "purple")
+    MAINTENANCE = ("Maintenance", "gray")
+    CONCIERGE = ("Concierge", "brown")
+    CHEF = ("Chef", "orange")
+    SERVER = ("Server", "yellow")
+
+    def __init__(self, label, color):
+        self.label = label
+        self.color = color

@@ -1,4 +1,4 @@
-from sqlalchemy import DateTime, distinct, Computed, asc, desc
+from sqlalchemy import DateTime, distinct, Computed, asc, desc, func, literal
 from datetime import datetime
 from .Enums import YesNo
 from ..db import db
@@ -23,7 +23,7 @@ class Booking(db.Model):
     rid = db.Column(db.Integer, db.ForeignKey('rooms.id'), nullable=False)
     check_in = db.Column(DateTime, nullable=False)
     check_out = db.Column(DateTime, nullable=False)
-    fees = db.Column(db.Integer, default=50)
+    fees = db.Column(db.Integer, default=50) #the total price for the stay
     cancel_date = db.Column(DateTime)
     refund_type = db.Column(db.Enum(YesNo)) 
     special_requests = db.Column(db.String(1000))
@@ -85,7 +85,7 @@ class Booking(db.Model):
     @classmethod
     def add_booking(cls, uid, rid, check_in, check_out, fees, special_requests, name, email, phone, num_guests):
         """
-        Creaate and commit a booking
+        Create and commit a booking
         
         Parameters:
             uid (int): The unique ID of the user.
@@ -102,7 +102,9 @@ class Booking(db.Model):
         Returns:
             None
         """
-        booking = cls(uid=uid, rid=rid, check_in=check_in, check_out=check_out, fees=fees, special_requests=special_requests, name=name, email=email, phone=phone, num_guests=num_guests)
+        duration = (check_out - check_in).days + 1
+        total_price = fees*duration #NEED TO CHECK THIS LOGIC!!
+        booking = cls(uid=uid, rid=rid, check_in=check_in, check_out=check_out, fees=total_price, special_requests=special_requests, name=name, email=email, phone=phone, num_guests=num_guests)
         db.session.add(booking)
         db.session.commit()
 
@@ -190,3 +192,21 @@ class Booking(db.Model):
         return cls.query.filter(cls.uid==uid, cls.cancel_date.isnot(None)).order_by(desc(cls.check_in), asc(cls.check_out)).all()
     
 
+
+    @classmethod
+    def get_booking_stats(cls):
+        today = datetime.now()
+        completed = cls.query.filter(cls.cancel_date.is_(None), cls.check_out <= today)
+        completed = completed.with_entities(literal('Completed').label('status'), func.sum(cls.fees).label('total_fees'), func.count(distinct(cls.id)).label('total_bookings')).first()
+        pending = cls.query.filter(cls.cancel_date.is_(None), cls.check_out > today)
+        pending = pending.with_entities(literal('Pending').label('status'), func.sum(cls.fees).label('total_fees'), func.count(distinct(cls.id)).label('total_bookings')).first()
+        return [completed, pending]
+    
+    @classmethod
+    def get_room_popularity_stats(cls):
+        from .Room import Room
+        popularity = cls.query.filter(cls.cancel_date.is_(None)).join(Room)
+        popularity = popularity.group_by(Room.hid, Room.room_type, Room.number_beds, Room.rate, Room.balcony, Room.city_view, Room.ocean_view, 
+                                     Room.smoking, Room.max_guests, Room.wheelchair_accessible)
+        popularity = popularity.with_entities(func.min(cls.rid).label('rid'), func.count(cls.rid).label('popularity')).order_by(desc('popularity')).limit(10)
+        return popularity

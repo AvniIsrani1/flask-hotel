@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% from "tasks_temp.html" import task_table %}
 
 {% block title %} Tasks {% endblock %}
 
@@ -6,46 +7,19 @@
 <link rel="stylesheet" href="../static/css/tasks.css" />
 {% endblock %}
 {% block content %}
-<div class="content">
-    <section>
-        <p class="subtitle">Current Tasks</p>
-        <table>
-        <th>Action Type</th>
-        <th>Request Details</th>
-        <th>Time</th>
-        <th>Date</th>
-        <th>Assigned To</th>
-        <th>Status</th>
-        {% for current in current_tasks %}
-        <tr>
-            <td>{{current.stype.value}}</td>
-            <td>
-                {% if current.stype == SType.I %}
-                hello
-                {% elif current.stype == SType.H %}
-                {{current.housedatetime}}
-                {% elif current.stype == SType.T %}
-                {% elif current.stype == SType.C %}
-                {% elif current.stype == SType.D %}
-                {% elif current.stype == SType.A %}
-                {% elif current.stype == SType.O %}
 
-                {% endif %}
-            </td>
-            <td>{{current.issued.strftime("%H:%M")}}</td>
-            <td>{{current.issued.strftime("%m/%d/%Y")}}</td>
-            <td>Staff in charge</td>
-            <td>
-            <select id="statusType" name="statusType" required>
-                {% for s in Status %}
-                <option value="{{s.value}}" {% if current.status==s %} selected {% endif %}>{{s.value}}</option>
-                {% endfor %}
-            </select>  
-            </td>      
-        </tr>
-        {% endfor %}
-        </table>
-    </section>
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+  <div class="flash-message {{ messages[-1][0] }}">
+    {{ messages[-1][1] }}
+  </div>
+{% endif %}
+{% endwith %}
+
+<div class="content">
+    {{ task_table() }}
+
+
 </div>
 
 {% endblock %}

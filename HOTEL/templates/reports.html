@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block title %} Reports {% endblock %}
+
+{% block styles %} 
+<script src="https://cdn.plot.ly/plotly-3.0.1.min.js" charset="utf-8"></script>
+<link rel="stylesheet" href="../static/css/reports.css" />
+{% endblock %}
+
+{% block content %}
+<div class="content">
+    <p class="title">Reports</p>
+    <div id="pie-chart"></div>
+    <div id="completed-booking-chart"></div>
+    <div id="pending-booking-chart"></div>
+    <div id="room-popularity-chart"></div>
+    
+    <script>
+        var service_graph = JSON.parse('{{ service_graph | safe }}');
+        Plotly.newPlot('pie-chart', service_graph.data, service_graph.layout);
+
+        var completed_booking_graph = JSON.parse('{{ completed_booking_graph | safe }}');
+        Plotly.newPlot('completed-booking-chart', completed_booking_graph.data, completed_booking_graph.layout);
+        
+        var pending_booking_graph = JSON.parse('{{ pending_booking_graph | safe }}');
+        Plotly.newPlot('pending-booking-chart', pending_booking_graph.data, pending_booking_graph.layout);
+
+        var room_popularity_graph = JSON.parse('{{ room_popularity_graph | safe }}');
+        Plotly.newPlot('room-popularity-chart', room_popularity_graph.data, room_popularity_graph.layout);
+    </script>
+</div>
+
+
+
+{% endblock %}

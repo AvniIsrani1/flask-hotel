@@ -17,6 +17,7 @@ class User(db.Model):
     """
     __tablename__ = 'users'  # Name of the table in the database
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)  # Unique id for each user
+    type = db.Column(db.String(50)) #keep track of type of user
     name = db.Column(db.String(150), nullable=False)  # User's name
     email = db.Column(db.String(150), unique=True, nullable=False)  # User's email (must be unique)
     password = db.Column(db.String(255), nullable=False)  # Hashed password
@@ -31,6 +32,11 @@ class User(db.Model):
     text_notifications = db.Column(db.Enum(YesNo), nullable=False, default=YesNo.N) 
     email_notifications = db.Column(db.Enum(YesNo), nullable=False, default=YesNo.N) 
     bookings = db.relationship('Booking', backref='users', lazy=True, cascade='all, delete-orphan') #user is keeping track of bookings
+
+    __mapper_args__ = {
+        'polymorphic_identity': 'user',
+        'polymorphic_on': type
+    }
     
     @classmethod
     def get_user(cls, id):
@@ -44,6 +50,18 @@ class User(db.Model):
             User | None: The User object if found, else None.
         """
         return cls.query.filter(cls.id==id).first()
+    
+    def get_name(self):
+        """
+        Retrieve a user's name.
+
+        Parameters: 
+            None
+
+        Returns:
+            str | None: The name of the user if found, else None.
+        """
+        return self.name
     
     @classmethod
     def get_user_by_email(cls,email):

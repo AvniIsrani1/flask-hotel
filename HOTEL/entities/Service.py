@@ -1,7 +1,8 @@
 from ..db import db
-from sqlalchemy import DateTime, distinct, Computed
+from sqlalchemy import DateTime, distinct, Computed, func
 from datetime import datetime, timedelta
 from .Enums import YesNo, Assistance, SType, Status
+
 
 
 class Service(db.Model):
@@ -20,6 +21,7 @@ class Service(db.Model):
     __tablename__ = 'services'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     bid = db.Column(db.Integer, db.ForeignKey('bookings.id'), nullable=False) 
+    staff_in_charge = db.Column(db.Integer, db.ForeignKey('users.id')) 
     issued = db.Column(DateTime, nullable=False)
     modified = db.Column(DateTime)
     stype = db.Column(db.Enum(SType), nullable=False)
@@ -38,7 +40,7 @@ class Service(db.Model):
     housedatetime = db.Column(DateTime)
     trash = db.Column(db.Enum(YesNo)) 
     calldatetime = db.Column(DateTime)
-    recurrent = db.Column(db.Enum(YesNo)) 
+    # recurrent = db.Column(db.Enum(YesNo)) 
     restaurant = db.Column(db.String(200)) 
     assistance = db.Column(db.Enum(Assistance))
     other = db.Column(db.String(300)) 
@@ -94,7 +96,7 @@ class Service(db.Model):
         if housedatetime < today:
             housedatetime = today
         if housedatetime <= validate_check_out:
-            return cls(id=id, bid=bid, issued=today, stype=SType.H, housedatetime=housedatetime)
+            return cls(bid=bid, issued=today, stype=SType.H, housedatetime=housedatetime)
     
     @classmethod
     def add_call(cls, bid, calltime, recurrent, validate_check_out):
@@ -197,3 +199,18 @@ class Service(db.Model):
             self.status = new_status
             return True
         return False
+    
+    @classmethod
+    def get_service_stats(cls):
+        # remove_cols = ["id","staff_in_charge", "modified","status"]
+        # cols = [col for col in cls.__table__.columns if col.name not in remove_cols]
+        # stats = cls.query.group_by(*cols) #group by to remove duplicates from recurrent wake up calls
+        stats = cls.query.group_by(cls.stype)
+        stats = stats.with_entities(cls.stype, func.count(distinct(cls.id)).label('count'))
+        return stats.all()
+    
+    @classmethod
+    def get_staff_insights(cls):
+        stats = cls.query.group_by(cls.staff_in_charge, cls.status)
+        stats = stats.with_entities(cls.staff_in_charge, cls.status, func.count(distinct(cls.id).label('count')))
+        return stats.all()

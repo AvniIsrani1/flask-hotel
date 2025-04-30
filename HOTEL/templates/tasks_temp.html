@@ -1,0 +1,92 @@
+{% macro task_table() %}
+<section>
+    <p class="subtitle">Current Tasks</p>
+    <form id="current_tasks" class="tasks" method="post"  action="{{ url_for('staff.tasks') }}">
+        <table>
+        <th>Action Type</th>
+        <th>Request Details</th>
+        <th>Time</th>
+        <th>Date</th>
+        <th>Assigned To</th>
+        <th>Status</th>
+        {% for current in current_tasks %}
+        {% if current.status != Status.C %}
+        <tr>
+            <td>{{current.stype.value}}</td>
+            <td>
+                {% if current.stype == SType.I %}
+                    {% if current.robes %}
+                        <p>Robes: {{ current.robes }}</p>
+                    {% endif %}
+                    {% if current.htowels %}
+                        <p>Hand Towels: {{ current.htowels }}</p>
+                    {% endif %}
+                    {% if current.btowels %}
+                        <p>Bath Towels: {{ current.btowels }}</p>
+                    {% endif %}
+                    {% if current.soap %}
+                        <p>Soap: {{ current.soap }}</p>
+                    {% endif %}
+                    {% if current.shampoo %}
+                        <p>Shampoo: {{ current.shampoo }}</p>
+                    {% endif %}
+                    {% if current.conditioner %}
+                        <p>Conditioner: {{ current.conditioner }}</p>
+                    {% endif %}
+                    {% if current.wash %}
+                        <p>Body Wash: {{ current.wash }}</p>
+                    {% endif %}
+                    {% if current.lotion %}
+                        <p>Lotion: {{ current.lotion }}</p>
+                    {% endif %}
+                    {% if current.hdryer %}
+                        <p>Hair Dryer: {{ current.hdryer }}</p>
+                    {% endif %}
+                    {% if current.pillows %}
+                        <p>Pillows: {{ current.pillows }}</p>
+                    {% endif %}
+                    {% if current.blankets %}
+                        <p>Blankets: {{ current.blankets }}</p>
+                    {% endif %}
+                    {% if current.sheets %}
+                        <p>Sheets: {{ current.sheets }}</p>
+                    {% endif %}
+                {% elif current.stype == SType.H %}
+                    {{current.housedatetime.strftime("%H:%M, %m/%d/%Y")}}
+                {% elif current.stype == SType.T %}
+                {% elif current.stype == SType.C %}
+                {% elif current.stype == SType.D %}
+                    {{ current.restaurant }}
+                {% elif current.stype == SType.A %}
+                    {{ current.assistance }}
+                {% elif current.stype == SType.O %}
+                    {{ current.other }}
+                {% endif %}
+            </td>
+            <td>{{current.issued.strftime("%H:%M")}}</td>
+            <td>{{current.issued.strftime("%m/%d/%Y")}}</td>
+            <td>
+                <select name="staffList_{{current.id}}" required>
+                    <option value="" selected disabled>Assignable Staff</option>
+                    {% for s in assignable_staff %}
+                    <option value="{{s.id}}" {% if current.staff_in_charge==s.id %} selected {% endif %}>{{s.name}}</option>
+                    {% endfor %}
+                </select>  
+            </td>
+            <td>
+                <select name="statusType_{{current.id}}" required>
+                    <option value="" selected disabled>Current Status</option>
+                    {% for s in Status %}
+                    <option value="{{s.value}}" {% if current.status==s %} selected {% endif %}>{{s.value}}</option>
+                    {% endfor %}
+                </select>  
+            </td>      
+        </tr>
+        {% endif %}
+        {% endfor %}
+        </table>
+        <input type="submit" value="Save Changes">
+    </form>
+</section>
+
+{% endmacro %}

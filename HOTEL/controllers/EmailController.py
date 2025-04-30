@@ -13,7 +13,7 @@ class EmailController:
     Modified: April 17, 2025
     """
     
-    def __init__(self,mail):
+    def __init__(self, mail):
         """
         Initialize the EmailController with a Flask-Mail instance.
 
