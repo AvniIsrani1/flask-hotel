@@ -49,6 +49,18 @@ class Room(db.Model):
         """
         return cls.query.filter(cls.id==id).first()
     
+    def get_room_hotel(self):
+        """
+        Retrieve the hotel ID of the room.
+
+        Parameters:
+            None
+
+        Returns:
+            int: The room's hotel ID (hid)
+        """
+        return self.hid
+    
     def get_room_number(self):
         """
         Retrieve the room number of the room.
@@ -208,5 +220,6 @@ class Room(db.Model):
         if self.smoking == YesNo.N:
             desc = desc + " | Non-Smoking"
         return desc
+    
 
 

@@ -14,6 +14,15 @@ class ReportGenerator():
         Modified: 4-29-25
     """
     
+    @staticmethod
+    def empty_figure(title):
+        """
+        Returns a blank bar chart. 
+        """
+        empty_figure = px.bar(title=title)
+        empty_figure = json.dumps(empty_figure, cls=plotly.utils.PlotlyJSONEncoder)
+        return empty_figure
+    
     @classmethod
     def get_service_stats(cls, location=None, startdate=None, enddate=None):
         """
@@ -30,9 +39,7 @@ class ReportGenerator():
             graph = json.dumps(figure, cls=plotly.utils.PlotlyJSONEncoder)
             return graph
         else:
-            empty_figure = px.bar(title="No Service Data Found")
-            empty_figure = json.dumps(empty_figure, cls=plotly.utils.PlotlyJSONEncoder)
-            return empty_figure
+            return cls.empty_figure("No Service Data Found")
     
     @classmethod
     def get_booking_stats(cls, location=None, startdate=None, enddate=None):
@@ -58,9 +65,7 @@ class ReportGenerator():
 
             return completed_figure, pending_figure
         else:
-            empty_figure = px.bar(title="No Booking Data Found")
-            empty_figure = json.dumps(empty_figure, cls=plotly.utils.PlotlyJSONEncoder)
-            return empty_figure
+            return cls.empty_figure("No Booking Data Found")
     
     @classmethod
     def get_room_popularity_stats(cls, location=None, startdate=None, enddate=None):
@@ -77,28 +82,29 @@ class ReportGenerator():
                 room = Room.get_room(row[0])
                 if room:
                     desc = room.get_room_description()
+                    hid = room.get_room_hotel()
                     abbrieviated = ' '.join(desc.split(' ')[:2])
                     popularity_list.append({
                         "room":abbrieviated,
                         "description": desc,
-                        "count":row[1]
+                        "count":row[1],
+                        "hid": str(hid)
                     })
                 else:
                     popularity_list.append({
                         "room":'N/A',
                         "description":'N/A',
-                        "count":row[1]
+                        "count":row[1],
+                        "hid":'N/A'
                     })
 
-            popularity_figure = px.bar(popularity_list, x="room",y="count",title="Room Popularity",labels={'room':'Room','count':'Number of Bookings', 'description':'Full Description'},
-                                       hover_data=["description"])
+            popularity_figure = px.bar(popularity_list, x="room",y="count",title="Room Popularity", color="hid",labels={'room':'Room','count':'Number of Bookings', 'description':'Full Description', 'hid': 'Hotel ID'},
+                                       hover_data=["description", "hid"])
             popularity_figure.update_layout(height=800, margin=dict(t=100,b=100,l=50,r=50), title_x=0.5)
             popularity_figure = json.dumps(popularity_figure, cls=plotly.utils.PlotlyJSONEncoder)
             return popularity_figure
         else:
-            empty_figure = px.bar(title="No Room Data Found")
-            empty_figure = json.dumps(empty_figure, cls=plotly.utils.PlotlyJSONEncoder)
-            return empty_figure
+            return cls.empty_figure("No Room Data Found")
     
     @classmethod
     def get_staff_insights(cls, location=None, startdate=None, enddate=None, assignable_staff=None):
@@ -113,6 +119,4 @@ class ReportGenerator():
             staff_figure = json.dumps(staff_figure, cls=plotly.utils.PlotlyJSONEncoder)
             return staff_figure
         else:
-            empty_figure = px.bar(title="No Staff Data Found")
-            empty_figure = json.dumps(empty_figure, cls=plotly.utils.PlotlyJSONEncoder)
-            return empty_figure
+            return cls.empty_figure("No Staff Data Found")

@@ -902,7 +902,7 @@ def staff_reports():
             if enddate < startdate:
                 flash("Please select a valid date range", 'error')
                 staff_graph = ReportGenerator.get_staff_insights(location, None, None, assignable_staff)
-                return render_template('reports_staff.html', staff_graph=staff_graph, startdate=None, enddate=None)
+                return render_template('reports_staff.html', locations=locations, staff_graph=staff_graph, startdate=None, enddate=None)
             staff_graph = ReportGenerator.get_staff_insights(location, startdate, enddate, assignable_staff)
             return render_template('reports_staff.html', locations=locations, staff_graph=staff_graph, startdate=None, enddate=None)
         except ValueError:

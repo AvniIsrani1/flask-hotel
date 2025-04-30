@@ -108,7 +108,9 @@ a p{
     font-size:0.8rem;
 }
 
-.profile-info a {
+
+
+.profile-info nav a {
     display:flex;
     justify-content: left;
     align-items: center;

@@ -110,5 +110,5 @@ form .sub {
 
 form .sub:hover{
     background-color:#001E40;
+    cursor:pointer;
 }
-
