@@ -1,0 +1,242 @@
+{% extends 'base.html' %}
+
+{% block title %} Home {% endblock %}
+
+{% block styles %}
+    <title> Amenitiess Page </title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/amenities.css') }}">
+
+    {% endblock %}
+
+    {% block content %}
+
+<div class="amenitiesPage-title"> 
+    <h2> Amenities </h2>
+    
+</div>
+
+<div class="content">
+    
+     <!-- Amenitiess section -->
+      <div class="amenities-section">
+      </div>
+
+      <!-- Amenitiess card latout - image left , title & details right -->
+       <div class="amenities-card" id="Default">
+                <div class="amenities-image">
+                    <img src="static\images\imgAmenities\Wifi.jpg" width="400px" height="300" alt="Amenities Image">
+                </div>
+            <div class="amenities-content">
+                <div class="amenities-title">
+                    <h3> WIFI </h3>
+                </div>
+                <div class="amenities-details">
+                    <p> 
+                        Enjoy fast and reliable high-speed Wi-Fi throughout the hotel grounds. Whether you're working, streaming,
+                         or staying connected with loved ones,our seamless internet service ensures you stay productive and entertained.
+                        Access is available in all rooms, public areas, and even by the pool, making it easy to stay connected wherever you are.
+                    </p>
+                </div>
+            </div>
+       </div>
+
+        <!-- Amenities card layout 2 -->
+        <div class="amenities-card" id="Default">
+            <div class="amenities-image">
+                <img src="static\images\imgAmenities\Amenities.jpg" width="400px" height="300" alt="Amenities Image">
+            </div>
+        <div class="amenities-content">
+            <div class="amenities-title">
+                <h3> Complimentary Items </h3>
+            </div>
+            <div class="amenities-details">
+                <p> 
+                    At Ocean Vista, we offer an array of complimentary items to enhance your stay.
+                    Enjoy plush beach towels, sunscreen, shades, and sandals. for suite and deluxe stays you are entitled to cozy bathrobes, and slippers for ultimate comfort along with a free drink on arrival. 
+                    Indulge in our exclusive oceanic-scented sea salt soaps and bath bombs, designed to provide a truly luxurious bathing experience. 
+                    Basic toiletries such as premium shampoos, conditioners, and body lotions are thoughtfully provided, along with a selection of refreshing beverages, 
+                    including coffee, water, soda, and tea. All included items are entirely free to take home. <br> <br>
+                    These high-end, included amenities ensure that your time at Ocean Vista is not just a stay, but a seamless retreat into elegance and relaxation. 
+                    All items are included with your stay others may be available upon request or for purchase like rental equipment includeing umbrellas, beach chairs, surfboards, snorkeling equipment, kayaks, paddleboards, and bicycles.
+                    Ask our concierge for more information and essentials not listed any other special arrangements must be made upon initially booking request or at the reception.
+                </p>
+            </div>
+        </div>
+        </div>
+
+        <!-- Amenities card layout 3 -->
+        <div class="amenities-card" id="coming soon">
+            <div class="amenities-image">
+                <img src="static\images\imgAmenities\Appliances.jpg" width="400px" height="300" alt="Amenities Image">
+            </div>
+        <div class="amenities-content">
+            <div class="amenities-title">
+                <h3> In-room appliances </h3>
+            </div>
+            <div class="amenities-details">
+                <p>
+                    Our rooms at Ocean Vista are equipped with a range of high-end appliances to ensure your comfort and convenience.
+                    Each room features a personal safe to securely store your valuables, along with a fully stocked wet bar/mini bar offering a selection of premium beverages. 
+                    Deluxe and suite guests enjoy spacious walk-in closets for added luxury and comfort. Unwind in a deep bathtub or enjoy the invigorating experience of a waterfall shower. 
+                    For those seeking outdoor relaxation, select rooms feature a private patio with a bonfire, perfect for a serene evening. 
+                    All rooms are also equipped with a state-of-the-art smart TV for your entertainment, ensuring your stay is nothing short of exceptional.
+                </p>
+            </div>
+        </div>
+        </div>
+
+        <!-- Amenities card layout 3 -->
+        <div class="amenities-card" id="coming soon">
+            <div class="amenities-image">
+                <img src="static\images\imgAmenities\Pool.jpg" width="250px" height="250" alt="Amenities Image">
+            </div>
+        <div class="amenities-content">
+            <div class="amenities-title">
+                <h3> Pool </h3>
+            </div>
+            <div class="amenities-details">
+                <p>
+                    Our pool area offers something for everyone. Whether you're looking to swim laps, relax in the deep end, 
+                    or have your little ones enjoy the kiddie pool with the little ones, we’ve got it all. 
+                    For ultimate relaxation, unwind in our jacuzzi, or sip refreshing cocktails from the pool bar. 
+                    <br> <br>
+                    Poolside chairs with umbrellas are available for lounging, and open dining is offered for purchase so you can enjoy a meal while soaking up the sun. 
+                    Diving board equipment and other pool gear can be rented at the local desk in the nearby cabana hut. 
+                    Showers are also available for guests using both the pool and private beach, ensuring a refreshing experience every time you visit.
+                </p>
+            </div>
+        </div>
+        </div>
+
+        <!-- Amenities card layout 3 -->
+        <div class="amenities-card" id="coming soon">
+            <div class="amenities-image">
+                <img src="static\images\imgAmenities\Beach.jpg" width="250px" height="250" alt="Amenities Image">
+            </div>
+        <div class="amenities-content">
+            <div class="amenities-title">
+                <h3> Private Beach </h3>
+            </div>
+            <div class="amenities-details">
+                <p>
+                    Our private beach is a serene, sectioned man-made and custom landscaped cove is designed for the ultimate seaside experience. 
+                    Snorkeling at Ocean Vista is an unforgettable experience, enhanced by our commitment to conservation.
+                    We also have our own state-protected coral reef, carefully nurtured to maintain its natural beauty and biodiversity. 
+                    Guests can explore the vibrant underwater world, discovering colorful marine life amidst the thriving coral ecosystem 
+                    as part of our ongoing conservation efforts in coop with the state marine biology community.
+                    <br> <br>
+                    The Ocean Vista Private beach offers many of the same amenities as our pool, including beach equipment rentals, food and drink services, and poolside-style seating with umbrellas. 
+                    A mini boardwalk adds to the charm, and the beach is regularly maintained by a dedicated team of janitors and cleaners, ensuring a pristine environment for all guests. 
+                </p>
+            </div>
+        </div>
+        </div>
+
+
+        <!-- Amenities card layout 3 -->
+        <div class="amenities-card" id="coming soon">
+            <div class="amenities-image">
+                <img src="static\images\imgAmenities\Shuttle.jpg" width="400px" height="300" alt="Amenities Image">
+            </div>
+        <div class="amenities-content">
+            <div class="amenities-title">
+                <h3> Hotel Transportation </h3>
+            </div>
+            <div class="amenities-details">
+                <p>
+                    Ocean Vista offers convenient shuttle services to a variety of popular locations, including LAX for a $60 fee (to and from). 
+                    Deluxe members enjoy complimentary shuttle access, while standard and suite guests can purchase a $45 shuttle day pass or opt 
+                    for the $120 package that includes unlimited shuttle use throughout their stay. 
+                    Our shuttle can take you to beautiful LA beaches, downtown LA, amusement parks like Universal Studios and Disneyland, 
+                    and more. We also offer special disability-accessible shuttles and can arrange private transportation, including family SUVs, luxury cars, or sports cars. 
+                    Shuttle services are available from 7 AM to 11 PM daily.
+                </p>
+            </div>
+            <div class="amenities-image-row" style="display: flex; gap: 20px;">
+                <img src="static/images/imgAmenities/RentalCar.jpg" width="300px" height="300" alt="Porsche Image">
+                <img src="static/images/imgAmenities/Century.png" width="320px" height="300" alt="Rolls Royce Image">
+                <img src="static/images/imgAmenities/FJCruiser.png" width="300px" height="200" alt="FJ Cruiser Image">
+            </div>
+        </div>
+        </div>
+
+        <!-- Amenities card layout 3 -->
+        <div class="amenities-card" id="coming soon">
+            <div class="amenities-image">
+                <img src="static\images\imgAmenities\Dining.jpg" width="400px" height="300" alt="Amenities Image">
+            </div>
+        <div class="amenities-content">
+            <div class="amenities-title">
+                <h3> Included Buffet </h3>
+            </div>
+            <div class="amenities-details">
+                <p>
+                    At Ocean Vista, we offer a daily continental breakfast buffet and a dinner buffet, both included with your stay. 
+                    Our buffet selections rotate daily, offering a variety of fresh and flavorful dishes, ensuring you never have the same meal twice. 
+                    For added convenience, our poolside bar and restaurants are located by our private beach, offering a relaxed dining experience with stunning views. 
+                    Room service is also available, allowing you to pre-select meals or request dishes on call by contacting the concierge.<br> <br>
+                     You can view our menu online for in-house specialties. 
+                    While the buffets are included as a separate service from our hotel’s staffed restaurant, we also accommodate various dietary preferences to ensure every guest enjoys their meals.
+                </p>
+            </div>
+        </div>
+        </div>
+
+        <!-- Amenities card layout 3 -->
+        <div class="amenities-card" id="coming soon">
+            <div class="amenities-image">
+                <img src="static\images\imgAmenities\RoomService.jpg" width="400px" height="300" alt="Amenities Image">
+            </div>
+        <div class="amenities-content">
+            <div class="amenities-title">
+                <h3> Offered Services </h3>
+            </div>
+            <div class="amenities-details">
+                <ul>
+                    <li>
+                        <h4>24-hour concierge</h4>
+                        Available around the clock for reservations, directions, and guest support.
+                    </li><br>
+                    <li>
+                        <h4>On-site laundry and dry cleaning</h4>
+                        Convenient same-day service available for all guests.
+                    </li><br>
+                    <li>
+                        <h4>Bellhop/luggage delivery</h4>
+                        Assistance with transporting luggage to and from your room.
+                    </li><br>
+                    <li>
+                        <h4>Staffed spa</h4>
+                        Full-service spa with licensed therapists and premium treatments.
+                    </li><br>
+                    <li>
+                        <h4>Fitness trainer classes</h4>
+                        Group and personal fitness sessions led by certified instructors.
+                    </li><br>
+                    <li>
+                        <h4>House Keeping</h4>
+                        Daily housekeeping arrangements with do not disturb options.
+                    </li><br>
+                    <li>
+                        <h4>Complimentary valet</h4>
+                        Free valet parking included with your stay.
+                    </li><br>
+                    <li>
+                        <h4>Wake-up calls</h4>
+                        Scheduled wake-up calls to start your day on time.
+                    </li><br>
+                    <li>
+                        <h4>Pet care services</h4>
+                        Pet sitting, walking, and grooming available upon request.
+                    </li><br>
+                    <li>
+                        <h4>Babysitting/daycare services</h4>
+                        Trusted childcare available for daytime or evening needs.
+                    </li>
+                </ul>
+            </div>
+        </div>
+        </div>
+
+</div>
+{% endblock %}

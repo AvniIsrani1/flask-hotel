@@ -11,7 +11,7 @@
     width:100%;
 }
 
-.aboutPage-title {
+.amenitiesPage-title {
     position: relative;
     font-size: 28px;
     border: none;
@@ -27,7 +27,7 @@
 }
 
 /* Events section title */
-.aboutInfo-title {
+.amenities-title {
     font-size: 28px;
     border: none;
     margin: 20px auto;
@@ -41,13 +41,13 @@
 }
 
 
-.aboutInfo-section .aboutInfo-title {
+.amenities-section .amenities-title {
     font-family: 'Georgia', serif;
     font-weight: normal;
 }
 
 /* Event card styles */
-.aboutInfo-card {
+.amenities-card {
     border: none;
     margin: 0 90px 30px 90px;
     display: flex;
@@ -58,39 +58,39 @@
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-.aboutInfo-card:hover {
+.amenities-card:hover {
     transform: translateY(-5px);
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
 }
 
 /* Image section styles */
-.aboutInfo-image {
+.amenities-image {
     border-right: none;
     width: 35%;
     padding: 0;
     overflow: hidden;
 }
 
-.aboutInfo-image img {
+.amenities-image img {
     width: 100%;
     height: 100%;
     object-fit: cover;
     transition: transform 0.5s ease;
 }
 
-.aboutInfo-card:hover .aboutInfo-image img {
+.amenities-card:hover .amenities-image img {
     transform: scale(1.05);
 }
 
 /* Event content styles */
-.aboutInfo-content {
+.amenities-content {
     width: 65%;
     padding: 25px;
     display: flex;
     flex-direction: column;
 }
 
-.aboutInfo-content .aboutInfo-title {
+.amenities-content .amenities-title {
     width: 100%;
     background-color: transparent;
     color: #00315c;
@@ -100,13 +100,13 @@
     padding: 0;
 }
 
-.aboutInfo-content .aboutInfo-title h3 {
+.amenities-content .amenities-title h3 {
     font-size: 24px;
     font-weight: normal;
     color: #00315c;
 }
 
-.aboutInfo-details {
+.amenities-details {
     border: none;
     padding: 20px;
     font-size: 16px;
@@ -118,21 +118,21 @@
 
 /* Responsive adjustments */
 @media (max-width: 900px) {
-    .aboutInfo-card {
+    .amenities-card {
         flex-direction: column;
         margin: 0 20px 30px 20px;
     }
     
-    .aboutInfo-image {
+    .amenities-image {
         width: 100%;
         height: 250px;
     }
     
-    .aboutInfo-content {
+    .amenities-content {
         width: 100%;
     }
     
-    .aboutInfo-card-spacial {
+    .amenities-card-spacial {
         flex-direction: column;
     }
 }

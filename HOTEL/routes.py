@@ -996,10 +996,24 @@ def about():
         Template: The about page template.
 
     Note:
-        Author: Devansh Sharma
+        Author: Eiji Cortez
         Modified: April 17, 2025
     """
     return render_template('about.html')
+
+@bp_info.route("/amenities")
+def amenities():
+    """
+    Render the amenities page.
+    
+    Returns:
+        Template: The amenities page template.
+
+    Note:
+        Author: Eiji Cortez
+        Modified: April 29, 2025
+    """
+    return render_template('amenities.html')
 
 @bp_info.route("/faq")
 def faq():
