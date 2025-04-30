@@ -1,4 +1,4 @@
-from sqlalchemy import DateTime, distinct, Computed, asc, desc, func, literal
+from sqlalchemy import DateTime, distinct, Computed, asc, desc, func, literal, or_, and_
 from datetime import datetime
 from .Enums import YesNo
 from ..db import db
@@ -103,10 +103,10 @@ class Booking(db.Model):
             None
         """
         duration = (check_out - check_in).days + 1
-        total_price = fees*duration #NEED TO CHECK THIS LOGIC!!
+        total_price = fees*duration*1.15 + 30 #NEED TO CHECK THIS LOGIC!!
+        print('total',total_price)
         booking = cls(uid=uid, rid=rid, check_in=check_in, check_out=check_out, fees=total_price, special_requests=special_requests, name=name, email=email, phone=phone, num_guests=num_guests)
-        db.session.add(booking)
-        db.session.commit()
+        return booking
 
     @classmethod
     def get_booking(cls, id):
@@ -194,19 +194,51 @@ class Booking(db.Model):
 
 
     @classmethod
-    def get_booking_stats(cls):
+    def get_booking_stats(cls, location=None, startdate=None, enddate=None):
+        from .Room import Room
+        from .Hotel import Hotel
         today = datetime.now()
-        completed = cls.query.filter(cls.cancel_date.is_(None), cls.check_out <= today)
+        completed = cls.query.filter(cls.cancel_date.is_(None)).join(Room).join(Hotel)
+        if location:
+            completed = completed.filter(Hotel.location == location)
+        if startdate and enddate: #completed refers to bookings fully completed within the startdate and enddate
+            print('time period',startdate, enddate)
+            completed = completed.filter(cls.check_in >= startdate, cls.check_out <= enddate)
+        else:
+            completed = completed.filter(cls.check_out <= today)
         completed = completed.with_entities(literal('Completed').label('status'), func.sum(cls.fees).label('total_fees'), func.count(distinct(cls.id)).label('total_bookings')).first()
-        pending = cls.query.filter(cls.cancel_date.is_(None), cls.check_out > today)
+
+        pending = cls.query.filter(cls.cancel_date.is_(None)).join(Room).join(Hotel)
+        if location:
+            pending = pending.filter(Hotel.location == location)
+        if startdate and enddate: #pending refers to future bookings (after enddate)
+            pending = pending.filter(
+                or_(
+                    cls.check_out > enddate
+                )
+            )
+        else:
+            pending = pending.filter(cls.check_out > today)
         pending = pending.with_entities(literal('Pending').label('status'), func.sum(cls.fees).label('total_fees'), func.count(distinct(cls.id)).label('total_bookings')).first()
         return [completed, pending]
     
     @classmethod
-    def get_room_popularity_stats(cls):
+    def get_room_popularity_stats(cls, location=None, startdate=None, enddate=None):
         from .Room import Room
-        popularity = cls.query.filter(cls.cancel_date.is_(None)).join(Room)
+        from .Hotel import Hotel
+        popularity = cls.query.filter(cls.cancel_date.is_(None)).join(Room).join(Hotel)
+        if location:
+            popularity = popularity.filter(Hotel.location==location)
+        if startdate and enddate: #check in during time period, check out during time period, or check in and out during time period
+            popularity = popularity.filter(
+                    or_(
+                        and_(cls.check_in >= startdate, cls.check_in <= enddate),
+                        and_(cls.check_out >= startdate, cls.check_out <= enddate),
+                        and_(cls.check_in <= startdate, cls.check_out >= enddate)
+                    )
+            )         
         popularity = popularity.group_by(Room.hid, Room.room_type, Room.number_beds, Room.rate, Room.balcony, Room.city_view, Room.ocean_view, 
                                      Room.smoking, Room.max_guests, Room.wheelchair_accessible)
-        popularity = popularity.with_entities(func.min(cls.rid).label('rid'), func.count(cls.rid).label('popularity')).order_by(desc('popularity')).limit(10)
+        popularity = popularity.with_entities(func.min(cls.rid).label('rid'), func.count(cls.rid).label('popularity')).order_by(desc('popularity')).all()
+        print(popularity)
         return popularity

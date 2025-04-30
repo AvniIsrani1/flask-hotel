@@ -1,17 +1,26 @@
-{% macro task_table() %}
+{% macro task_table(title, current_tasks, assignable_staff, Status, SType, condition) %}
 <section>
-    <p class="subtitle">Current Tasks</p>
+    <p class="subtitle">{{title}}</p>
     <form id="current_tasks" class="tasks" method="post"  action="{{ url_for('staff.tasks') }}">
         <table>
+        <th>Issue Time</th>
+        <th>Issue Date</th>
         <th>Action Type</th>
         <th>Request Details</th>
-        <th>Time</th>
-        <th>Date</th>
         <th>Assigned To</th>
         <th>Status</th>
         {% for current in current_tasks %}
-        {% if current.status != Status.C %}
+        {% if (condition == 'default' and current.status != Status.C) or 
+              (condition == 'completed' and current.status == Status.C) or
+              (condition == 'all') or
+              (condition == 'staff_unassigned' and current.staff_in_charge == None) or
+              (condition == 'staff_pending' and current.status != Status.C) or
+              (condition == 'mine_pending' and current.staff_in_charge == session.get("user_id") and current.status != Status.C) or
+              (condition == 'mine_complete' and current.staff_in_charge == session.get("user_id") and current.status == Status.C)
+        %}
         <tr>
+            <td>{{current.issued.strftime("%H:%M")}}</td>
+            <td>{{current.issued.strftime("%m/%d/%Y")}}</td>
             <td>{{current.stype.value}}</td>
             <td>
                 {% if current.stype == SType.I %}
@@ -54,19 +63,19 @@
                 {% elif current.stype == SType.H %}
                     {{current.housedatetime.strftime("%H:%M, %m/%d/%Y")}}
                 {% elif current.stype == SType.T %}
+                    <p>Trash Cleanup</p>
                 {% elif current.stype == SType.C %}
+                    <p>{{current.calldatetime.strftime("%H:%M, %m/%d/%Y")}}</p>
                 {% elif current.stype == SType.D %}
-                    {{ current.restaurant }}
+                    <p>{{ current.restaurant }}</p>
                 {% elif current.stype == SType.A %}
-                    {{ current.assistance }}
+                    <p>{{ current.assistance.value }}</p>
                 {% elif current.stype == SType.O %}
-                    {{ current.other }}
+                    <p>{{ current.other }}</p>
                 {% endif %}
             </td>
-            <td>{{current.issued.strftime("%H:%M")}}</td>
-            <td>{{current.issued.strftime("%m/%d/%Y")}}</td>
             <td>
-                <select name="staffList_{{current.id}}" required>
+                <select name="staffList_{{current.id}}">
                     <option value="" selected disabled>Assignable Staff</option>
                     {% for s in assignable_staff %}
                     <option value="{{s.id}}" {% if current.staff_in_charge==s.id %} selected {% endif %}>{{s.name}}</option>
@@ -74,7 +83,7 @@
                 </select>  
             </td>
             <td>
-                <select name="statusType_{{current.id}}" required>
+                <select name="statusType_{{current.id}}">
                     <option value="" selected disabled>Current Status</option>
                     {% for s in Status %}
                     <option value="{{s.value}}" {% if current.status==s %} selected {% endif %}>{{s.value}}</option>
@@ -85,7 +94,9 @@
         {% endif %}
         {% endfor %}
         </table>
-        <input type="submit" value="Save Changes">
+        <div class="submit">
+            <input type="submit" value="Save Changes" class="sub">
+        </div>
     </form>
 </section>
 

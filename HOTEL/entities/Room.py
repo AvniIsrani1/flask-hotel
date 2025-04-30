@@ -47,7 +47,7 @@ class Room(db.Model):
         Returns:
             Room | None: The Room object if found, else None.
         """
-        return cls.query.filter(id==id).first()
+        return cls.query.filter(cls.id==id).first()
     
     def get_room_number(self):
         """

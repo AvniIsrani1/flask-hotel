@@ -1,6 +1,6 @@
 from ..db import db
-from sqlalchemy import DateTime, distinct, Computed, func
-from datetime import datetime, timedelta
+from sqlalchemy import DateTime, distinct, Computed, func, asc, case, or_, and_
+from datetime import datetime, timedelta, date
 from .Enums import YesNo, Assistance, SType, Status
 
 
@@ -182,6 +182,15 @@ class Service(db.Model):
             Service: A new service request object for other services.
         """
         return cls(bid=bid, issued=datetime.now(), stype=SType.O, other=other)
+    
+    @classmethod
+    def get_active_tasks(cls):
+        from .Booking import Booking
+        today = datetime.now()
+        tasks = cls.query.join(Booking).filter(Booking.check_in<=today, Booking.check_out>today)
+        sorting = case((cls.stype==SType.C, cls.calldatetime), else_=cls.issued)
+        tasks = tasks.order_by(asc(sorting), asc(cls.issued), asc(cls.bid), asc(cls.stype)).all()
+        return tasks
 
     def update_status(self, new_status):
         """
@@ -201,16 +210,50 @@ class Service(db.Model):
         return False
     
     @classmethod
-    def get_service_stats(cls):
+    def get_service_stats(cls, location=None, startdate=None, enddate=None):
         # remove_cols = ["id","staff_in_charge", "modified","status"]
         # cols = [col for col in cls.__table__.columns if col.name not in remove_cols]
         # stats = cls.query.group_by(*cols) #group by to remove duplicates from recurrent wake up calls
-        stats = cls.query.group_by(cls.stype)
+        from .Booking import Booking
+        from .Room import Room
+        from .Hotel import Hotel
+        stats = cls.query.join(Booking).join(Room).join(Hotel)
+        if location:
+            stats = stats.filter(Hotel.location == location)
+        if startdate and enddate: 
+            stats = stats.filter(
+                or_(
+                    and_(cls.issued>=startdate, cls.modified.isnot(None), cls.modified <= enddate),
+                    and_(cls.issued>=startdate, cls.modified.is_(None), cls.issued <= enddate),
+                    and_(cls.calldatetime>=startdate, cls.calldatetime<=enddate),
+                    and_(cls.housedatetime>=startdate, cls.housedatetime<=enddate)
+                ))
+        stats = stats.group_by(cls.stype)
         stats = stats.with_entities(cls.stype, func.count(distinct(cls.id)).label('count'))
         return stats.all()
     
     @classmethod
-    def get_staff_insights(cls):
-        stats = cls.query.group_by(cls.staff_in_charge, cls.status)
+    def get_staff_insights(cls, location=None, startdate=None, enddate=None, assignable_staff=None):
+        # stats = cls.query.filter(cls.issued>=startdate, cls.modified<=enddate).group_by(cls.staff_in_charge, cls.status)
+        from .Booking import Booking
+        from .Room import Room
+        from .Hotel import Hotel
+        stats = cls.query.join(Booking).join(Room).join(Hotel)
+        if location:
+            stats = stats.filter(Hotel.location == location)
+        if startdate and enddate:
+            stats = stats.filter(
+                or_(
+                    and_(cls.issued>=startdate, cls.modified.isnot(None), cls.modified <= enddate),
+                    and_(cls.issued>=startdate, cls.modified.is_(None), cls.issued <= enddate),
+                    and_(cls.calldatetime>=startdate, cls.calldatetime<=enddate),
+                    and_(cls.housedatetime>=startdate, cls.housedatetime<=enddate)
+                )
+            )
+        if assignable_staff and len(assignable_staff) > 0:
+            staff_ids = [staff.id for staff in assignable_staff]
+            print('staff',staff_ids)
+            stats = stats.filter(cls.staff_in_charge.in_(staff_ids))
+        stats = stats.group_by(cls.staff_in_charge, cls.status)
         stats = stats.with_entities(cls.staff_in_charge, cls.status, func.count(distinct(cls.id).label('count')))
         return stats.all()

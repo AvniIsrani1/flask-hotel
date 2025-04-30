@@ -7,19 +7,45 @@
 <link rel="stylesheet" href="../static/css/reports.css" />
 {% endblock %}
 
+
 {% block content %}
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+  <div class="flash-message {{ messages[-1][0] }}">
+    {{ messages[-1][1] }}
+  </div>
+{% endif %}
+{% endwith %}
+
 <div class="content">
     <p class="title">Staff Reports</p>
-    <form>
-        <div class="selection">
-            <label for="start">Start Period: </label>
-            <input type="date" id="start" name="start">
-            <label for="end">End Period:</label>
-            <input type="date" id="end" name="end">
-            <input type="submit">
-            <div id="staff-chart"></div>
+    <form method="get" action="{{url_for('staff.staff_reports')}}">
+      <div class="selection">
+        <div class="inside">
+          <label for="location_type">Location: </label>
+          <select name="location_type" class="inside location_type" title="Select a Location">
+              <option value="" disabled {% if not request.args.get('location_type') %} selected {% endif %}>Select Location</option>
+                {% if locations %}
+                  {% for loc in locations %}
+                    <option value="{{loc[0].value}}" {% if request.args.get('location_type')==loc[0].value %} selected {% endif %}>{{ loc[0].value }}</option>
+                  {% endfor %}
+                {% endif %}
+          </select>
         </div>
+        <div class="inside">
+          <label for="startdate">Start Period: </label>
+          <input type="date" id="startdate" name="startdate" value="{{ request.args.get('startdate', '') }}" required>
+        </div>
+        <div class="inside">
+          <label for="enddate">End Period:</label>
+          <input type="date" id="enddate" name="enddate" value="{{ request.args.get('enddate', '') }}" required>
+        </div>
+        <input type="submit" class="sub">
+      </div>
     </form>
+    <div id="staff-chart" class="figure"></div>
+
     
     <script>
         var staff_graph = JSON.parse('{{ staff_graph | safe }}');

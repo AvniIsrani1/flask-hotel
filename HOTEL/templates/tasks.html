@@ -17,7 +17,24 @@
 {% endwith %}
 
 <div class="content">
-    {{ task_table() }}
+  <div class="main-title">
+    <p class="overall">Tasks</p>
+    <p class="description">This page displays all assigned tasks for staff members, including service requests, room duties, and booking-related actions. Use this page to track what needs to be done, who is responsible, and when tasks are due. Be sure to check this page regularly for updates and new assignments.</p>
+  </div>
+  <div class="active">
+    <p class="title">**MY ACTIVITY**</p>
+    {{ task_table("My Pending Tasks", current_tasks, assignable_staff, Status, SType, 'mine_pending') }}
+    {{ task_table("My Completed Tasks", current_tasks, assignable_staff, Status, SType, 'mine_complete') }}
+  </div>
+
+  {% if session.get('staff_position') == 'Manager' %}
+  <hr>
+  <div class="active staff">
+    <p class="title">**STAFF ACTIVITY**</p>
+  {{ task_table("Unassigned Tasks", current_tasks, assignable_staff, Status, SType, 'staff_unassigned') }}
+  {{ task_table("Incomplete Tasks", current_tasks, assignable_staff, Status, SType, 'staff_pending') }}
+  {% endif %}
+  </div>
 
 
 </div>

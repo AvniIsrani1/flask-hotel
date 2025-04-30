@@ -7,17 +7,56 @@
 <link rel="stylesheet" href="../static/css/reports.css" />
 {% endblock %}
 
+
+
 {% block content %}
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+  <div class="flash-message {{ messages[-1][0] }}">
+    {{ messages[-1][1] }}
+  </div>
+{% endif %}
+{% endwith %}
+
 <div class="content">
     <p class="title">Reports</p>
-    <div id="pie-chart"></div>
-    <div id="completed-booking-chart"></div>
-    <div id="pending-booking-chart"></div>
-    <div id="room-popularity-chart"></div>
+    <form method="get" action="{{url_for('staff.reports')}}">
+        <div class="selection">
+          <div class="inside">
+            <label for="location_type">Location: </label>
+            <select name="location_type" class="inside location_type" title="Select a Location">
+                <option value="" disabled {% if not request.args.get('location_type') %} selected {% endif %}>Select Location</option>
+                  {% if locations %}
+                    {% for loc in locations %}
+                      <option value="{{loc[0].value}}" {% if request.args.get('location_type')==loc[0].value %} selected {% endif %}>{{ loc[0].value }}</option>
+                    {% endfor %}
+                  {% endif %}
+            </select>
+          </div>
+          <div class="inside">
+            <label for="startdate">Start Period: </label>
+            <input type="date" id="startdate" name="startdate" value="{{ request.args.get('startdate', '') }}" required>
+          </div>
+          <div class="inside">
+            <label for="enddate">End Period:</label>
+            <input type="date" id="enddate" name="enddate" value="{{ request.args.get('enddate', '') }}" required>
+          </div>
+            <input type="submit" class="sub">
+        </div>
+    </form>
+    <div class="figures">
+      <div id="completed-booking-chart" class="figure"></div>
+      <div id="pending-booking-chart" class="figure"></div>
+      <div id="room-popularity-chart" class="figure"></div>
+      <div id="services-pie-chart" class="figure"></div>
+
+    </div>
+
     
     <script>
         var service_graph = JSON.parse('{{ service_graph | safe }}');
-        Plotly.newPlot('pie-chart', service_graph.data, service_graph.layout);
+        Plotly.newPlot('services-pie-chart', service_graph.data, service_graph.layout);
 
         var completed_booking_graph = JSON.parse('{{ completed_booking_graph | safe }}');
         Plotly.newPlot('completed-booking-chart', completed_booking_graph.data, completed_booking_graph.layout);
@@ -27,6 +66,8 @@
 
         var room_popularity_graph = JSON.parse('{{ room_popularity_graph | safe }}');
         Plotly.newPlot('room-popularity-chart', room_popularity_graph.data, room_popularity_graph.layout);
+
+
     </script>
 </div>
 

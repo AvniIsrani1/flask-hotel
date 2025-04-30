@@ -618,20 +618,13 @@ def payment_routes(email_controller):
                 # Create a new booking record
                 new_bookings = []
                 for room in rooms_to_book:
+                    print('inside of loop', room.rate)
                     new_bookings.append(
-                        Booking(
-                            uid=user_id,
-                            rid=room.id, 
-                            check_in=check_in_date,
-                            check_out=check_out_date,
-                            fees=Room.get_room(id==room.id).rate,
-                            special_requests=requests,
-                            name=name, 
-                            email=email,
-                            phone=phone, 
-                            num_guests=guests
+                        Booking.add_booking(uid=user_id, rid=room.id, check_in=check_in_date, check_out=check_out_date,
+                            fees=room.rate, special_requests=requests, name=name, email=email, phone=phone, num_guests=guests
                         )
                     )
+                print('booking rooms', new_bookings)
                 db.session.add_all(new_bookings)
                 db.session.commit()
                 print("sending email...")
@@ -799,7 +792,7 @@ def tasks():
 
                         print(staff_id, status)
                         service.staff_in_charge = staff_id
-                        service.status = Status(status)
+                        service.update_status(Status(status))
             db.session.commit()
             flash("Tasks updated successfully","success")
         except Exception as e:
@@ -807,9 +800,8 @@ def tasks():
             print(f"Error updating tasks: {str(e)}")
             flash("Unable to update tasks. Please try again later.","error")
     today = date.today()
-    current_tasks = Service.query.filter(cast(Service.issued, Date) >= today).order_by(
-            asc(Service.issued), asc(Service.bid), asc(Service.stype)).all()
-    print(current_tasks)
+    current_tasks = Service.get_active_tasks()
+    print('Cur',current_tasks)
     assignable_staff = Staff.query.filter(or_(Staff.supervisor_id==staff.id, Staff.id==staff.id)).all()
     
     return render_template('tasks.html', current_tasks=current_tasks, assignable_staff=assignable_staff, Status=Status, SType=SType)
@@ -817,17 +809,108 @@ def tasks():
 
 @bp_staff.route("/reports", methods=["GET", "POST"])
 def reports():
-    service_graph = ReportGenerator.get_service_stats()
-    completed_booking_graph, pending_booking_graph = ReportGenerator.get_booking_stats()
-    room_popularity_graph = ReportGenerator.get_room_popularity_stats()
-    return render_template('reports.html', service_graph=service_graph, completed_booking_graph=completed_booking_graph,
+    """
+    Display booking-related reports for the manager to view.
+    
+    Returns:
+        Template: The reports template with all booking-related views.
+
+    Note: 
+        Author: Avni Israni
+        Created: April 28, 2025
+        Modified: April 29, 2025
+    """
+    if "user_id" not in session:
+        flash("Please log in first.", "error")
+        return redirect(url_for("auth.login"))
+    staff = Staff.get_user(session["user_id"])
+    if not staff:
+        flash("You don't have permission to view this resource.", "error")
+        return redirect(url_for("info.home"))
+    
+
+    locations = db.session.query(distinct(Hotel.location)).all()
+    location  = request.args.get('location_type')
+
+    if location:
+        location = Locations(location)
+
+    service_graph = ReportGenerator.get_service_stats(location)
+    completed_booking_graph, pending_booking_graph = ReportGenerator.get_booking_stats(location)
+    room_popularity_graph = ReportGenerator.get_room_popularity_stats(location)
+
+    startdate = request.args.get('startdate')
+    enddate = request.args.get('enddate')
+
+    if startdate and enddate:
+        print("Recieved startdate and enddate")
+        try:
+            startdate = datetime.strptime(startdate, '%Y-%m-%d')
+            enddate = datetime.strptime(enddate, '%Y-%m-%d')
+            enddate = enddate.replace(hour=23, minute=59, second=59)
+            if enddate < startdate:
+                flash("Please select a valid date range", 'error')
+                return render_template('reports.html', locations=locations, service_graph=service_graph, completed_booking_graph=completed_booking_graph,
+                                    pending_booking_graph=pending_booking_graph, room_popularity_graph=room_popularity_graph)
+            print("Adding startdate and enddate to report graphs")
+            service_graph = ReportGenerator.get_service_stats(location, startdate, enddate)
+            completed_booking_graph, pending_booking_graph = ReportGenerator.get_booking_stats(location, startdate, enddate)
+            room_popularity_graph = ReportGenerator.get_room_popularity_stats(location, startdate, enddate)
+        except Exception as e:
+            print(f'Message: {e}')
+            flash("Invalid date format", "error")
+    return render_template('reports.html', locations=locations, service_graph=service_graph, completed_booking_graph=completed_booking_graph,
                            pending_booking_graph=pending_booking_graph, room_popularity_graph=room_popularity_graph)
 
 
 @bp_staff.route("/staff-reports", methods=["GET", "POST"])
 def staff_reports():
-    staff_graph = ReportGenerator.get_staff_insights()
-    return render_template('reports_staff.html', staff_graph=staff_graph)
+    """
+    Display staff-related reports for the manager to view.
+    
+    Returns:
+        Template: The staff-reports template with all staff-related views.
+
+    Note: 
+        Author: Avni Israni
+        Created: April 28, 2025
+        Modified: April 29, 2025
+    """
+    if "user_id" not in session:
+        flash("Please log in first.", "error")
+        return redirect(url_for("auth.login"))
+    staff = Staff.get_user(session["user_id"])
+    if not staff:
+        flash("You don't have permission to view this resource.", "error")
+        return redirect(url_for("info.home"))
+    assignable_staff = Staff.query.filter(or_(Staff.supervisor_id==staff.id, Staff.id==staff.id)).all()
+
+    locations = db.session.query(distinct(Hotel.location)).all()
+    location  = request.args.get('location_type')
+
+    if location:
+        location = Locations(location)
+
+    startdate = request.args.get('startdate')
+    enddate = request.args.get('enddate')
+
+    if startdate and enddate:
+        try:
+            startdate = datetime.strptime(startdate, '%Y-%m-%d')
+            enddate = datetime.strptime(enddate, '%Y-%m-%d')
+            enddate = enddate.replace(hour=23, minute=59, second=59)
+            if enddate < startdate:
+                flash("Please select a valid date range", 'error')
+                staff_graph = ReportGenerator.get_staff_insights(location, None, None, assignable_staff)
+                return render_template('reports_staff.html', staff_graph=staff_graph, startdate=None, enddate=None)
+            staff_graph = ReportGenerator.get_staff_insights(location, startdate, enddate, assignable_staff)
+            return render_template('reports_staff.html', locations=locations, staff_graph=staff_graph, startdate=None, enddate=None)
+        except ValueError:
+            flash("Invalid date format", "error")
+            staff_graph = ReportGenerator.get_staff_insights(location, None, None, assignable_staff)
+    else:
+        staff_graph = ReportGenerator.get_staff_insights(location, None, None, assignable_staff)
+    return render_template('reports_staff.html', locations=locations, staff_graph=staff_graph, startdate=startdate, enddate=enddate)
 
 
 
