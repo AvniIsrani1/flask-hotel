@@ -39,7 +39,7 @@ function sendMessage() {
         // Append AI response to chat
         let botMessage = document.createElement("div");
         botMessage.className = "bot-message";
-        botMessage.innerText = "AI: " + data.response;
+        botMessage.innerText = "Ocean Vista: " + data.response;
         chatBox.appendChild(botMessage);
 
         // Scroll to bottom

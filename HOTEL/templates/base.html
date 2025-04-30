@@ -23,7 +23,7 @@
     </div>
     <nav class="base-links">
       <a href="{{url_for('search.search')}}"><i class="fa-solid fa-hotel"></i><p>Reserve</p></a>
-      <a href=""><i class="fa-solid fa-bell-concierge"></i><p>Amenities</p></a>
+      <a href="{{url_for('info.amenities')}}"></i><p>Amenities</p></a>
       <a href="{{url_for('info.events')}}"><i class="fa-regular fa-calendar-days"></i><p>Events</p></a>
       <a href="{{url_for('info.menu')}}"><i class="fa-solid fa-utensils"></i><p>Dining</p></a>
       {% if session.get('user_name') %}
@@ -86,7 +86,7 @@
       <div class="inner">
         <a href="{{ url_for('info.home') }}" class="indent">Home</a>
         <a href="{{url_for('search.search')}}" class="indent">Reserve</a>
-        <a href="" class="indent">Amenities</a>
+        <a href="{{url_for('info.amenities')}}" class="indent">Amenities</a>
         <a href="{{url_for('info.events')}}" class="indent">Events</a>
         <a href="{{url_for('info.menu')}}" class="indent">Dining</a>
         <a href="{{url_for('info.faq')}}" class="indent">FAQs</a>
@@ -112,7 +112,7 @@
 
       <div class="form-popup" id="myForm">
           <div class="form-container">
-              <h1>OV Chatbot</h1>
+              <!--<h1>Pookie Monkey</h1> -->
 
               <div class="chat-box" id="chatBox">
                   <!-- Messages will be appended here -->
