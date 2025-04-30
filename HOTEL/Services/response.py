@@ -30,7 +30,7 @@ def format_response(answer, question):
     if "description:" in answer.lower():
         try:
             description = answer.split("description:")[1].strip()
-            return f"Ocean Vista: {description}"
+            return f"{description}"
         except:
             # If parsing fails, continue to other methods
             pass
@@ -39,17 +39,16 @@ def format_response(answer, question):
     match = re.search(r'.*?:(.+)', answer)
     if match:
         description = match.group(1).strip()
-        return f"Ocean Vista: {description}"
+        return f"{description}"
         
-    # Third, try to extract from CSV row format (like in the original BugginFace.py)
     parts = answer.split(',')
     if len(parts) >= 3:
         # Assume last part is description
         description = parts[2].strip()
-        return f"Ocean Vista: {description}"
+        return f"{description}"
     
     # If all extraction methods fail, just return the answer with branding
-    return f"Ocean Vista: {answer}"
+    return f"{answer}"
 
 ''' #not functional at the moment
 def is_greeting(text): 

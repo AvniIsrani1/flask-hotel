@@ -1,5 +1,6 @@
 ﻿category,sub_category,description
-greeting, hello hi hey,Welcome to the Ocean Vista Hotel in Malibu! We are delighted to have you here. Our staff is dedicated to making your stay as enjoyable as possible. Please ask me any questions you may have regarding Ocean Vista.
+greeting, Hello, Hi monkey!
+conversation, greeting, Welcome to the Ocean Vista Hotel in Malibu! We are delighted to have you here. Our staff is dedicated to making your stay as enjoyable as possible. Please ask me any questions you may have regarding Ocean Vista.
 conversation, how are you, I am doing great and I hope you are as well! How can I assist you today?
 rooms,suite,Our luxury suites feature ocean views you can experience from your own private balcony o king-size bed. We have 50 suites available occupying the Malibu location.
 rooms,standard,Our comfortable standard rooms include have all that you need to enjoy your stay in Malibu. There are currently 200 standard rooms in total at the Malibu location.
@@ -38,7 +39,7 @@ checkin,mobile,Mobile check-in is available through our app 24 hours before arri
 pets,policy,We welcome pets under 40 pounds. A $75 non-refundable pet fee applies per stay by request arrangements prior either via email or over the phone.
 pets,amenities, Pet appliances such bowls/bags/treats are available upon request for rooms.
 activities,local,Surfing or ocean kayaking lessons are available at the beach front right outside the hotel. Our concierge can arrange lessons for all skill levels. Additionally you can take a ride up to Paradise Cove is another popular local beach spot for swimming and sunbathing.
-activities,downtown,Explore the Galleria shopping center in downtown Los Angeles. There is also the famous Hollywood walk of fame. Or check out Santa Monica pier and ride the roller coaster right aboce the ocean waves.
+activities,downtown,Explore the Galleria shopping center in downtown Los Angeles. There is also the famous Hollywood walk of fame. Or check out Santa Monica pier and ride the roller coaster right above the ocean waves.
 activities,hiking,The Santa Monica Mountains offer beautiful hiking trails with ocean views. Trail maps available at the concierge desk.
 activities,biking,Rent bicycles from our activity center to explore the Malibu coastline. $25 for 2 hours and $40 for a full day.
 activities,yoga,Complimentary beach yoga is offered daily at 7AM. Meet in the lobby 15 minutes before class.
@@ -52,6 +53,7 @@ shopping,farmers,The Malibu Farmers Market is held every Sunday from 10AM to 3PM
 food,local,Nobu Malibu offers high-quality Japanese cuisine with ocean views. You can also find good grub at Neptune's Net for great quality and locally sourced seafood. Or check out the state famous In-N-Out Burger is available for quick meals.
 food,seafood,Malibu Seafood Fresh Fish Market & Patio Cafe serves fresh-caught seafood in a casual setting with ocean views.
 food,vegetarian,The Real Coconut Kitchen offers plant-based and gluten-free options just 5 minutes from the hotel.
+food,taste, The local food you can find are alot of hispanic influenced baja style cuisine along with your typical American burgers and fries and of course fresh seafood sourced from the Pacific Ocean.
 art,museum,Visit the Getty Villa for art and culture. Free admission but reservations are required.
 car,museum,The Petersen Automotive Museum in Los Angeles displays extraordinary cars and automotive history. Approximately 50 minutes from the hotel.
 amusement,disneyland,Disneyland and California Adventure are located in Anaheim.
