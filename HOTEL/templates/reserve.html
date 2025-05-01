@@ -141,7 +141,7 @@
     <a href="{{url_for('bookings.bookings')}}" class="submit-room-button">Cancel and Return to Bookings</a>
 </div>
 {% else %}
-<form method="get" action="{{url_for('search.search')}}" id='returned-room' class="returned-room">
+<form method="get" action="{{url_for('details.search')}}" id='returned-room' class="returned-room">
     <input type="hidden" name="location_type" id="returned-location" value="{{ request.args.get('location_type', '')}}">
     <input type="hidden" name="startdate" id="returned-startdate" value="{{ request.args.get('startdate', '') }}">
     <input type="hidden" name="enddate" id="returned-enddate" value="{{ request.args.get('enddate', '') }}">

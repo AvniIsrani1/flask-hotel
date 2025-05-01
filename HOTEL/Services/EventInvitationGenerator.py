@@ -27,7 +27,7 @@ def download_invitation(event_id):
     # Check if user is logged in
     if "user_id" not in session:
         flash("Please log in first.", "error")
-        return redirect(url_for("auth.login"))
+        return redirect(url_for("userinfo.login"))
     
     # Get user information
     from ..entities import User

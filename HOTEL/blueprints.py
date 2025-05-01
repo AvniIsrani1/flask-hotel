@@ -1,4 +1,7 @@
-from .routes import bp_profile, bp_reserve, bp_request_services, bp_search, bp_staff, bp_info, booking_routes, auth_routes, payment_routes, chat_routes
+import email
+from HOTEL.entities import Booking
+from .routes import chat_routes
+from .views import StaffRoutes, BookingRoutes, InfoRoutes, UserRoutes, DetailRoutes, PaymentRoutes
 from .event_routes import get_events_blueprint
 
 """
@@ -11,21 +14,12 @@ Note:
     Modified: April 28, 2025
 """
 def register_blueprints(app, email_controller):
-    app.register_blueprint(bp_profile)
-
-    bp_bookings = booking_routes(email_controller)
-    app.register_blueprint(bp_bookings)
-
-    app.register_blueprint(bp_reserve)
-    app.register_blueprint(bp_request_services)
-    app.register_blueprint(bp_search)
-    app.register_blueprint(bp_staff)
-
-    bp_auth = auth_routes(email_controller)
-    app.register_blueprint(bp_auth)
-
-    bp_payment = payment_routes(email_controller)
-    app.register_blueprint(bp_payment)
+    DetailRoutes(app)
+    UserRoutes(app, email_controller)
+    InfoRoutes(app)
+    BookingRoutes(app, email_controller)
+    StaffRoutes(app)
+    PaymentRoutes(app, email_controller)
     
     # Register events blueprint
     bp_events = get_events_blueprint()
@@ -33,5 +27,3 @@ def register_blueprints(app, email_controller):
     
     bp_chat = chat_routes()
     app.register_blueprint(bp_chat)
-
-    app.register_blueprint(bp_info)

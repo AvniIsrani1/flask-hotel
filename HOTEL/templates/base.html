@@ -22,13 +22,13 @@
       </a>
     </div>
     <nav class="base-links">
-      <a href="{{url_for('search.search')}}"><i class="fa-solid fa-hotel"></i><p>Reserve</p></a>
+      <a href="{{url_for('details.search')}}"><i class="fa-solid fa-hotel"></i><p>Reserve</p></a>
       <a href="{{url_for('info.amenities')}}"><i class="fa-solid fa-bell-concierge"></i><p>Amenities</p></a>
       <a href="{{url_for('info.events')}}"><i class="fa-regular fa-calendar-days"></i><p>Events</p></a>
       <a href="{{url_for('info.menu')}}"><i class="fa-solid fa-utensils"></i><p>Dining</p></a>
       {% if session.get('user_name') %}
       <div class="profile-info">
-        <a href="{{ url_for('profile.profile') }}">
+        <a href="{{ url_for('userinfo.profile') }}">
           <i class="fa-solid fa-user"></i>
           <p>{{ session['user_name'] | upper }}</p>
         </a>
@@ -57,12 +57,12 @@
           {% endif %}
         </nav>
       </div>
-        <a href="{{ url_for('auth.logout') }}">
+        <a href="{{ url_for('userinfo.logout') }}">
           <i class="fa-solid fa-right-from-bracket"></i>
           <p>Logout</p>
         </a>
       {% else %}
-        <a href="{{ url_for('auth.login') }}">
+        <a href="{{ url_for('userinfo.login') }}">
           <i class="fa-solid fa-user"></i>
           <p>Sign-In</p>
         </a>
@@ -85,7 +85,7 @@
       <p>QUICK LINKS</p>
       <div class="inner">
         <a href="{{ url_for('info.home') }}" class="indent">Home</a>
-        <a href="{{url_for('search.search')}}" class="indent">Reserve</a>
+        <a href="{{url_for('details.search')}}" class="indent">Reserve</a>
         <a href="{{url_for('info.amenities')}}" class="indent">Amenities</a>
         <a href="{{url_for('info.events')}}" class="indent">Events</a>
         <a href="{{url_for('info.menu')}}" class="indent">Dining</a>
