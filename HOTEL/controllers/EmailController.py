@@ -97,7 +97,7 @@ class EmailController:
     
         Parameters:
             user (User): The user who created the booking.
-            bookings (Booking): The booking object containing reservation details.
+            bookings (list): The list of booking objects.
             YesNo (enum): The YesNo enum to use in the template.
     
         Returns:
