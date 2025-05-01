@@ -53,7 +53,7 @@ class EmailController:
             None
         """
         msg = Message(subject,
-                    recipients=['ocean.vista.hotels@gmail.com'], #we are in sandbox mode right now (can only send to verified emails) (need to create a dns record first to move to prod mode)
+                    recipients=recipients,
                     body=body)
         try:
             formatting = render_template(body_template, user=user, booking=booking, YesNo=YesNo)

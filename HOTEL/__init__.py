@@ -24,7 +24,7 @@ app = Flask(__name__,
 app.secret_key = 'GITGOOD_12345'
 
 rds_secret_name = "rds!db-d319020b-bb3f-4784-807c-6271ab3293b0"
-ses_secret_name = "oceanvista_ses"
+ses_secret_name = "oceanvista/gmail"
 
 
 def get_secrets(secret_name):
@@ -62,7 +62,7 @@ ses_username, ses_pwd = get_secrets(ses_secret_name)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql+pymysql://{rds_username}:{rds_pwd}@hotel-db-instance.cvwasiw2g3h6.us-west-1.rds.amazonaws.com:3306/hotel_db'
 
-app.config['MAIL_SERVER'] = 'email-smtp.us-west-1.amazonaws.com'
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 app.config['MAIL_PORT'] = 587
 app.config['MAIL_USE_TLS'] = True
 app.config['MAIL_USE_SSL'] = False
@@ -75,7 +75,7 @@ mail = Mail(app)
 email_controller = EmailController(mail)
 register_blueprints(app, email_controller)
 
-# model = [User, Hotel, Floor, Room, Bookings, FAQ, YesNo, Locations, RoomType, Availability, Saved]
+# model = [User, Hotel, Floor, Room, Bookings, FAQ, YesNo, Locations, RoomType, Availability]
 admin = Admin(app, name="Admin", template_mode="bootstrap4")
 
 # Create all database tables (if they don't exist already)
@@ -118,10 +118,10 @@ def add_sample_data():
         print("Sample rooms added")
 
         users = []
-        avni = Staff(name="avni", email="avni@gmail.com", password=generate_password_hash("avni"), position=Position.MANAGER)
-        devansh = Staff(name="danny", email="devansh@gmail.com", password=generate_password_hash("1230"), position=Position.CONCIERGE, supervisor_id=1)
-        elijah = Staff(name="elijah", email="elijah@gmail.com", password=generate_password_hash("elijah"), position=Position.MANAGER, supervisor_id=1)
-        andrew = Staff(name="andrew", email="andrew@gmail.com", password=generate_password_hash("andrew"), position=Position.MAINTENANCE, supervisor_id=3)
+        avni = Staff(name="avni", email="avni.israni.292@my.csun.edu", password=generate_password_hash("avni"), position=Position.MANAGER)
+        devansh = Staff(name="danny", email="devansh.sharma.574@my.csun.edu", password=generate_password_hash("1230"), position=Position.CONCIERGE, supervisor_id=1)
+        elijah = Staff(name="elijah", email="elijah.cortez.213@my.csun.edu", password=generate_password_hash("elijah"), position=Position.MANAGER, supervisor_id=1)
+        andrew = Staff(name="andrew", email="andrew.ponce.047@my.csun.edu", password=generate_password_hash("andrew"), position=Position.MAINTENANCE, supervisor_id=3)
         users.extend([avni, devansh, elijah, andrew])
         db.session.add_all(users)
         db.session.commit()
