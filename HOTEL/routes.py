@@ -799,11 +799,9 @@ def tasks():
             db.session.rollback()
             print(f"Error updating tasks: {str(e)}")
             flash("Unable to update tasks. Please try again later.","error")
-    today = date.today()
     current_tasks = Service.get_active_tasks()
-    print('Cur',current_tasks)
-    assignable_staff = Staff.query.filter(or_(Staff.supervisor_id==staff.id, Staff.id==staff.id)).all()
-    
+    assignable_staff = Staff.get_assignable_staff()
+    print(assignable_staff)
     return render_template('tasks.html', current_tasks=current_tasks, assignable_staff=assignable_staff, Status=Status, SType=SType)
 
 

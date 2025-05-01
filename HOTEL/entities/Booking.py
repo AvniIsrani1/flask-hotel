@@ -103,6 +103,10 @@ class Booking(db.Model):
             None
         """
         duration = (check_out - check_in).days + 1
+        if duration<=0:
+            print('duration was 0')
+            duration = 1
+        print('Duration',check_out, check_in, (check_out - check_in).days, duration)
         total_price = fees*duration*1.15 + 30 #NEED TO CHECK THIS LOGIC!!
         print('total',total_price)
         booking = cls(uid=uid, rid=rid, check_in=check_in, check_out=check_out, fees=total_price, special_requests=special_requests, name=name, email=email, phone=phone, num_guests=num_guests)
@@ -194,21 +198,45 @@ class Booking(db.Model):
 
 
     @classmethod
-    def get_booking_stats(cls, location=None, startdate=None, enddate=None): #may need to update this bc some canceled bookings are nonrefundable -- their profits should be included too
+    def get_booking_stats(cls, location=None, startdate=None, enddate=None): 
+        """
+        Calculate booking statistics (completed and pending bookings) with optional filters for location, start date, and end date
+
+        Parameters:
+            location: Optional location filter.
+            startdate: Optional start date filter.
+            enddate: Optional end date filter. 
+
+        Returns:
+            list: List containing completed and pending booking statistics
+        """
         from .Room import Room
         from .Hotel import Hotel
         today = datetime.now()
-        completed = cls.query.filter(cls.cancel_date.is_(None)).join(Room).join(Hotel)
+        completed = cls.query.join(Room).join(Hotel).filter(
+            or_(
+                cls.cancel_date.is_(None),
+                and_(cls.cancel_date.isnot(None), cls.refund_type==YesNo.N)
+            ))
         if location:
             completed = completed.filter(Hotel.location == location)
-        if startdate and enddate: #completed refers to bookings fully completed within the startdate and enddate
-            print('time period',startdate, enddate)
-            completed = completed.filter(cls.check_in >= startdate, cls.check_out <= enddate)
+        if startdate and enddate: #completed refers to bookings fully completed (or canceled without refund) within the startdate and enddate
+            completed = completed.filter(
+                or_(
+                    #check out is within time period
+                    and_(cls.check_in <= enddate, cls.check_out >= startdate, cls.check_out <= enddate),
+                    # or cancel date is within time period
+                    and_(cls.cancel_date >= startdate, cls.cancel_date <= enddate)
+                ))
         else:
-            completed = completed.filter(cls.check_out <= today)
-        completed = completed.with_entities(literal('Completed').label('status'), func.sum(cls.fees).label('total_fees'), func.count(distinct(cls.id)).label('total_bookings')).first()
+            completed = completed.filter(
+                or_(
+                    and_(cls.check_out <= today, cls.cancel_date.is_(None)),
+                    cls.cancel_date <= today
+                ))
+        completed = completed.with_entities(literal('Completed').label('status'), func.coalesce(func.sum(cls.fees), 0).label('total_fees'), func.count(distinct(cls.id)).label('total_bookings')).first()
 
-        pending = cls.query.filter(cls.cancel_date.is_(None)).join(Room).join(Hotel)
+        pending = cls.query.join(Room).join(Hotel).filter(cls.cancel_date.is_(None))
         if location:
             pending = pending.filter(Hotel.location == location)
         if startdate and enddate: #pending refers to future bookings (after enddate)
@@ -219,7 +247,7 @@ class Booking(db.Model):
             )
         else:
             pending = pending.filter(cls.check_out > today)
-        pending = pending.with_entities(literal('Pending').label('status'), func.sum(cls.fees).label('total_fees'), func.count(distinct(cls.id)).label('total_bookings')).first()
+        pending = pending.with_entities(literal('Pending').label('status'), func.coalesce(func.sum(cls.fees), 0).label('total_fees'), func.count(distinct(cls.id)).label('total_bookings')).first()
         return [completed, pending]
     
     @classmethod

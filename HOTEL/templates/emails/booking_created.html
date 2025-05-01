@@ -16,7 +16,7 @@
 
     <p style="font-weight:bold;">Room Information: </p>
     {% if booking and booking|length > 0 %}
-    <ul style="padding-left:100px;">
+    <ul>
         <li><span style="text-decoration:underline;">Room Description</span>: 
             {{booking[0].rooms.number_beds}}-Bedroom {{booking[0].rooms.room_type.value}}
                 {% if booking[0].rooms.wheelchair_accessible==YesNo.Y %}
