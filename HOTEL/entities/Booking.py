@@ -194,7 +194,7 @@ class Booking(db.Model):
 
 
     @classmethod
-    def get_booking_stats(cls, location=None, startdate=None, enddate=None):
+    def get_booking_stats(cls, location=None, startdate=None, enddate=None): #may need to update this bc some canceled bookings are nonrefundable -- their profits should be included too
         from .Room import Room
         from .Hotel import Hotel
         today = datetime.now()

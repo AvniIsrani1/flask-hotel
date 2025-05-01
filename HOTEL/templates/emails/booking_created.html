@@ -15,34 +15,32 @@
     <p>Number of Rooms Booked: {{booking | length}}</p>
 
     <p style="font-weight:bold;">Room Information: </p>
-    {% for b in booking %}
-    <p style="padding-left:50px;">Room #{{loop.index}}</p>
+    {% if booking and booking|length > 0 %}
     <ul style="padding-left:100px;">
         <li><span style="text-decoration:underline;">Room Description</span>: 
-            {{b.rooms.number_beds}}-Bedroom {{b.rooms.room_type.value}}
-                {% if b.rooms.wheelchair_accessible==YesNo.Y %}
+            {{booking[0].rooms.number_beds}}-Bedroom {{booking[0].rooms.room_type.value}}
+                {% if booking[0].rooms.wheelchair_accessible==YesNo.Y %}
                     <span> (Wheelchair Accessible) </span>
                 {% endif %}
-                {% if b.rooms.balcony==YesNo.Y %}
+                {% if booking[0].rooms.balcony==YesNo.Y %}
                     <span> with Balcony</span>
                 {% endif %}
-                {% if b.rooms.ocean_view==YesNo.Y and b.rooms.city_view==YesNo.Y %}
+                {% if booking[0].rooms.ocean_view==YesNo.Y and booking[0].rooms.city_view==YesNo.Y %}
                     <span> - Ocean View, City View</span>
-                {% elif b.rooms.ocean_view==YesNo.Y %}
+                {% elif booking[0].rooms.ocean_view==YesNo.Y %}
                     <span> - Ocean View</span>
-                {% elif b.rooms.city_view==YesNo.Y %}
+                {% elif booking[0].rooms.city_view==YesNo.Y %}
                     <span> - City View</span>
                 {% endif %}
-                {% if b.rooms.smoking==YesNo.N %}
+                {% if booking[0].rooms.smoking==YesNo.N %}
                     <span>| Non-Smoking</span>
                 {% endif %}
         </li>
-        <li><span style="text-decoration:underline;">Check-In Date</span>: {{b.check_in.strftime('%B %d, %Y')}}</li>
-        <li><span style="text-decoration:underline;">Check-Out Date</span>: {{b.check_out.strftime('%B %d, %Y')}} </li>
-        <li><span style="text-decoration:underline;">Special Requests</span>: {{b.special_requests or 'N/A'}}</li>
+        <li><span style="text-decoration:underline;">Check-In Date</span>: {{booking[0].check_in.strftime('%B %d, %Y')}}</li>
+        <li><span style="text-decoration:underline;">Check-Out Date</span>: {{booking[0].check_out.strftime('%B %d, %Y')}} </li>
+        <li><span style="text-decoration:underline;">Special Requests</span>: {{booking[0].special_requests or 'N/A'}}</li>
     </ul>
-    {% endfor %}
-    {% if booking and booking|length > 0 %}
+
     <p style="font-weight:bold;">Guest Information:</p>
     <ul>
         <li><span style="text-decoration:underline;">Guest Name</span>: {{booking[0].name}}</li>

@@ -12,6 +12,14 @@ class EmailController:
     Created: April 6, 2025
     Modified: April 17, 2025
     """
+
+    __instance = None
+
+    def __new__(cls, mail):
+        if cls.__instance is None:
+            cls.__instance = super(EmailController, cls).__new__(cls)
+            cls.__instance.mail = mail
+        return cls.__instance
     
     def __init__(self, mail):
         """
@@ -23,10 +31,8 @@ class EmailController:
         Returns:
             None
         """
-        self.mail = mail
-
-
-    
+        if not hasattr(self, 'mail'):
+            self.mail = mail
 
     def send_email(self,subject, recipients, body, body_template, user=None, booking=None,YesNo=YesNo, attachment=None, attachment_type=None):
         """
@@ -120,7 +126,7 @@ class EmailController:
         Returns:
             str: A message indicating the email was sent.
         """
-        return self.send_email(subject=f'Ocean Vista Booking Updated - {booking.id}!',recipients=[user.email], body="Your booking has been updated!",
+        return self.send_email(subject=f'Ocean Vista Booking Updated - ID#{booking.id}!',recipients=[user.email], body="Your booking has been updated!",
                                body_template='emails/updated.html',user=user, booking=booking, YesNo=YesNo)
 
 

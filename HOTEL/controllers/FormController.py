@@ -230,10 +230,10 @@ class FormController():
                 str: phone - Updated phone number for the booking, defaults to booking's phone number information if none is provided.
                 str: num_guests - Updated num_guests for the booking, defaults to booking's num_guests information if none is provided.
         """
-        special_requests=request.form.get('requests'), 
-        name=request.form.get('name', booking.name), 
-        email = request.form.get('email', booking.email), 
-        phone=request.form.get('phone', booking.phone), 
+        special_requests=request.form.get('requests')
+        name=request.form.get('name', booking.name)
+        email = request.form.get('email', booking.email)
+        phone=request.form.get('phone', booking.phone)
         num_guests=request.form.get('guests')
         return special_requests, name, email, phone, num_guests
     

@@ -152,9 +152,11 @@ class Hotel(db.Model):
 
         """
         floors = self.add_floor(number_floors=number_floors, base_floor_number=base_floor_number)
+        db.session.add_all(floors)
+        db.session.commit()
+
         rooms = []
         for floor in floors:
-            fid = floor.id
             start = int(add_room_params["initial_room_base_number"])
             rooms_to_add = add_room_params["rooms"]
             for room_to_add in rooms_to_add:
@@ -178,6 +180,5 @@ class Hotel(db.Model):
                     )
                 )
                 start+=int(room_to_add["num_rooms"])
-        db.session.add_all(floors)
         db.session.add_all(rooms)
         db.session.commit()
