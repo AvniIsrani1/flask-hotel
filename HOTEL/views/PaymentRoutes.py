@@ -55,6 +55,9 @@ class PaymentRoutes:
             return redirect(url_for("userinfo.login"))
         if request.method == 'POST':
             rid, location_type, startdate, enddate, name, phone, email, guests, rooms, requests = FormController.get_summary_reservation_information(user)
+            if startdate >= enddate:
+                flash('Please select a valid start and end date',"error")
+                return redirect(url_for('details.search'))
             room_availability = RoomAvailability(startdate=startdate, enddate=enddate)
             room_availability.set_rid_room(rid=rid)
             similar_rooms = room_availability.get_similar_rooms(status='open')

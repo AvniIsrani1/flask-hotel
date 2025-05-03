@@ -31,12 +31,29 @@ class TestService:
         assert service.stype == SType.H
         assert service.housedatetime.date() == service.issued.date()
 
-    def test_add_call_non_recurrent(session):
-        future = datetime.now() + timedelta(days=1)
-        calls = Service.add_call(bid=1, calltime=time(7, 0), recurrent=False, validate_check_out=future)
-        assert len(calls) == 1
-        assert calls[0].stype == SType.C
+    #calldatetime > validate_check_out (1, 2, 4, 10)
+    def test_add_call_invalid(session):
+        invalid_check_out = datetime.now() - timedelta(days=1)
+        calltime = datetime.now().time()
+        calls = Service.add_call(bid=1, calltime=calltime, recurrent=True, validate_check_out=invalid_check_out)
+        assert len(calls) == 0
 
+    #calldatetime > validate_check_out (1, 2, 3, 4, 10)
+    def test_add_call_past_calldatetime_invalid(session):
+        invalid_check_out = datetime.now() - timedelta(days=1)
+        calltime = (datetime.now() - timedelta(hours=1)).time()
+        calls = Service.add_call(bid=1, calltime=calltime, recurrent=True, validate_check_out=invalid_check_out)
+        assert len(calls) == 0
+
+    # calldatetime < today (1, 2, 4, 5, 8, 9, 10)
+    def test_add_call_non_recurrent(session):
+         future = datetime.now() + timedelta(days=1)
+         calltime = (datetime.now()+timedelta(hours=1)).time()
+         calls = Service.add_call(bid=1, calltime=calltime, recurrent=False, validate_check_out=future)
+         assert len(calls) == 1
+         assert calls[0].stype == SType.C
+
+    #calldatetime < today (1, 2, 3, 4, 5, 8, 9, 10)
     def test_add_call_non_recurrent_past_calldatetime(session):
         expected = datetime.now() - timedelta(hours=3) + timedelta(days=1)
         past = (datetime.now() - timedelta(hours=3)).time()
@@ -46,13 +63,24 @@ class TestService:
         assert calls[0].stype == SType.C
         assert calls[0].calldatetime == expected
 
+    #calldatetime > today (1, 2, 4, 5, 6, 7, 6, 10)
     def test_add_call_recurrent(session):
-        start = datetime.now()
-        end = start + timedelta(days=2)
-        calls = Service.add_call(bid=1, calltime=time(6, 30), recurrent=True, validate_check_out=end)
-        assert len(calls) in [2, 3]  
+        start = (datetime.now() + timedelta(hours=1)).time()
+        end = datetime.now() + timedelta(days=2) + timedelta(hours=1)
+        calls = Service.add_call(bid=1, calltime=start, recurrent=True, validate_check_out=end)
+        assert len(calls) == 3
         for call in calls:
             assert call.stype == SType.C
+
+    #calldatetime < today (1, 2, 3, 4, 5, 6, 7, 6, 10)
+    def test_add_call_recurrent_past_calldatetime(session):
+        start = (datetime.now() - timedelta(hours=1)).time()
+        end = datetime.now() + timedelta(days=2)
+        calls = Service.add_call(bid=1, calltime=start, recurrent=True, validate_check_out=end)
+        assert len(calls) == 2
+        for call in calls:
+            assert call.stype == SType.C
+
 
     def test_add_trash(session):
         service = Service.add_trash(bid=1)

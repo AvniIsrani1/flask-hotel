@@ -56,6 +56,9 @@ class DetailRoutes:
                     flash('Please enter both the start and end dates',"error")
                 return redirect(url_for('details.search'))
             print(f"Received rid: {rid}, location_type: {location_type}, startdate: {startdate}, enddate: {enddate}") 
+            if startdate >= enddate:
+                flash('Please enter a valid start and end date',"error")
+                return redirect(url_for('details.search'))
             room_availability = RoomAvailability(startdate=startdate,enddate=enddate)
             room_availability.set_rid_room(rid=rid)
             room=room_availability.get_similar_quantities(status='open').first()
@@ -91,10 +94,13 @@ class DetailRoutes:
             stype = request.args.get('stype')
             # if stype == 'apply_search':
             location, start, end = FormController.get_main_search()
-            starting, ending,result = search_controller.main_search(location=location,start=start,end=end)
+            starting, ending, result = search_controller.main_search(location=location,start=start,end=end)
             if(not result):
-                flash('Please enter both the start and end dates',"error")
+                flash('Please enter a valid start and end date',"error")
                 return redirect(url_for('details.search', startdate=starting, enddate=ending))
+            if starting >= ending:
+                flash('Please select a valid range.', 'error')
+                return redirect(url_for('details.search'))
             if stype=='apply_filters':
                 room_type, bed_type, view, balcony, smoking_preference, accessibility, price_range = FormController.get_filters_search()
                 search_controller.filter_search(room_type=room_type,bed_type=bed_type,view=view,balcony=balcony,
