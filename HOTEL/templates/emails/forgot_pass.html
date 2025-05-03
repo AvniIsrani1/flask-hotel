@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booking Updated</title>
+    <link rel="stylesheet" href="./emails.css"> 
+
+</head>
+<body>
+<div class="content">
+    <p>Hi {{user.name or 'Guest'}},</p>
+    
+    <p>Your reservation at <span style="font-weight:bold;">Ocean Vista</span> has been successfully updated!</p>
+    <p>Here are your new reservation details: </p>
+    <ul>
+        <li><span style="text-decoration:underline;">Guest Name</span>: {{booking.name}}</li>
+        <li><span style="text-decoration:underline;">Guest Email</span>: {{booking.email}}</li>
+        <li><span style="text-decoration:underline;">Guest Phone Number</span>: {{booking.phone}}</li>
+        <li><span style="text-decoration:underline;">Number of Guests</span>: {{booking.num_guests}}</li>
+        <li><span style="text-decoration:underline;">Special Requests</span>: {{booking.special_requests or 'N/A'}}</li>
+    </ul>
+    <p>Room Details: </p>
+    <ul>
+        <li><span style="text-decoration:underline;">Room Description</span>: 
+            {{booking.rooms.number_beds}}-Bedroom {{booking.rooms.room_type.value}}
+                {% if booking.rooms.wheelchair_accessible==YesNo.Y %}
+                    <span> (Wheelchair Accessible) </span>
+                {% endif %}
+                {% if booking.rooms.balcony==YesNo.Y %}
+                    <span> with Balcony</span>
+                {% endif %}
+                {% if booking.rooms.ocean_view==YesNo.Y and booking.rooms.city_view==YesNo.Y %}
+                    <span> - Ocean View, City View</span>
+                {% elif booking.rooms.ocean_view==YesNo.Y %}
+                    <span> - Ocean View</span>
+                {% elif booking.rooms.city_view==YesNo.Y %}
+                    <span> - City View</span>
+                {% endif %}
+                {% if booking.rooms.smoking==YesNo.N %}
+                    <span>| Non-Smoking</span>
+                {% endif %}
+        </li>
+        <li><span style="text-decoration:underline;">Check-In Date</span>: {{booking.check_in.strftime('%B %d, %Y')}}</li>
+        <li><span style="text-decoration:underline;">Check-Out Date</span>: {{booking.check_out.strftime('%B %d, %Y')}} </li>
+    </ul>
+
+    <p>If you didn’t make this change or if anything doesn’t look right, feel free to contact us or call us at (123) 456-7890 — we’re happy to help.</p>
+    <p>We’re looking forward to welcoming you to Ocean Vista, where relaxation meets the sea.</p>
+
+    <p>Warm regards,</p>
+    <p>The Ocean Vista Team</p>
+</div>
+</body>
+</html>
