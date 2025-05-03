@@ -1,6 +1,6 @@
 ﻿category,sub_category,description
-greeting, Hello, Hi monkey!
-conversation, greeting, Welcome to the Ocean Vista Hotel in Malibu! We are delighted to have you here. Our staff is dedicated to making your stay as enjoyable as possible. Please ask me any questions you may have regarding Ocean Vista.
+greeting, Hello, Hello! Welcome to the Ocean Vista Hotel website. How may I assist you today?
+conversation, greeting, Welcome to the Ocean Vista Hotel! We are delighted to have you here. Our staff is dedicated to making your stay as enjoyable as possible. Please ask me any questions you may have regarding Ocean Vista.
 conversation, how are you, I am doing great and I hope you are as well! How can I assist you today?
 rooms,suite,Our luxury suites feature ocean views you can experience from your own private balcony o king-size bed. We have 50 suites available occupying the Malibu location.
 rooms,standard,Our comfortable standard rooms include have all that you need to enjoy your stay in Malibu. There are currently 200 standard rooms in total at the Malibu location.
@@ -11,6 +11,7 @@ amenities,parking,Self-parking is available for $25 per night. Valet parking is 
 amenities,fitness,Our 24-hour fitness center features state-of-the-art equipment including free weights and cardio machines. Personal training sessions can be arranged through the concierge.
 amenities,business,Our business center offers computers and printing services. Through the concierge you are also able to reserve a private meeting spaces available.
 amenities,spa,The Ocean Vista Spa offers full massages and other services at our fully staffed salon boutique. Open daily from 9AM to 7PM. Reservations recommended.
+pool, location,The main pool is located on the ground floor of the hotel with ocean views through the lobby and out the back on a lower terrace. The kiddie pool is adjacent to the main pool.
 pool,hours,The main pool is open from 8AM to 8PM daily with lifeguard on duty. Seasonal hours may vary.
 pool,towels,Pool towels are complimentary and available at the pool gate. Please return used towels to the designated bins.
 pool,size,Our main pool measures 50ft x 35ft with depths ranging from 3ft to 12ft.
@@ -68,5 +69,6 @@ entertainment,movies,The Malibu Film Society hosts screenings throughout the yea
 services,babysitting,Babysitting services can be arranged with 24-hour notice. Background-checked sitters available for $25/hour.
 services,laundry,Same-day laundry and dry cleaning services are available if items are submitted before 9AM. See in-room directory for pricing.
 services,medical,A doctor can be called to your room for medical assistance. The nearest hospital is 15 minutes away.
+services,assistance,Our concierge is available 24/7 to assist with any needs or requests you may have during your stay.
 
 
