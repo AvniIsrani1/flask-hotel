@@ -126,7 +126,7 @@ class Service(db.Model):
             else:
                 call = cls(bid=bid, issued=today, stype=SType.C, calldatetime=calldatetime)
                 calls.append(call)
-            return calls
+        return calls
         
     @classmethod
     def add_trash(cls, bid):
