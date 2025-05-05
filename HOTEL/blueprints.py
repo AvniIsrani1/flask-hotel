@@ -1,5 +1,3 @@
-import email
-from HOTEL.entities import Booking
 from .routes import chat_routes
 from .views import StaffRoutes, BookingRoutes, InfoRoutes, UserRoutes, DetailRoutes, PaymentRoutes
 from .event_routes import get_events_blueprint

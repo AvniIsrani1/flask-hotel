@@ -1,5 +1,5 @@
 import pytest
-from HOTEL.Services.response import format_response
+from HOTEL.services.response import format_response
 from HOTEL.AImodels.csv_retriever import setup_csv_retrieval, get_answer_from_csv
 from HOTEL.AImodels.ai_model import load_ai_model, generate_ai_response
 

@@ -45,7 +45,7 @@
                         "checkin": c.check_in.strftime("%A, %B %d, %Y"),
                         "checkout": c.check_out.strftime("%A, %B %d, %Y"),
                         "room_number": c.rooms.floors.floor_number ~ c.rooms.room_number,
-                        "address": c.rooms.hotels.address,
+                        "address": c.rooms.floors.hotels.address,
                         "number_beds": c.rooms.number_beds,
                         "room_type": c.rooms.room_type.value,
                         "wheelchair":c.rooms.wheelchair_accessible.value,
@@ -65,8 +65,8 @@
                             </div>
                             <br>
                             <div class="hotel-details">
-                                {% set s = c.rooms.hotels.address.split(',')[2][:3] %}
-                                <p>{{c.rooms.hotels.location.value}}, {{s}}</p>
+                                {% set s = c.rooms.floors.hotels.address.split(',')[2][:3] %}
+                                <p>{{c.rooms.floors.hotels.location.value}}, {{s}}</p>
                             </div>
                         </div>
                         <div class="links ptop">
@@ -97,7 +97,7 @@
                         "checkin": f.check_in.strftime("%A, %B %d, %Y"),
                         "checkout": f.check_out.strftime("%A, %B %d, %Y"),
                         "room_number": f.rooms.floors.floor_number ~ f.rooms.room_number,
-                        "address": f.rooms.hotels.address,
+                        "address": f.rooms.floors.hotels.address,
                         "number_beds": f.rooms.number_beds,
                         "room_type": f.rooms.room_type.value,
                         "wheelchair":f.rooms.wheelchair_accessible.value,
@@ -117,8 +117,8 @@
                             </div> 
                             <br>                           
                             <div class="hotel-details">
-                                {% set s = f.rooms.hotels.address.split(',')[2][:3] %}
-                                <p>{{f.rooms.hotels.location.value}}, {{s}}</p>
+                                {% set s = f.rooms.floors.hotels.address.split(',')[2][:3] %}
+                                <p>{{f.rooms.floors.hotels.location.value}}, {{s}}</p>
                             </div>                        
                         </div>
                         <div class="links2 ptop">
@@ -149,7 +149,7 @@
                     "checkin": pa.check_in.strftime("%A, %B %d, %Y"),
                     "checkout": pa.check_out.strftime("%A, %B %d, %Y"),
                     "room_number": pa.rooms.floors.floor_number ~ pa.rooms.room_number,
-                    "address": pa.rooms.hotels.address,
+                    "address": pa.rooms.floors.hotels.address,
                     "number_beds": pa.rooms.number_beds,
                     "room_type": pa.rooms.room_type.value,
                     "wheelchair":pa.rooms.wheelchair_accessible.value,
@@ -169,8 +169,8 @@
                         </div>
                         <br>
                         <div class="hotel-details">
-                            {% set s = pa.rooms.hotels.address.split(',')[2][:3] %}
-                            <p>{{pa.rooms.hotels.location.value}}, {{s}}</p>
+                            {% set s = pa.rooms.floors.hotels.address.split(',')[2][:3] %}
+                            <p>{{pa.rooms.floors.hotels.location.value}}, {{s}}</p>
                         </div>
                     </div>
                     <div class="links ptop">
@@ -199,7 +199,7 @@
                     "checkin": ca.check_in.strftime("%A, %B %d, %Y"),
                     "checkout": ca.check_out.strftime("%A, %B %d, %Y"),
                     "room_number": ca.rooms.floors.floor_number ~ ca.rooms.room_number,
-                    "address": ca.rooms.hotels.address,
+                    "address": ca.rooms.floors.hotels.address,
                     "number_beds": ca.rooms.number_beds,
                     "room_type": ca.rooms.room_type.value,
                     "wheelchair":ca.rooms.wheelchair_accessible.value,
@@ -219,8 +219,8 @@
                         </div>
                         <br>
                         <div class="hotel-details">
-                            {% set s = ca.rooms.hotels.address.split(',')[2][:3] %}
-                            <p>{{ca.rooms.hotels.location.value}}, {{s}}</p>
+                            {% set s = ca.rooms.floors.hotels.address.split(',')[2][:3] %}
+                            <p>{{ca.rooms.floors.hotels.location.value}}, {{s}}</p>
                         </div>
                     </div>
                     <div class="links ptop">

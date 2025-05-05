@@ -24,13 +24,12 @@ class Floor(db.Model):
 
     __table_args__ = (db.UniqueConstraint('hid', 'floor_number', name='hid_floor_number_unique'),)
 
-    def add_room(self, number_rooms, hid, base_room_number, img, modPath, room_type, number_beds, rate,balcony,city_view,ocean_view,smoking,available,max_guests,wheelchair_accessible):
+    def add_room(self, number_rooms, base_room_number, img, modPath, room_type, number_beds, rate,balcony,city_view,ocean_view,smoking,available,max_guests,wheelchair_accessible):
         """
         Create rooms in the hotel.
 
         Parameters:
             number_rooms (int): The number of rooms to add.
-            hid (int): The unique ID of the hotel.
             base_room_number (int): The starting room number upon which more rooms will be added.
             img (str): The path to the image file.
             modPath (str): The path to the 3D model.
@@ -51,7 +50,6 @@ class Floor(db.Model):
         for i in range(number_rooms):
             room = Room(
                 fid=self.id,
-                hid=hid,
                 room_number = base_room_number + i,
                 img = img, 
                 modPath=modPath,

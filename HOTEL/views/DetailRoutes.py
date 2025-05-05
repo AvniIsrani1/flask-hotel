@@ -1,6 +1,7 @@
 from flask import Blueprint, request, render_template, flash, redirect, session, url_for
 from ..entities import User, Hotel, Room, YesNo
-from ..controllers import FormController, RoomAvailability, SearchController
+from ..controllers import FormController, SearchController
+from ..services import RoomAvailability
 from ..db import db
 from sqlalchemy import distinct, cast, String, desc
 

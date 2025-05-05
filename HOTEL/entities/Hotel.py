@@ -7,7 +7,7 @@ class Hotel(db.Model):
     """
     A table for storing hotel information.
 
-    Maintains a 2-way relationship with the Floors and Rooms tables.
+    Maintains a 2-way relationship with the Floors table.
 
     Note:
         Author: Avni Israni
@@ -26,11 +26,10 @@ class Hotel(db.Model):
     gym = db.Column(db.Enum(YesNo), nullable=False, default=YesNo.N) 
     golf = db.Column(db.Enum(YesNo), nullable=False, default=YesNo.N) 
     floors = db.relationship('Floor', backref='hotels', lazy=True, cascade='all, delete-orphan') #hotel is keeping track of floors
-    rooms = db.relationship('Room', backref='hotels', lazy=True, cascade='all, delete-orphan') #hotel is keeping track of floors
 
 
     @classmethod
-    def get_hotel(cls, hid):
+    def get_hotel(cls, id):
         """
         Retrieve a hotel by its unique ID.
 
@@ -40,7 +39,7 @@ class Hotel(db.Model):
         Returns:
             Hotel | None: The Hotel object if found, else None.
         """
-        return cls.query.filter_by(hid=hid).first()
+        return cls.query.filter_by(id=id).first()
         
     @classmethod
     def get_hotels_by_location(cls, location):
@@ -109,18 +108,6 @@ class Hotel(db.Model):
         """
         return self.floors
     
-    def get_rooms(self):
-        """
-        Retrieve the hotel's rooms.
-
-        Parameters:
-            None
-
-        Returns:
-            list[Room]: A list of the hotel's rooms.
-        """
-        return self.rooms
-    
     def add_floor(self, number_floors, base_floor_number):
         """
         Create floors in the hotel.
@@ -163,7 +150,6 @@ class Hotel(db.Model):
                 rooms.extend(
                     floor.add_room(
                         number_rooms=int(room_to_add["num_rooms"]),
-                        hid=self.id,
                         base_room_number=start,
                         img=room_to_add["img"],
                         modPath=room_to_add["modPath"],

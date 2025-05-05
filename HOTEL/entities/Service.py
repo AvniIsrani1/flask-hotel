@@ -40,7 +40,6 @@ class Service(db.Model):
     housedatetime = db.Column(DateTime)
     trash = db.Column(db.Enum(YesNo)) 
     calldatetime = db.Column(DateTime)
-    # recurrent = db.Column(db.Enum(YesNo)) 
     restaurant = db.Column(db.String(200)) 
     assistance = db.Column(db.Enum(Assistance))
     other = db.Column(db.String(300)) 
@@ -187,7 +186,16 @@ class Service(db.Model):
     def get_active_tasks(cls):
         from .Booking import Booking
         today = datetime.now()
-        tasks = cls.query.join(Booking).filter(Booking.check_in<=today, Booking.check_out>today)
+        tasks = cls.query.join(Booking).filter(Booking.check_in<=today, Booking.check_out>today, Booking.cancel_date.is_(None))
+        sorting = case((cls.stype==SType.C, cls.calldatetime), else_=cls.issued)
+        tasks = tasks.order_by(asc(sorting), asc(cls.issued), asc(cls.bid), asc(cls.stype)).all()
+        return tasks
+    
+    @classmethod
+    def get_expired_tasks(cls):
+        from .Booking import Booking
+        today = datetime.now()
+        tasks = cls.query.join(Booking).filter(Booking.check_out<today, Booking.cancel_date.is_(None), cls.status != Status.C)
         sorting = case((cls.stype==SType.C, cls.calldatetime), else_=cls.issued)
         tasks = tasks.order_by(asc(sorting), asc(cls.issued), asc(cls.bid), asc(cls.stype)).all()
         return tasks
@@ -216,8 +224,9 @@ class Service(db.Model):
         # stats = cls.query.group_by(*cols) #group by to remove duplicates from recurrent wake up calls
         from .Booking import Booking
         from .Room import Room
+        from .Floor import Floor
         from .Hotel import Hotel
-        stats = cls.query.join(Booking).join(Room).join(Hotel)
+        stats = cls.query.join(Booking).join(Room).join(Floor).join(Hotel)
         if location:
             stats = stats.filter(Hotel.location == location)
         if startdate and enddate: 
@@ -237,8 +246,9 @@ class Service(db.Model):
         # stats = cls.query.filter(cls.issued>=startdate, cls.modified<=enddate).group_by(cls.staff_in_charge, cls.status)
         from .Booking import Booking
         from .Room import Room
+        from .Floor import Floor
         from .Hotel import Hotel
-        stats = cls.query.join(Booking).join(Room).join(Hotel)
+        stats = cls.query.join(Booking).join(Room).join(Floor).join(Hotel)
         if location:
             stats = stats.filter(Hotel.location == location)
         if startdate and enddate:

@@ -25,7 +25,7 @@ class SearchController:
         Returns:
             None
         """
-        self.query=Room.query.join(Hotel).filter(Room.available==Availability.A)
+        self.query=Room.query.join(Floor).join(Hotel).filter(Room.available==Availability.A)
     
     def main_search(self,location=None,start=None,end=None):
         """
@@ -136,7 +136,7 @@ class SearchController:
             None
         """
         self.query = self.query.group_by(
-            Room.hid, Room.room_type, Room.number_beds, Room.rate, Room.balcony, Room.city_view, Room.ocean_view, 
+            Floor.hid, Room.room_type, Room.number_beds, Room.rate, Room.balcony, Room.city_view, Room.ocean_view, 
             Room.smoking, Room.max_guests, Room.wheelchair_accessible
         )
         self.query = self.query.with_entities(Room, func.count(distinct(Room.id)).label('number_rooms'), func.min(Room.id).label('min_rid'))

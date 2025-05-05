@@ -31,7 +31,7 @@ class Booking(db.Model):
     email = db.Column(db.String(150),nullable=False)
     phone = db.Column(db.String(15),nullable=False)
     num_guests = db.Column(db.Integer, default=1)
-    services = db.relationship('Service', backref='users', lazy=True, cascade='all, delete-orphan')
+    services = db.relationship('Service', backref='bookings', lazy=True, cascade='all, delete-orphan')
 
     def update_booking(self, special_requests, name, email, phone, num_guests):
         """
@@ -212,8 +212,9 @@ class Booking(db.Model):
         """
         from .Room import Room
         from .Hotel import Hotel
+        from .Floor import Floor
         today = datetime.now()
-        completed = cls.query.join(Room).join(Hotel).filter(
+        completed = cls.query.join(Room).join(Floor).join(Hotel).filter(
             or_(
                 cls.cancel_date.is_(None),
                 and_(cls.cancel_date.isnot(None), cls.refund_type==YesNo.N)
@@ -236,7 +237,7 @@ class Booking(db.Model):
                 ))
         completed = completed.with_entities(literal('Completed').label('status'), func.coalesce(func.sum(cls.fees), 0).label('total_fees'), func.count(distinct(cls.id)).label('total_bookings')).first()
 
-        pending = cls.query.join(Room).join(Hotel).filter(cls.cancel_date.is_(None))
+        pending = cls.query.join(Room).join(Floor).join(Hotel).filter(cls.cancel_date.is_(None))
         if location:
             pending = pending.filter(Hotel.location == location)
         if startdate and enddate: #pending refers to future bookings (after enddate)
@@ -254,7 +255,8 @@ class Booking(db.Model):
     def get_room_popularity_stats(cls, location=None, startdate=None, enddate=None):
         from .Room import Room
         from .Hotel import Hotel
-        popularity = cls.query.filter(cls.cancel_date.is_(None)).join(Room).join(Hotel)
+        from .Floor import Floor
+        popularity = cls.query.filter(cls.cancel_date.is_(None)).join(Room).join(Floor).join(Hotel)
         if location:
             popularity = popularity.filter(Hotel.location==location)
         if startdate and enddate: #check in during time period, check out during time period, or check in and out during time period
@@ -265,7 +267,7 @@ class Booking(db.Model):
                         and_(cls.check_in <= startdate, cls.check_out >= enddate)
                     )
             )         
-        popularity = popularity.group_by(Room.hid, Room.room_type, Room.number_beds, Room.rate, Room.balcony, Room.city_view, Room.ocean_view, 
+        popularity = popularity.group_by(Floor.hid, Room.room_type, Room.number_beds, Room.rate, Room.balcony, Room.city_view, Room.ocean_view, 
                                      Room.smoking, Room.max_guests, Room.wheelchair_accessible)
         popularity = popularity.with_entities(func.min(cls.rid).label('rid'), func.count(cls.rid).label('popularity')).order_by(desc('popularity')).all()
         print(popularity)

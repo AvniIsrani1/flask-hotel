@@ -95,7 +95,7 @@ class ReceiptGenerator:
         Returns file path or BytesIO.
         """
         room = booking.rooms
-        hotel = room.hotels
+        hotel = room.floors.hotels
         timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
         filename = f"Receipt_{booking.id}_{timestamp}.pdf"
         pdf_path = save_path or os.path.join(self.receipt_dir, filename)

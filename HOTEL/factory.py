@@ -80,6 +80,7 @@ class Factory:
 
 
         admin = Admin(app, name="Admin", template_mode="bootstrap4")
+        from .entities import User, Staff, Booking, Hotel, Floor, Room, Service, FAQ
 
         with app.app_context():
             from .entities import FAQ
@@ -87,6 +88,15 @@ class Factory:
             self.add_sample_data()
             if not FAQ.query.first():
                 self.add_sample_faq()
+            admin.add_views(
+                ModelView(User, db.session),
+                ModelView(Booking, db.session),
+                ModelView(Hotel, db.session),
+                ModelView(Floor, db.session), 
+                ModelView(Room, db.session),
+                ModelView(Service, db.session),
+                ModelView(FAQ, db.session)
+            )
 
         return app
 

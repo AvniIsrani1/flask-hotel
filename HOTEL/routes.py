@@ -8,18 +8,11 @@ Note:
     Modified: April 17, 2025
 """
 
-from flask import Flask, Blueprint, jsonify, render_template, request, redirect, url_for, session, flash, get_flashed_messages, send_file
-from .db import db
-from sqlalchemy import DateTime, Date, cast, distinct, desc, asc, cast, func, not_, or_, String, Computed
-from datetime import datetime, date, timedelta
-from .entities import User, Staff, Booking, Service, Hotel, Floor, Room, YesNo, Assistance, Locations, Availability, RoomType, Status, SType, Creditcard, FAQ
-from .controllers import SearchController, FormController, RoomAvailability
-from datetime import datetime
-from .Services import ReceiptGenerator, ReportGenerator
+from flask import Flask, Blueprint, jsonify, render_template, request
 from flask import Blueprint, jsonify, render_template
 from HOTEL.AImodels.csv_retriever import setup_csv_retrieval, get_answer_from_csv
 from HOTEL.AImodels.ai_model import load_ai_model, generate_ai_response
-from .Services.response import format_response  
+from .services.response import format_response  
 
 ai_model = load_ai_model()
 ai_db, ai_df = setup_csv_retrieval()

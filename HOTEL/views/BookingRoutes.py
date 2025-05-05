@@ -1,6 +1,7 @@
 from flask import Blueprint, request, render_template, flash, redirect, session, url_for
 from ..entities import User, Booking, Service, YesNo, Assistance
-from ..controllers import RoomAvailability, FormController
+from ..controllers import FormController
+from ..services import RoomAvailability
 from ..db import db
 from datetime import datetime 
 
@@ -47,7 +48,6 @@ class BookingRoutes:
             flash("Please log in first.", "error")
             return redirect(url_for("userinfo.login"))
         user_id = session["user_id"]
-        user = User.get_user(user_id)
 
         current = Booking.get_current_user_bookings(user_id)
         print(current)

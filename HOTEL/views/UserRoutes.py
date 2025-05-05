@@ -151,7 +151,7 @@ class UserRoutes:
             flash("Please log in first.", "error")
             return redirect(url_for("userinfo.login"))
         
-        user = User.query.get(session["user_id"])
+        user = User.get_user(session["user_id"])
         if not user:
             flash('Account not found','error')
             session.clear()

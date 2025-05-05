@@ -17,7 +17,6 @@ class Room(db.Model):
     __tablename__ = 'rooms'
     id = db.Column(db.Integer, primary_key=True) 
     fid = db.Column(db.Integer, db.ForeignKey('floors.id'))
-    hid = db.Column(db.Integer, db.ForeignKey('hotels.id'))
     room_number = db.Column(db.Integer,nullable=False) #room number
     img = db.Column(db.String(200), nullable=False)
     modPath = db.Column(db.String(200))
@@ -33,7 +32,7 @@ class Room(db.Model):
     wheelchair_accessible = db.Column(db.Enum(YesNo), nullable=False, default=YesNo.N) 
     bookings = db.relationship('Booking', backref='rooms', lazy=True, cascade='all, delete-orphan')  
     
-    __table_args__ = (db.UniqueConstraint('hid', 'fid', 'room_number', name='hid_fid_room_number_unique'),)
+    __table_args__ = (db.UniqueConstraint('fid', 'room_number', name='fid_room_number_unique'),)
 
     
     @classmethod
@@ -59,7 +58,7 @@ class Room(db.Model):
         Returns:
             int: The room's hotel ID (hid)
         """
-        return self.hid
+        return self.floors.hid
     
     def get_room_number(self):
         """
@@ -83,7 +82,7 @@ class Room(db.Model):
         Returns:
             int: The full location of the room (floor_number + room_number)
         """
-        return self.fid*100 + self.id #nned to fix this
+        return self.floors.floor_number*100 + self.room_number
     
     def get_room_type(self):
         """
