@@ -25,6 +25,8 @@ pip install faiss-cpu
 pip install reportlab 
 pip install qrcode[pil]    
 pip install plotly
+pip install flask_apscheduler
+
 
 pip install pytest
 pip install pytest-flask

@@ -12,9 +12,12 @@ from .db import db
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
 from .blueprints import register_blueprints
+from flask_apscheduler import APScheduler
 
 
 mail = Mail()
+scheduler = APScheduler()
+
 
 class Factory:
 
@@ -56,6 +59,22 @@ class Factory:
         if test_config:
             app.config.update(test_config)
         else:
+            
+            scheduler.init_app(app)
+            def clean_service_tasks():
+                with app.app_context():
+                    from .entities import Service
+                    print("cleaning tasks...")
+                    Service.clean_tasks()
+                    print("done cleaning tasks...")
+            scheduler.add_job(
+                id='clean_service_tasks', 
+                func=clean_service_tasks,
+                trigger='interval', 
+                hours=1
+            )
+            scheduler.start()
+
             rds_secret_name = "rds!db-d319020b-bb3f-4784-807c-6271ab3293b0"
             ses_secret_name = "oceanvista/gmail"
 
@@ -99,9 +118,6 @@ class Factory:
             )
 
         return app
-
-# # model = [User, Hotel, Floor, Room, Bookings, FAQ, YesNo, Locations, RoomType, Availability]
-
 
     def add_sample_data(self):
         """

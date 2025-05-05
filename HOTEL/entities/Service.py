@@ -186,19 +186,37 @@ class Service(db.Model):
     def get_active_tasks(cls):
         from .Booking import Booking
         today = datetime.now()
-        tasks = cls.query.join(Booking).filter(Booking.check_in<=today, Booking.check_out>today, Booking.cancel_date.is_(None))
+        tasks = cls.query.join(Booking).filter(Booking.check_in<=today, Booking.check_out>today, Booking.cancel_date.is_(None), cls.status != Status.E)
         sorting = case((cls.stype==SType.C, cls.calldatetime), else_=cls.issued)
         tasks = tasks.order_by(asc(sorting), asc(cls.issued), asc(cls.bid), asc(cls.stype)).all()
         return tasks
     
     @classmethod
-    def get_expired_tasks(cls):
+    def clean_tasks(cls):
+        """
+        Update the status of incomplete service requests that either have a past Booking check out date
+        or (for call requests) have a calldatetime that has expired (buffer of 3 hours).
+
+        Parameters:
+            None
+        
+        Returns:
+            list[Service]: List of updated task records
+        """
         from .Booking import Booking
         today = datetime.now()
-        tasks = cls.query.join(Booking).filter(Booking.check_out<today, Booking.cancel_date.is_(None), cls.status != Status.C)
-        sorting = case((cls.stype==SType.C, cls.calldatetime), else_=cls.issued)
-        tasks = tasks.order_by(asc(sorting), asc(cls.issued), asc(cls.bid), asc(cls.stype)).all()
+        today_buffer = today + timedelta(hours=3)
+        tasks = cls.query.join(Booking).filter(or_(Booking.check_out<today, cls.calldatetime <= today_buffer), Booking.cancel_date.is_(None), cls.status != Status.C).all()
+        if tasks:
+            for task in tasks:
+                task.update_status(Status.E)
+            try:
+                db.session.commit()
+            except Exception as e:
+                db.session.rollback()
+                print("UNABLE TO CLEAN SERVICE TABLE")
         return tasks
+        
 
     def update_status(self, new_status):
         """
