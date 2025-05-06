@@ -1,7 +1,7 @@
 from flask import Blueprint, request, render_template, flash, redirect, session, url_for
 from ..entities import User, Booking, Service, YesNo, Assistance
 from ..controllers import FormController
-from ..Services import RoomAvailability
+from ..services import RoomAvailability
 from ..db import db
 from datetime import datetime 
 
