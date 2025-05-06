@@ -1,4 +1,4 @@
-from .routes import chat_routes
+from .AIRoutes import AIRoutes
 from .views import StaffRoutes, BookingRoutes, InfoRoutes, UserRoutes, DetailRoutes, PaymentRoutes
 from .event_routes import get_events_blueprint
 
@@ -18,10 +18,9 @@ def register_blueprints(app, email_controller):
     BookingRoutes(app, email_controller)
     StaffRoutes(app)
     PaymentRoutes(app, email_controller)
+    AIRoutes(app)
     
     # Register events blueprint
     bp_events = get_events_blueprint()
     app.register_blueprint(bp_events)
-    
-    bp_chat = chat_routes()
-    app.register_blueprint(bp_chat)
+
