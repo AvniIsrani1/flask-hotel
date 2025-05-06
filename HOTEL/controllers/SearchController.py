@@ -14,6 +14,12 @@ class SearchController:
         Created: March 17, 2025
         Modified: April 17, 2025
     """
+    __instance = None
+
+    def __new__(cls):
+        if cls.__instance is None:
+            cls.__instance = super(SearchController, cls).__new__(cls)
+        return cls.__instance
 
     def __init__(self):
         """
@@ -43,6 +49,7 @@ class SearchController:
                 datetime: ending - The ending date.
                 bool: valid - True if search parameters were provided, False if defaults were used. 
         """
+        self.query=Room.query.join(Floor).join(Hotel).filter(Room.available==Availability.A) #reset search query
         valid = True
         if not start and not end: #only time this can happen is when user clicks to search page via home search bar or search button (otherwise always have at least start)
             starting = datetime.now().strftime("%B %d, %Y")

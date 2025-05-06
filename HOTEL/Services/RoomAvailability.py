@@ -14,6 +14,13 @@ class RoomAvailability:
         Modified: April 17, 2025
     """
 
+    __instance = None
+
+    def __new__(cls, *args, **kwargs):
+        if cls.__instance is None:
+            cls.__instance = super(RoomAvailability, cls).__new__(cls)
+        return cls.__instance
+
     def __init__(self,startdate=None,enddate=None,rid=None):
         """
         Initialize a RoomAvailability object with optional start date, end date, and room ID.

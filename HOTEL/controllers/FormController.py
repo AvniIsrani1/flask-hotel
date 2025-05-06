@@ -12,6 +12,13 @@ class FormController():
     Modified: April 18, 2025
     """
 
+    __instance = None
+
+    def __new__(cls):
+        if cls.__instance is None:
+            cls.__instance = super(FormController, cls).__new__(cls)
+        return cls.__instance
+
     @classmethod
     def get_signup_information(cls):
         """
