@@ -102,12 +102,12 @@ class Booking(db.Model):
         Returns:
             None
         """
-        duration = (check_out - check_in).days + 1
+        duration = (check_out - check_in).days
         if duration<=0:
             print('duration was 0')
             duration = 1
         print('Duration',check_out, check_in, (check_out - check_in).days, duration)
-        total_price = fees*duration*1.15 + 30 #NEED TO CHECK THIS LOGIC!!
+        total_price = fees*duration*1.15 + 30*duration #NEED TO CHECK THIS LOGIC!!
         print('total',total_price)
         booking = cls(uid=uid, rid=rid, check_in=check_in, check_out=check_out, fees=total_price, special_requests=special_requests, name=name, email=email, phone=phone, num_guests=num_guests)
         return booking
