@@ -28,6 +28,15 @@ function sendMessage() {
     // Clear input field
     document.getElementById("userInput").value = "";
 
+    // Add loading spinner
+    let loadingSpinner = document.createElement("div");
+    loadingSpinner.className = "bot-message";
+    loadingSpinner.innerHTML = '<div class="bot-loading"></div>';
+    loadingSpinner.id = "loading-spinner";
+    chatBox.appendChild(loadingSpinner);
+    chatBox.scrollTop = chatBox.scrollHeight;
+
+
     // Send user input to Flask backend
     fetch("/get_response", {
         method: "POST",
@@ -36,6 +45,11 @@ function sendMessage() {
     })
     .then(response => response.json())
     .then(data => {
+        
+        let spinner = document.getElementById("loading-spinner");
+        if (spinner) spinner.remove();
+
+
         // Append AI response to chat
         let botMessage = document.createElement("div");
         botMessage.className = "bot-message";
@@ -64,6 +78,13 @@ function loadChatHistory() {
     if (chatHistory) {
         chatBox.innerHTML = chatHistory;
         chatBox.scrollTop = chatBox.scrollHeight;
+    } 
+    
+    else {
+        let welcomeMessage = document.createElement("div");
+        welcomeMessage.className = "bot-message";
+        welcomeMessage.innerText = "Ocean Vista: Hello! Welcome to the Ocean Vista Hotel website, what would you like to know?";
+        chatBox.appendChild(welcomeMessage);
     }
     
     // Check if chat was open
