@@ -46,7 +46,7 @@ def setup_csv_retrieval():
             print("CSV file is empty")
             return None, None
         
-        # Format how we store the data similar to BugginFace.py
+        # Format separation; category, sub-category, description
         df["combined"] = df.apply(
             lambda row: f"{row['category']} - {row['sub_category']}: {row['description']}", 
             axis=1
@@ -91,7 +91,7 @@ def get_answer_from_csv(db, df, question):
         if not results:
             return None
             
-        # Get the document and score
+        # Get the document and score for similarity
         doc, score = results[0]
         print(f"Found document with score: {score}")
         

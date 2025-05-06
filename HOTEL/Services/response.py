@@ -43,7 +43,7 @@ def format_response(answer, question):
         
     parts = answer.split(',')
     if len(parts) >= 3:
-        # Assume last part is description
+        # return last part(description); topic response
         description = parts[2].strip()
         return f"{description}"
     
