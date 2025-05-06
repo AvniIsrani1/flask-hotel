@@ -1,6 +1,6 @@
 from flask import Blueprint, request, render_template, flash, redirect, session, url_for
 from ..entities import Hotel, Staff, Service, Status, Locations, SType
-from ..services import ReportGenerator
+from ..Services import ReportGenerator
 from ..db import db
 from datetime import datetime 
 from sqlalchemy import distinct, or_
