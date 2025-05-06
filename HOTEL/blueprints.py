@@ -1,4 +1,4 @@
-from .AIRoutes import AIRoutes
+from .views.AIRoutes import AIRoutes
 from .views import StaffRoutes, BookingRoutes, InfoRoutes, UserRoutes, DetailRoutes, PaymentRoutes
 from .event_routes import get_events_blueprint
 
