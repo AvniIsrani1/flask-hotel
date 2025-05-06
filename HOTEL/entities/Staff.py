@@ -1,6 +1,6 @@
 from .User import User
 from ..db import db
-from sqlalchemy import DateTime
+from sqlalchemy import DateTime, or_
 from .Enums import Position
 
 
@@ -40,3 +40,19 @@ class Staff(User):
             Staff | None: The Staff object if found, else None.
         """
         return cls.query.filter(cls.id==id).first()
+    
+    def get_assignable_staff(self):
+        """
+        Retrieve staff members who can be assigned to work under this staff member. 
+        
+        This includes the staff member themselves and al staff who report directly to this staff member 
+        (where this staff member is their supervisor).
+
+        Parameters:
+            None
+        
+        Returns:
+            list: A list of Staff objects that can be assigned, or an empty list if none found
+        
+        """
+        return self.__class__.query.filter(or_(self.__class__.supervisor_id==self.id, self.__class__.id==self.id)).all()

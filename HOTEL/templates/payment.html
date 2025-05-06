@@ -201,7 +201,7 @@
             <button type="submit" class="payment-button">Complete Payment</button>
         </form>
         <div class="cancel-link">
-            <form method="post" action="{{url_for('reserve.reserve')}}?rid={{rid}}&location_type={{location_type}}&startdate={{startdate}}&enddate={{enddate}}" id='submit-room'>
+            <form method="post" action="{{url_for('details.reserve')}}?rid={{rid}}&location_type={{location_type}}&startdate={{startdate}}&enddate={{enddate}}" id='submit-room'>
                 <input type="hidden" id="name" name="name"  value="{{name}}">
                 <input type="hidden" id="email" name="email" value="{{email }}">
                 <input type="hidden" id="phone" name="phone" value="{{phone}}">

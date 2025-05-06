@@ -85,8 +85,8 @@ class Status(PyEnum):
     N = 'Not Started'
     I = 'In-Progress'
     C = 'Complete'
+    E = 'Expired'
     # CA = 'Canceled'
-    # E = 'Expired'
 
 class Position(PyEnum):
     """

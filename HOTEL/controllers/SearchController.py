@@ -14,6 +14,12 @@ class SearchController:
         Created: March 17, 2025
         Modified: April 17, 2025
     """
+    __instance = None
+
+    def __new__(cls):
+        if cls.__instance is None:
+            cls.__instance = super(SearchController, cls).__new__(cls)
+        return cls.__instance
 
     def __init__(self):
         """
@@ -25,7 +31,7 @@ class SearchController:
         Returns:
             None
         """
-        self.query=Room.query.join(Hotel).filter(Room.available==Availability.A)
+        self.query=Room.query.join(Floor).join(Hotel).filter(Room.available==Availability.A)
     
     def main_search(self,location=None,start=None,end=None):
         """
@@ -43,6 +49,7 @@ class SearchController:
                 datetime: ending - The ending date.
                 bool: valid - True if search parameters were provided, False if defaults were used. 
         """
+        self.query=Room.query.join(Floor).join(Hotel).filter(Room.available==Availability.A) #reset search query
         valid = True
         if not start and not end: #only time this can happen is when user clicks to search page via home search bar or search button (otherwise always have at least start)
             starting = datetime.now().strftime("%B %d, %Y")
@@ -136,7 +143,7 @@ class SearchController:
             None
         """
         self.query = self.query.group_by(
-            Room.hid, Room.room_type, Room.number_beds, Room.rate, Room.balcony, Room.city_view, Room.ocean_view, 
+            Floor.hid, Room.room_type, Room.number_beds, Room.rate, Room.balcony, Room.city_view, Room.ocean_view, 
             Room.smoking, Room.max_guests, Room.wheelchair_accessible
         )
         self.query = self.query.with_entities(Room, func.count(distinct(Room.id)).label('number_rooms'), func.min(Room.id).label('min_rid'))

@@ -12,6 +12,13 @@ class FormController():
     Modified: April 18, 2025
     """
 
+    __instance = None
+
+    def __new__(cls):
+        if cls.__instance is None:
+            cls.__instance = super(FormController, cls).__new__(cls)
+        return cls.__instance
+
     @classmethod
     def get_signup_information(cls):
         """
@@ -230,10 +237,10 @@ class FormController():
                 str: phone - Updated phone number for the booking, defaults to booking's phone number information if none is provided.
                 str: num_guests - Updated num_guests for the booking, defaults to booking's num_guests information if none is provided.
         """
-        special_requests=request.form.get('requests'), 
-        name=request.form.get('name', booking.name), 
-        email = request.form.get('email', booking.email), 
-        phone=request.form.get('phone', booking.phone), 
+        special_requests=request.form.get('requests')
+        name=request.form.get('name', booking.name)
+        email = request.form.get('email', booking.email)
+        phone=request.form.get('phone', booking.phone)
         num_guests=request.form.get('guests')
         return special_requests, name, email, phone, num_guests
     

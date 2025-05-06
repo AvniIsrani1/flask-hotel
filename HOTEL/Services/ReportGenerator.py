@@ -2,6 +2,7 @@ import plotly
 import plotly.express as px
 import plotly.graph_objects as go
 import json
+from ..entities import Booking, Room, Service, Staff
 
 class ReportGenerator():
     """
@@ -13,6 +14,13 @@ class ReportGenerator():
         Created: 4-28-25
         Modified: 4-29-25
     """
+
+    __instance = None
+
+    def __new__(cls):
+        if cls.__instance is None:
+            cls.__instance = super(ReportGenerator, cls).__new__(cls)
+        return cls.__instance
     
     @staticmethod
     def empty_figure(title):
@@ -28,7 +36,6 @@ class ReportGenerator():
         """
         Returns a pie chart of service request frequencies. 
         """
-        from ..entities import Service
         service_frequency = Service.get_service_stats(location, startdate, enddate)
         if service_frequency:
             labels = [service[0].value for service in service_frequency]
@@ -46,7 +53,6 @@ class ReportGenerator():
         """
         Returns a digit-figure of revenue (based on completed and pending bookings)
         """
-        from ..entities import Booking
         completed, pending = Booking.get_booking_stats(location, startdate, enddate)
         if completed and pending:
             completed_figure = go.Figure()
@@ -72,8 +78,6 @@ class ReportGenerator():
         """
         Returns a bar graph of most popular rooms
         """
-        from ..entities import Booking
-        from ..entities import Room
         
         popularity = Booking.get_room_popularity_stats(location, startdate, enddate) #row objects with (rid, popularity)
         if popularity:
@@ -108,10 +112,6 @@ class ReportGenerator():
     
     @classmethod
     def get_staff_insights(cls, location=None, startdate=None, enddate=None, assignable_staff=None):
-        from ..entities import Service
-        from ..entities import Staff
-        from ..entities import Status
-
         staff_insights = Service.get_staff_insights(location, startdate, enddate, assignable_staff)
         if staff_insights:
             staff_insights_list = [{"staff":Staff.get_staff(row[0]).get_name().upper() if row[0] else 'Unknown', 'status':row[1].value,'count':row[2]} for row in staff_insights]

@@ -340,7 +340,7 @@
             
             acceptBtn.textContent = 'Login';
             acceptBtn.onclick = function() {
-                window.location.href = "{{ url_for('auth.login') }}?redirect=events";
+                window.location.href = "{{ url_for('userinfo.login') }}?redirect=events";
             };
             declineBtn.textContent = 'Cancel';
             declineBtn.onclick = function() {

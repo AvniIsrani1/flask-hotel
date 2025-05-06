@@ -1,6 +1,6 @@
 from datetime import datetime
 from ..db import db
-from sqlalchemy import DateTime, distinct, desc, asc, cast, func, not_, String, Computed
+from sqlalchemy import distinct, asc, func, not_
 
 class RoomAvailability:
     """
@@ -13,6 +13,13 @@ class RoomAvailability:
         Created: March 17, 2025
         Modified: April 17, 2025
     """
+
+    __instance = None
+
+    def __new__(cls, *args, **kwargs):
+        if cls.__instance is None:
+            cls.__instance = super(RoomAvailability, cls).__new__(cls)
+        return cls.__instance
 
     def __init__(self,startdate=None,enddate=None,rid=None):
         """
@@ -63,9 +70,9 @@ class RoomAvailability:
         Returns:
             None
         """
-        from ..entities import Availability, Room, Hotel
+        from ..entities import Availability, Room, Hotel, Floor
         self.rid = rid
-        self.room = Room.query.join(Hotel).filter(Room.available==Availability.A).filter(Room.id==rid).first()
+        self.room = Room.query.join(Floor).join(Hotel).filter(Room.available==Availability.A).filter(Room.id==rid).first()
 
 
     
@@ -79,12 +86,12 @@ class RoomAvailability:
         Returns:
             Query: A SQLAlchemy query object containing similar rooms matching the criteria.
         """
-        from ..entities import Availability, Booking, Room, Hotel
+        from ..entities import Booking, Room, Hotel, Floor
         if not self.room:
             print("MUST SET ROOM ID!!!!!")
             return None
-        similar_rooms = Room.query.join(Hotel).filter(
-            Room.hid==self.room.hid, Room.room_type==self.room.room_type, Room.number_beds==self.room.number_beds, Room.rate==self.room.rate, Room.balcony==self.room.balcony, Room.city_view==self.room.city_view,
+        similar_rooms = Room.query.join(Floor).join(Hotel).filter(
+            Floor.hid==self.room.floors.hid, Room.room_type==self.room.room_type, Room.number_beds==self.room.number_beds, Room.rate==self.room.rate, Room.balcony==self.room.balcony, Room.city_view==self.room.city_view,
             Room.ocean_view==self.room.ocean_view, Room.smoking==self.room.smoking, Room.max_guests==self.room.max_guests, Room.wheelchair_accessible==self.room.wheelchair_accessible
         )
         if status == 'open':
@@ -103,14 +110,14 @@ class RoomAvailability:
         Returns:
             Query: A SQLAlchemy query object containing the count of similar rooms, along with room and hotel information.
         """
-        from ..entities import Room, Hotel #need to update this when move Room/Hotel to model_dbs
+        from ..entities import Room, Hotel, Floor 
         similar_rooms = self.get_similar_rooms(status=status)
         if not similar_rooms:
             print("DID NOT GET ANY SIMILAR ROOMS!!")
             return None
         if status=='any':
             similar_rooms = similar_rooms.group_by(
-                Room.hid, Room.room_type, Room.number_beds, Room.rate, Room.balcony, Room.city_view, Room.ocean_view, 
+                Floor.hid, Room.room_type, Room.number_beds, Room.rate, Room.balcony, Room.city_view, Room.ocean_view, 
                 Room.smoking, Room.max_guests, Room.wheelchair_accessible
             )
         similar_rooms = similar_rooms.with_entities(Room, Hotel.address, func.count(distinct(Room.id)).label('number_rooms'), func.min(Room.id).label('min_rid'))

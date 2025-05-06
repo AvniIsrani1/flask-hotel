@@ -12,6 +12,14 @@ class EmailController:
     Created: April 6, 2025
     Modified: April 17, 2025
     """
+
+    __instance = None
+
+    def __new__(cls, mail):
+        if cls.__instance is None:
+            cls.__instance = super(EmailController, cls).__new__(cls)
+            cls.__instance.mail = mail
+        return cls.__instance
     
     def __init__(self, mail):
         """
@@ -23,10 +31,8 @@ class EmailController:
         Returns:
             None
         """
-        self.mail = mail
-
-
-    
+        if not hasattr(self, 'mail'):
+            self.mail = mail
 
     def send_email(self,subject, recipients, body, body_template, user=None, booking=None,YesNo=YesNo, attachment=None, attachment_type=None):
         """
@@ -47,7 +53,7 @@ class EmailController:
             None
         """
         msg = Message(subject,
-                    recipients=['ocean.vista.hotels@gmail.com'], #we are in sandbox mode right now (can only send to verified emails) (need to create a dns record first to move to prod mode)
+                    recipients=recipients,
                     body=body)
         try:
             formatting = render_template(body_template, user=user, booking=booking, YesNo=YesNo)
@@ -97,7 +103,7 @@ class EmailController:
     
         Parameters:
             user (User): The user who created the booking.
-            bookings (Booking): The booking object containing reservation details.
+            bookings (list): The list of booking objects.
             YesNo (enum): The YesNo enum to use in the template.
     
         Returns:
@@ -120,7 +126,7 @@ class EmailController:
         Returns:
             str: A message indicating the email was sent.
         """
-        return self.send_email(subject=f'Ocean Vista Booking Updated - {booking.id}!',recipients=[user.email], body="Your booking has been updated!",
+        return self.send_email(subject=f'Ocean Vista Booking Updated - ID#{booking.id}!',recipients=[user.email], body="Your booking has been updated!",
                                body_template='emails/updated.html',user=user, booking=booking, YesNo=YesNo)
 
 

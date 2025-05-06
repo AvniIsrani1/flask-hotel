@@ -37,7 +37,7 @@
   <br>
   <div class="home-searchbar">
 
-  <form method="get" action={{url_for('search.search')}} id="searchbar" class="searchbar" style="max-width:1200px; width:90%;">
+  <form method="get" action={{url_for('details.search')}} id="searchbar" class="searchbar" style="max-width:1200px; width:90%;">
     <input type="hidden" name="stype" value="apply_search">
     <div class="locations">
         <div class="search-description">
@@ -158,7 +158,7 @@
           <div class="box5-text">
             <h1>“Check the Best Stay With Luxury Rooms”</h1>
             <p>Discover your dream destination, one click away!!!</p>
-            <a class="rooms-btn" href="{{url_for('search.search')}}">Rooms</a>
+            <a class="rooms-btn" href="{{url_for('details.search')}}">Rooms</a>
           </div>
         </div>
       </div>

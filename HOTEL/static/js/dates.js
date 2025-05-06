@@ -39,8 +39,9 @@ document.addEventListener('DOMContentLoaded', function(){
         const startdate = document.querySelector("#startdate")._flatpickr.selectedDates[0];
         const enddate = document.querySelector("#enddate")._flatpickr.selectedDates[0];
         if(startdate && enddate) {
-            nights = (enddate-startdate)/(1000*60*60*24) + 1;
-            document.getElementById('nights').innerText=`${nights} NIGHT${nights<=1?'': 'S'}`;
+            days = (enddate-startdate)/(1000*60*60*24) + 1;
+            nights = days - 1;
+            document.getElementById('nights').innerText=`${days} DAY${days==1?'': 'S'}, ${days-1} NIGHT${days-1==1?'' : 'S'}`;
         }
     };
     calcNights();

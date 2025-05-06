@@ -40,7 +40,6 @@ class Service(db.Model):
     housedatetime = db.Column(DateTime)
     trash = db.Column(db.Enum(YesNo)) 
     calldatetime = db.Column(DateTime)
-    # recurrent = db.Column(db.Enum(YesNo)) 
     restaurant = db.Column(db.String(200)) 
     assistance = db.Column(db.Enum(Assistance))
     other = db.Column(db.String(300)) 
@@ -126,7 +125,7 @@ class Service(db.Model):
             else:
                 call = cls(bid=bid, issued=today, stype=SType.C, calldatetime=calldatetime)
                 calls.append(call)
-            return calls
+        return calls
         
     @classmethod
     def add_trash(cls, bid):
@@ -187,10 +186,37 @@ class Service(db.Model):
     def get_active_tasks(cls):
         from .Booking import Booking
         today = datetime.now()
-        tasks = cls.query.join(Booking).filter(Booking.check_in<=today, Booking.check_out>today)
+        tasks = cls.query.join(Booking).filter(Booking.check_in<=today, Booking.check_out>today, Booking.cancel_date.is_(None), cls.status != Status.E)
         sorting = case((cls.stype==SType.C, cls.calldatetime), else_=cls.issued)
         tasks = tasks.order_by(asc(sorting), asc(cls.issued), asc(cls.bid), asc(cls.stype)).all()
         return tasks
+    
+    @classmethod
+    def clean_tasks(cls):
+        """
+        Update the status of incomplete service requests that either have a past Booking check out date
+        or (for call requests) have a calldatetime that has expired (buffer of 3 hours).
+
+        Parameters:
+            None
+        
+        Returns:
+            list[Service]: List of updated task records
+        """
+        from .Booking import Booking
+        today = datetime.now()
+        today_buffer = today + timedelta(hours=3)
+        tasks = cls.query.join(Booking).filter(or_(Booking.check_out<today, cls.calldatetime <= today_buffer), Booking.cancel_date.is_(None), cls.status != Status.C).all()
+        if tasks:
+            for task in tasks:
+                task.update_status(Status.E)
+            try:
+                db.session.commit()
+            except Exception as e:
+                db.session.rollback()
+                print("UNABLE TO CLEAN SERVICE TABLE")
+        return tasks
+        
 
     def update_status(self, new_status):
         """
@@ -216,8 +242,9 @@ class Service(db.Model):
         # stats = cls.query.group_by(*cols) #group by to remove duplicates from recurrent wake up calls
         from .Booking import Booking
         from .Room import Room
+        from .Floor import Floor
         from .Hotel import Hotel
-        stats = cls.query.join(Booking).join(Room).join(Hotel)
+        stats = cls.query.join(Booking).join(Room).join(Floor).join(Hotel)
         if location:
             stats = stats.filter(Hotel.location == location)
         if startdate and enddate: 
@@ -237,8 +264,9 @@ class Service(db.Model):
         # stats = cls.query.filter(cls.issued>=startdate, cls.modified<=enddate).group_by(cls.staff_in_charge, cls.status)
         from .Booking import Booking
         from .Room import Room
+        from .Floor import Floor
         from .Hotel import Hotel
-        stats = cls.query.join(Booking).join(Room).join(Hotel)
+        stats = cls.query.join(Booking).join(Room).join(Floor).join(Hotel)
         if location:
             stats = stats.filter(Hotel.location == location)
         if startdate and enddate:
