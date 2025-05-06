@@ -2,6 +2,7 @@
 greeting, Hello, Hello! Welcome to the Ocean Vista Hotel website. How may I assist you today?
 conversation, greeting, Welcome to the Ocean Vista Hotel! We are delighted to have you here. Our staff is dedicated to making your stay as enjoyable as possible. Please ask me any questions you may have regarding Ocean Vista.
 conversation, how are you, I am doing great and I hope you are as well! How can I assist you today?
+Hotel, location, We currently have two locations for Ocean Vista: Santa Monica and Malibu.
 rooms,suite,Our luxury suites feature ocean views you can experience from your own private balcony a queen-size bed and a multitude of other complimentary amenities. We have 50 suites available occupying the Malibu location.
 rooms,standard,Our essential yet still comfortable standard rooms include have all that you need to enjoy your stay in Malibu. There are currently 200 standard rooms in total at the Malibu location.
 rooms,deluxe,Our most decadent stay we offer will consist an all included arrangement of modern appliances followed by beautiful wide ocean views with extra services and complimentary items to make your stay even more perfect. We currently have 150 deluxe rooms available at the Malibu location.
@@ -18,6 +19,7 @@ pool,size,Our main pool measures 50ft x 35ft with depths ranging from 3ft to 12f
 pool, lifeguard, Our staffed lifeguard provide daily surveillance during pool hours safety throughout the daylight. Our private beach is equipped with cameras viewed by the security office and is fully secured 24/7.
 pool,kiddie,A separate kiddie pool for children is located adjacent to the main pool. The depth is 1.5ft.
 pool,jacuzzi,Our heated jacuzzi accommodates up to 12 people and is open from 8AM to 10PM daily.
+dining,restaurant,Nobu Malibu offers high-quality Japanese cuisine with ocean views. You can also find good grub at Neptune's Net for great quality and locally sourced seafood. Or check out the state famous In-N-Out Burger is available for quick meals.
 dining,oceanview,Our signature restaurant "Ocean View" serves California coastal cuisine with stunning views. Open for all three meals of the day.
 dining,lounge,The Sunset Lounge offers various seaside themed cocktails including all your essentials. Live bands play music on weekends after 7pm - 3pm.
 dining,cafe,The Beach side Cafe serves Coffee and pastries from 6AM to 2PM daily.
@@ -54,10 +56,9 @@ attractions,garden,The Malibu Botanical Gardens showcase native California plant
 attractions,celebrity,Many celebrity homes are located here in LA especially Malibu. Please however respect their private property and local regulations.
 shopping,cross,The Malibu Country Mart and Malibu Lumber Yard offer upscale shopping experiences just 10 minutes from the hotel.
 shopping,farmers,The Malibu Farmers Market is held every Sunday from 10AM to 3PM. There you can find fresh locally sourced produce and artisanal goods.
-food,restuarant,Nobu Malibu offers high-quality Japanese cuisine with ocean views. You can also find good grub at Neptune's Net for great quality and locally sourced seafood. Or check out the state famous In-N-Out Burger is available for quick meals.
 food,seafood,Malibu Seafood Fresh Fish Market & Patio Cafe serves fresh-caught seafood in a casual setting with ocean views.
 food,vegetarian, The hotel restaurant is able to accomodate to Guest's diets. The Real Coconut Kitchen is a local restaurant that offers plant-based and gluten-free options just 5 minutes from the hotel.
-food,food, The local food you can find are alot of hispanic influenced baja style cuisine along with your typical American burgers and fries and of course fresh seafood sourced from the Pacific Ocean.
+food,type, The local food you can find are alot of hispanic influenced baja style cuisine along with your typical American burgers and fries and of course fresh seafood sourced from the Pacific Ocean.
 art,museum,Visit the Getty Villa for art and culture. Free admission but reservations are required.
 car,museum,The Petersen Automotive Museum in Los Angeles displays extraordinary cars and automotive history. Approximately 50 minutes from the hotel.
 amusement,disneyland,Disneyland and California Adventure are located in Anaheim.
