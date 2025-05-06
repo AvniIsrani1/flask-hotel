@@ -2,12 +2,12 @@
 greeting, Hello, Hello! Welcome to the Ocean Vista Hotel website. How may I assist you today?
 conversation, greeting, Welcome to the Ocean Vista Hotel! We are delighted to have you here. Our staff is dedicated to making your stay as enjoyable as possible. Please ask me any questions you may have regarding Ocean Vista.
 conversation, how are you, I am doing great and I hope you are as well! How can I assist you today?
-rooms,suite,Our luxury suites feature ocean views you can experience from your own private balcony o king-size bed. We have 50 suites available occupying the Malibu location.
-rooms,standard,Our comfortable standard rooms include have all that you need to enjoy your stay in Malibu. There are currently 200 standard rooms in total at the Malibu location.
-rooms,deluxe,Our spacious deluxe rooms offers beautiful ocean views with extra amenities to make your stay even more perfect. We currently have 150 deluxe rooms available at the Malibu location.
+rooms,suite,Our luxury suites feature ocean views you can experience from your own private balcony a queen-size bed and a multitude of other complimentary amenities. We have 50 suites available occupying the Malibu location.
+rooms,standard,Our essential yet still comfortable standard rooms include have all that you need to enjoy your stay in Malibu. There are currently 200 standard rooms in total at the Malibu location.
+rooms,deluxe,Our most decadent stay we offer will consist an all included arrangement of modern appliances followed by beautiful wide ocean views with extra services and complimentary items to make your stay even more perfect. We currently have 150 deluxe rooms available at the Malibu location.
 rooms,accessible,We offer 25 fully wheelchair accessible rooms designed to accommodate guests with mobility needs. They all include roll-in showers and other ADA-compliant features.
 amenities,wifi,Complimentary high-speed WiFi is available throughout the hotel property and in all guest rooms.
-amenities,parking,Self-parking is available for $25 per night. Valet parking is available for $35 per night.
+amenities,parking,Self-parking is available for $15 per night. Valet parking is available for $35 per night with on site and off site locations available.
 amenities,fitness,Our 24-hour fitness center features state-of-the-art equipment including free weights and cardio machines. Personal training sessions can be arranged through the concierge.
 amenities,business,Our business center offers computers and printing services. Through the concierge you are also able to reserve a private meeting spaces available.
 amenities,spa,The Ocean Vista Spa offers full massages and other services at our fully staffed salon boutique. Open daily from 9AM to 7PM. Reservations recommended.
@@ -15,6 +15,7 @@ pool, location,The main pool is located on the ground floor of the hotel with oc
 pool,hours,The main pool is open from 8AM to 8PM daily with lifeguard on duty. Seasonal hours may vary.
 pool,towels,Pool towels are complimentary and available at the pool gate. Please return used towels to the designated bins.
 pool,size,Our main pool measures 50ft x 35ft with depths ranging from 3ft to 12ft.
+pool, lifeguard, Our staffed lifeguard provide daily surveillance during pool hours safety throughout the daylight. Our private beach is equipped with cameras viewed by the security office and is fully secured 24/7.
 pool,kiddie,A separate kiddie pool for children is located adjacent to the main pool. The depth is 1.5ft.
 pool,jacuzzi,Our heated jacuzzi accommodates up to 12 people and is open from 8AM to 10PM daily.
 dining,oceanview,Our signature restaurant "Ocean View" serves California coastal cuisine with stunning views. Open for all three meals of the day.
@@ -38,6 +39,7 @@ checkout,luggage,Complimentary luggage storage is available if you wish to enjoy
 checkin,time,Standard check-in time is 3PM. Early check-in is subject to availability.
 checkin,requirements,Please present a valid ID and credit card upon check-in. The card holder must be present.
 checkin,mobile,Mobile check-in is available through our app 24 hours before arrival.
+booking, reservation, for all room reservations pleace refer to the booking search or call online at the posted telphone number 818-000-0000.
 pets,policy,We welcome pets under 40 pounds. A $75 non-refundable pet fee applies per stay by request arrangements prior either via email or over the phone.
 pets,amenities, Pet appliances such bowls/bags/treats are available upon request for rooms.
 activities,local,Surfing or ocean kayaking lessons are available at the beach front right outside the hotel. Our concierge can arrange lessons for all skill levels. Additionally you can take a ride up to Paradise Cove is another popular local beach spot for swimming and sunbathing.
@@ -52,10 +54,10 @@ attractions,garden,The Malibu Botanical Gardens showcase native California plant
 attractions,celebrity,Many celebrity homes are located here in LA especially Malibu. Please however respect their private property and local regulations.
 shopping,cross,The Malibu Country Mart and Malibu Lumber Yard offer upscale shopping experiences just 10 minutes from the hotel.
 shopping,farmers,The Malibu Farmers Market is held every Sunday from 10AM to 3PM. There you can find fresh locally sourced produce and artisanal goods.
-food,local,Nobu Malibu offers high-quality Japanese cuisine with ocean views. You can also find good grub at Neptune's Net for great quality and locally sourced seafood. Or check out the state famous In-N-Out Burger is available for quick meals.
+food,restuarant,Nobu Malibu offers high-quality Japanese cuisine with ocean views. You can also find good grub at Neptune's Net for great quality and locally sourced seafood. Or check out the state famous In-N-Out Burger is available for quick meals.
 food,seafood,Malibu Seafood Fresh Fish Market & Patio Cafe serves fresh-caught seafood in a casual setting with ocean views.
-food,vegetarian,The Real Coconut Kitchen offers plant-based and gluten-free options just 5 minutes from the hotel.
-food,taste, The local food you can find are alot of hispanic influenced baja style cuisine along with your typical American burgers and fries and of course fresh seafood sourced from the Pacific Ocean.
+food,vegetarian, The hotel restaurant is able to accomodate to Guest's diets. The Real Coconut Kitchen is a local restaurant that offers plant-based and gluten-free options just 5 minutes from the hotel.
+food,food, The local food you can find are alot of hispanic influenced baja style cuisine along with your typical American burgers and fries and of course fresh seafood sourced from the Pacific Ocean.
 art,museum,Visit the Getty Villa for art and culture. Free admission but reservations are required.
 car,museum,The Petersen Automotive Museum in Los Angeles displays extraordinary cars and automotive history. Approximately 50 minutes from the hotel.
 amusement,disneyland,Disneyland and California Adventure are located in Anaheim.
@@ -64,12 +66,16 @@ recreation,golf,Malibu Golf Club is a scenic 18-hole course located 15 minutes f
 recreation,tennis,Our hotel features two tennis courts available for guest use. Reservations recommended. Racquets available for rent.
 recreation,spa,The Ocean Vista Spa offers a variety of treatments including hot stone massage/full body/facials/bodywraps.(reservation required)
 weather,climate,Malibu enjoys a Mediterranean climate with average temperatures ranging from 65°F to 85°F year-round. Evenings can be cool and even in summer.
-weather,seasons,The best time to visit is late spring through early fall. Winter months may have occasional rain but are still mild.
+weather,seasons,The best time to visit is late spring through early fall. Winter months may have occasional rain but are still mild. Summer of course is best when enjoyed at the ocean front but even better at Ocean Vista Resort.
 entertainment,live,Catch live music at the Malibu Inn or comedy shows at the Malibu Playhouse. Ask our concierge for current schedules.
 entertainment,movies,The Malibu Film Society hosts screenings throughout the year. The nearest multiplex cinema is in Santa Monica.
+services,housecleaning, house cleaning is generally done around 3pm-5pm but can be altered to fit the guest's preferences.
+services,trash pickup, Standard trash collection is around 3pm-5pm depending on floor but can be altered to guest's preferred time alternatively guest may take their trashbags to the chute down the lobby to the right of the elevators.
 services,babysitting,Babysitting services can be arranged with 24-hour notice. Background-checked sitters available for $25/hour.
 services,laundry,Same-day laundry and dry cleaning services are available if items are submitted before 9AM. See in-room directory for pricing.
 services,medical,A doctor can be called to your room for medical assistance. The nearest hospital is 15 minutes away.
 services,assistance,Our concierge is available 24/7 to assist with any needs or requests you may have during your stay.
+prices, rooms, Our room prices reflect the quality of services and housing we offer. 
+prices, food, Our food is all organic and locally sourced for the best and freshest quality ingredients. Prices may fluctaute to adhere to market trends accordingly.
 
 
