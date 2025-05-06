@@ -61,6 +61,7 @@ class Creditcard:
             
         total = sum_odd_digits + sum_even_digits
         return total % 10 == 0
+        return False
     
     def validate_exp_date(self):
         """

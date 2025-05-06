@@ -13,7 +13,7 @@ from reportlab.pdfbase.ttfonts import TTFont
 
 class ReceiptGenerator:
     """
-    Generate PDF receipts for hotel bookings.
+    Generate PDF receipts for hotel bookings as a singleton.
 
     Note:
         Author: Devansh Sharma
@@ -21,20 +21,26 @@ class ReceiptGenerator:
         Created: April 6, 2025
         Modified: May 2, 2025
     """
+    _instance = None
+    _initialized = False
+
+    def __new__(cls, *args, **kwargs):
+        if cls._instance is None:
+            cls._instance = super().__new__(cls)
+        return cls._instance
 
     def __init__(self):
-        """
-        Initialize the ReceiptGenerator with directories and styling.
-        """
+        # Only run initialization once
+        if self.__class__._initialized:
+            return
+        self.__class__._initialized = True
+
         # Directory for receipts
         self.receipt_dir = os.path.join(
             os.path.dirname(os.path.abspath(__file__)),
             'static', 'receipts'
         )
-        try:
-            os.makedirs(self.receipt_dir, exist_ok=True)
-        except Exception:
-            pass
+        os.makedirs(self.receipt_dir, exist_ok=True)
 
         # Register fonts if available
         font_dir = os.path.join(
@@ -125,12 +131,11 @@ class ReceiptGenerator:
         elements.append(platypus.Paragraph("Receipt Information", self.styles['SectionHeader']))
         receipt_date = datetime.now().strftime("%B %d, %Y")
         info_data = [
-            ["Receipt Number:", f"R-{booking.id}-{booking.check_in.strftime('%Y%m%d')}"] ,
+            ["Receipt Number:", f"R-{booking.id}-{booking.check_in.strftime('%Y%m%d')}"],
             ["Receipt Date:", receipt_date]
         ]
-        info_table = platypus.Table(info_data, colWidths=[1.5*inch, 4*inch])
-        elements.append(info_table)
-        elements.append(platypus.Spacer(1,0.2*inch))
+        elements.append(platypus.Table(info_data, colWidths=[1.5*inch, 4*inch]))
+        elements.append(platypus.Spacer(1, 0.2*inch))
 
         # Guest Info
         elements.append(platypus.Paragraph("Guest Information", self.styles['SectionHeader']))
@@ -139,18 +144,19 @@ class ReceiptGenerator:
             ["Email:", booking.email],
             ["Phone:", booking.phone]
         ]
-        guest_table = platypus.Table(guest_data, colWidths=[1.5*inch,4*inch])
-        elements.append(guest_table)
-        elements.append(platypus.Spacer(1,0.2*inch))
+        elements.append(platypus.Table(guest_data, colWidths=[1.5*inch, 4*inch]))
+        elements.append(platypus.Spacer(1, 0.2*inch))
 
         # Reservation Details
         elements.append(platypus.Paragraph("Reservation Details", self.styles['SectionHeader']))
         check_in_str = booking.check_in.strftime("%A, %B %d, %Y")
         check_out_str = booking.check_out.strftime("%A, %B %d, %Y")
-        nights = max(1, (booking.check_out-booking.check_in).days)
+        nights = max(1, (booking.check_out - booking.check_in).days)
         room_desc = f"{room.number_beds}-Bedroom {room.room_type.value}"
-        if room.wheelchair_accessible.value=='Y': room_desc += " (Wheelchair Accessible)"
-        if room.smoking.value=='N': room_desc += " | Non-Smoking"
+        if room.wheelchair_accessible.value == 'Y':
+            room_desc += " (Wheelchair Accessible)"
+        if room.smoking.value == 'N':
+            room_desc += " | Non-Smoking"
         res_data = [
             ["Check-In:", check_in_str],
             ["Check-Out:", check_out_str],
@@ -158,30 +164,27 @@ class ReceiptGenerator:
             ["Room Type:", room_desc],
             ["Guests:", str(booking.num_guests)]
         ]
-        res_table = platypus.Table(res_data, colWidths=[1.5*inch,4*inch])
-        elements.append(res_table)
-        elements.append(platypus.Spacer(1,0.2*inch))
+        elements.append(platypus.Table(res_data, colWidths=[1.5*inch, 4*inch]))
+        elements.append(platypus.Spacer(1, 0.2*inch))
 
         # Charges
         elements.append(platypus.Paragraph("Charges", self.styles['SectionHeader']))
         charges = [
-            ["Description","Rate","Amount"],
+            ["Description", "Rate", "Amount"],
             [room_desc, self._format_currency(room_rate), self._format_currency(total_room_charges)],
-            ["Resort Fee", self._format_currency(resort_fee/nights), self._format_currency(resort_fee)],
-            ["Tax (15%)","", self._format_currency(tax_amount)],
-            ["Total","", self._format_currency(total_amount)]
+            ["Resort Fee", self._format_currency(resort_fee / nights), self._format_currency(resort_fee)],
+            ["Tax (15%)", "", self._format_currency(tax_amount)],
+            ["Total", "", self._format_currency(total_amount)]
         ]
-        charge_table = platypus.Table(charges, colWidths=[3*inch,1*inch,1.5*inch])
-        elements.append(charge_table)
-        elements.append(platypus.Spacer(1,0.2*inch))
+        elements.append(platypus.Table(charges, colWidths=[3*inch, 1*inch, 1.5*inch]))
+        elements.append(platypus.Spacer(1, 0.2*inch))
 
         # Payment Info
         elements.append(platypus.Paragraph("Payment Information", self.styles['SectionHeader']))
         pay_date = booking.check_in.strftime("%B %d, %Y")
-        pay_data = [["Method:","Credit Card"],["Status:","Paid"],["Date:",pay_date]]
-        pay_table = platypus.Table(pay_data, colWidths=[1.5*inch,4*inch])
-        elements.append(pay_table)
-        elements.append(platypus.Spacer(1,0.3*inch))
+        pay_data = [["Method:", "Credit Card"], ["Status:", "Paid"], ["Date:", pay_date]]
+        elements.append(platypus.Table(pay_data, colWidths=[1.5*inch, 4*inch]))
+        elements.append(platypus.Spacer(1, 0.3*inch))
 
         # Footer
         elements.append(platypus.Paragraph(
@@ -193,7 +196,7 @@ class ReceiptGenerator:
             self.styles['Center']
         ))
 
-        # Build
+        # Build PDF
         doc.build(elements)
 
         if return_bytes:
