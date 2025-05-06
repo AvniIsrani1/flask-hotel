@@ -14,6 +14,13 @@ class ReportGenerator():
         Created: 4-28-25
         Modified: 4-29-25
     """
+
+    __instance = None
+
+    def __new__(cls):
+        if cls.__instance is None:
+            cls.__instance = super(ReportGenerator, cls).__new__(cls)
+        return cls.__instance
     
     @staticmethod
     def empty_figure(title):
