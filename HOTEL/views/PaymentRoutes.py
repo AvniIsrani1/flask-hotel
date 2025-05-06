@@ -55,8 +55,15 @@ class PaymentRoutes:
             return redirect(url_for("userinfo.login"))
         if request.method == 'POST':
             rid, location_type, startdate, enddate, name, phone, email, guests, rooms, requests = FormController.get_summary_reservation_information(user)
-            if startdate >= enddate:
-                flash('Please select a valid start and end date',"error")
+            try:
+                startdate_asdatetime = datetime.strptime(startdate, "%B %d, %Y")
+                enddate_asdatetime = datetime.strptime(enddate, "%B %d, %Y")
+            except ValueError as e:
+                flash("Invalid date format. Please ensure the dates are in the correct format.", "error")
+                return redirect(url_for('details.search'))
+            if startdate_asdatetime >= enddate_asdatetime:
+                print("startdate >= enddate, redirecting...")
+                flash('Please enter a valid start and end date',"error")
                 return redirect(url_for('details.search'))
             room_availability = RoomAvailability(startdate=startdate, enddate=enddate)
             room_availability.set_rid_room(rid=rid)

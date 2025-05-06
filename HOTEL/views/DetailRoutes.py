@@ -4,6 +4,7 @@ from ..controllers import FormController, SearchController
 from ..services import RoomAvailability
 from ..db import db
 from sqlalchemy import distinct, cast, String, desc
+from datetime import datetime
 
 class DetailRoutes:
     """
@@ -50,6 +51,7 @@ class DetailRoutes:
         user = User.query.get(session["user_id"])
         if request.method=='GET' or request.method=='POST':
             rid, location_type, startdate, enddate = FormController.get_booking_reservation_information()
+
             if not startdate or not enddate:
                 if not rid:
                     flash("Reservation details are missing. Please search for a room again.", "error")
@@ -57,7 +59,15 @@ class DetailRoutes:
                     flash('Please enter both the start and end dates',"error")
                 return redirect(url_for('details.search'))
             print(f"Received rid: {rid}, location_type: {location_type}, startdate: {startdate}, enddate: {enddate}") 
-            if startdate >= enddate:
+
+            try:
+                startdate_asdatetime = datetime.strptime(startdate, "%B %d, %Y")
+                enddate_asdatetime = datetime.strptime(enddate, "%B %d, %Y")
+            except ValueError as e:
+                flash("Invalid date format. Please ensure the dates are in the correct format.", "error")
+                return redirect(url_for('details.search'))
+            if startdate_asdatetime >= enddate_asdatetime:
+                print("startdate >= enddate, redirecting...")
                 flash('Please enter a valid start and end date',"error")
                 return redirect(url_for('details.search'))
             room_availability = RoomAvailability(startdate=startdate,enddate=enddate)

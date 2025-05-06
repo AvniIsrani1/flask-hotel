@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', function(){
 
 
     let starting_date = flatpickr("#startdate", {
-        dateFormat: "F j, Y", 
+        dateFormat: "F d, Y", 
         minDate: "today",  
         maxDate: new Date().fp_incr(365*2),
         prevArrow:'PREV',
@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', function(){
         }
     });
     let ending_date = flatpickr("#enddate", {
-        dateFormat: "F j, Y", 
+        dateFormat: "F d, Y", 
         minDate: "today",  
         maxDate: new Date().fp_incr(365*2),
         prevArrow:'PREV',
