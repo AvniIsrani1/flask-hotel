@@ -205,6 +205,15 @@ class Room(db.Model):
         return self.bookings
     
     def get_room_description(self):
+        """
+        Creates a description of the room based on its features. 
+
+        Parameters:
+            None
+
+        Returns: 
+            str: The formatted room description.
+        """
         desc = str(self.number_beds) + '-Bedroom ' + self.room_type.value
         if self.wheelchair_accessible==YesNo.Y:
             desc = desc + " (Wheelchair Accessible)"

@@ -14,6 +14,7 @@ class BookingRoutes:
         Created: February 18, 2025
         Modified: April 17, 2025
     """
+
     def __init__(self, app, email_controller):
         """
         Create booking-related routes and register them to a blueprint.
@@ -31,6 +32,15 @@ class BookingRoutes:
         app.register_blueprint(self.bp)
 
     def setup_routes(self):
+        """
+        Map the booking-related HTTP routes to their respective handler functions.
+
+        Parameters:
+            None
+
+        Returns:
+            None 
+        """
         self.bp.route('/bookings', methods=["GET", "POST"])(self.bookings)
         self.bp.route('/modify/<int:bid>', methods=["GET", "POST"])(self.modify)
         self.bp.route('/save/<int:bid>', methods=["GET", "POST"])(self.save)

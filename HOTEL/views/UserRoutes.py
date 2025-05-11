@@ -29,6 +29,15 @@ class UserRoutes:
         app.register_blueprint(self.bp)
 
     def setup_routes(self):
+        """
+        Map the user-related HTTP routes to their respective handler functions.
+
+        Parameters:
+            None
+
+        Returns:
+            None 
+        """
         self.bp.route('/signup', methods=["GET", "POST"])(self.sign_up)
         self.bp.route('/login', methods=["GET", "POST"])(self.login)
         self.bp.route('/logout')(self.logout)

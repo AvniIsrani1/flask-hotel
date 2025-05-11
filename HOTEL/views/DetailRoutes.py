@@ -31,6 +31,15 @@ class DetailRoutes:
         app.register_blueprint(self.bp)
 
     def setup_routes(self):
+        """
+        Map the detail-related HTTP routes to their respective handler functions.
+
+        Parameters:
+            None
+
+        Returns:
+            None 
+        """
         self.bp.route('/search', methods=["GET", "POST"])(self.search)
         self.bp.route('/reserve', methods=["GET", "POST"])(self.reserve)
 
@@ -73,6 +82,7 @@ class DetailRoutes:
             room_availability = RoomAvailability(startdate=startdate,enddate=enddate)
             room_availability.set_rid_room(rid=rid)
             room=room_availability.get_similar_quantities(status='open').first()
+            print(room)
             if not room:
                 flash('Room not found',"error")
                 return redirect(url_for('details.search'))

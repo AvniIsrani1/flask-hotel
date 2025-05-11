@@ -14,12 +14,12 @@ class RoomAvailability:
         Modified: April 17, 2025
     """
 
-    __instance = None
+    # __instance = None
 
-    def __new__(cls, *args, **kwargs):
-        if cls.__instance is None:
-            cls.__instance = super(RoomAvailability, cls).__new__(cls)
-        return cls.__instance
+    # def __new__(cls, *args, **kwargs):
+    #     if cls.__instance is None:
+    #         cls.__instance = super(RoomAvailability, cls).__new__(cls)
+    #     return cls.__instance
 
     def __init__(self,startdate=None,enddate=None,rid=None):
         """
@@ -95,7 +95,7 @@ class RoomAvailability:
             Room.ocean_view==self.room.ocean_view, Room.smoking==self.room.smoking, Room.max_guests==self.room.max_guests, Room.wheelchair_accessible==self.room.wheelchair_accessible
         )
         if status == 'open':
-            similar_rooms = similar_rooms.filter(not_(db.exists().where(Booking.rid == Room.id).where(Booking.check_in < self.ending).where(Booking.check_out>self.starting))).order_by(asc(Room.room_number))
+            similar_rooms = similar_rooms.filter(not_(db.exists().where(Booking.cancel_date==None).where(Booking.rid == Room.id).where(Booking.check_in < self.ending).where(Booking.check_out>self.starting))).order_by(asc(Room.room_number))
         return similar_rooms
 
 

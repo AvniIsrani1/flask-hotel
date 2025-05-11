@@ -20,6 +20,17 @@ scheduler = APScheduler()
 
 
 class Factory:
+    """
+    A class responsible for the application setup (configuring the database, mail, and scheduling services,
+    the routes, and adding sample data). 
+
+    Note:
+        Author: Avni Israni, Devansh Sharma
+        Documentation: Devansh Sharma, Avni Israni
+        Created: March 1, 2025
+        Modified: May 7, 2025
+    )
+    """
 
     def get_secrets(self, secret_name):
         """
@@ -51,6 +62,21 @@ class Factory:
         return username, pwd
 
     def create_app(self, test_config = None):
+        """
+        Configure and initialize the Flask application. 
+
+        Parameters:
+            test_config (dict, optional): A dictionary of configuration settings. 
+
+        Returns:
+            app (Flask): The Flask application instance. 
+
+        Note:
+            Author: Avni Israni, Devansh Sharma
+            Documentation: Avni Israni
+            Created: March 1, 2025
+            Modified: May 7, 2025
+        """
         app = Flask(__name__,
                     static_folder='static',
                     template_folder='templates')
@@ -122,7 +148,6 @@ class Factory:
     def add_sample_data(self):
         """
         Add sample data to the database if tables are empty.
-        
         Creates sample hotels, rooms, and users for testing.
 
         Note:
@@ -169,6 +194,12 @@ class Factory:
     def add_sample_faq(self):
         """
         Add sample FAQs to the database.
+        
+        Note:
+            Author: Avni Israni
+            Documentation: Avni Israni
+            Created: March 10, 2025
+            Modified: May 10, 2025
         """
         from .entities import FAQ
 

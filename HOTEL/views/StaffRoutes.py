@@ -13,22 +13,30 @@ class StaffRoutes:
         Author: Avni Israni
         Created: February 18, 2025
         Modified: April 17, 2025
-
     """
     def __init__(self, app):
+        """
+        Create staff-related routes and register them to a blueprint.
+    
+        Parameters:
+            app (Flask): The Flask app instance
+        
+        Returns:
+            None
+        """
         self.bp = Blueprint('staff', __name__)
         self.setup_routes()
         app.register_blueprint(self.bp)
 
     def setup_routes(self):
         """
-        Register the routes to the blueprint. 
+        Map the staff-related HTTP routes to their respective handler functions.
 
         Parameters:
             None
 
         Returns:
-            None
+            None 
         """
         self.bp.route('/tasks', methods=["GET", "POST"])(self.tasks)
         self.bp.route('/reports', methods=["GET", "POST"])(self.reports)

@@ -31,6 +31,15 @@ class PaymentRoutes:
         app.register_blueprint(self.bp)
 
     def setup_routes(self):
+        """
+        Map the payment-related HTTP routes to their respective handler functions.
+
+        Parameters:
+            None
+
+        Returns:
+            None 
+        """
         self.bp.route('/payment', methods=["GET", "POST"])(self.payment)
         self.bp.route('/process-payment', methods=["POST"])(self.process_payment)
         self.bp.route('/booking/<int:booking_id>/receipt/view')(self.view_receipt)

@@ -15,6 +15,16 @@ class FormController():
     __instance = None
 
     def __new__(cls):
+        """
+        Ensures that only a single instance of the FormController class is created (singleton design pattern).
+        If the instance does not already exist, it creates a new instance, else it returns the existing instance.
+
+        Parameters:
+            None
+
+        Returns:
+            FormController: The single FormController instance. 
+        """
         if cls.__instance is None:
             cls.__instance = super(FormController, cls).__new__(cls)
         return cls.__instance
