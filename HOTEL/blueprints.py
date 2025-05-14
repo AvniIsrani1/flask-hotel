@@ -2,16 +2,16 @@ from .views.AIRoutes import AIRoutes
 from .views import StaffRoutes, BookingRoutes, InfoRoutes, UserRoutes, DetailRoutes, PaymentRoutes
 from .event_routes import get_events_blueprint
 
-"""
-Register the blueprints so each route is accessible. 
-
-Note:
-    Author: Avni Israni, Devansh Sharma
-    Documentation: Avni Israni
-    Created: March 2, 2025
-    Modified: April 28, 2025
-"""
 def register_blueprints(app, email_controller):
+    """
+    Register the blueprints so each route is accessible. 
+
+    Note:
+        Author: Avni Israni, Devansh Sharma
+        Documentation: Avni Israni
+        Created: March 2, 2025
+        Modified: April 28, 2025
+    """
     DetailRoutes(app)
     UserRoutes(app, email_controller)
     InfoRoutes(app)

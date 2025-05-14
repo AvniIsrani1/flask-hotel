@@ -1,3 +1,6 @@
+"""
+Factory class for application setup. 
+"""
 from flask import Flask
 from flask_mail import Mail
 from werkzeug.security import generate_password_hash
@@ -29,7 +32,6 @@ class Factory:
         Documentation: Devansh Sharma, Avni Israni
         Created: March 1, 2025
         Modified: May 7, 2025
-    )
     """
 
     def get_secrets(self, secret_name):
@@ -126,6 +128,7 @@ class Factory:
 
         admin = Admin(app, name="Admin", template_mode="bootstrap4")
         from .entities import User, Staff, Booking, Hotel, Floor, Room, Service, FAQ
+        from .views import AdminRoutes
 
         with app.app_context():
             from .entities import FAQ
@@ -134,13 +137,13 @@ class Factory:
             if not FAQ.query.first():
                 self.add_sample_faq()
             admin.add_views(
-                ModelView(User, db.session),
-                ModelView(Booking, db.session),
-                ModelView(Hotel, db.session),
-                ModelView(Floor, db.session), 
-                ModelView(Room, db.session),
-                ModelView(Service, db.session),
-                ModelView(FAQ, db.session)
+                AdminRoutes(User, db.session),
+                AdminRoutes(Booking, db.session),
+                AdminRoutes(Hotel, db.session),
+                AdminRoutes(Floor, db.session), 
+                AdminRoutes(Room, db.session),
+                AdminRoutes(Service, db.session),
+                AdminRoutes(FAQ, db.session)
             )
 
         return app
@@ -184,7 +187,8 @@ class Factory:
             devansh = Staff(name="danny", email="devansh.sharma.574@my.csun.edu", password=generate_password_hash("1230"), position=Position.CONCIERGE, supervisor_id=1)
             elijah = Staff(name="elijah", email="elijah.cortez.213@my.csun.edu", password=generate_password_hash("elijah"), position=Position.MANAGER, supervisor_id=1)
             andrew = Staff(name="andrew", email="andrew.ponce.047@my.csun.edu", password=generate_password_hash("andrew"), position=Position.MAINTENANCE, supervisor_id=3)
-            users.extend([avni, devansh, elijah, andrew])
+            admin = Staff(name="admin", email="ocean.vista.hotels@gmail.com", password=generate_password_hash("admin"), position=Position.ADMIN)
+            users.extend([avni, devansh, elijah, andrew, admin])
             db.session.add_all(users)
             db.session.commit()
             print('sample users added')
