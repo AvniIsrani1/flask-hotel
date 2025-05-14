@@ -1,9 +1,10 @@
-from flask import Blueprint, request, render_template, flash, redirect, session, url_for, send_file
-from ..entities import User, Booking, YesNo, Creditcard
+from flask import Blueprint, g, request, render_template, flash, redirect, session, url_for, send_file
+from ..entities import Booking, YesNo, Creditcard
 from ..controllers import FormController
 from ..services import ReceiptGenerator, RoomAvailability
 from ..db import db
 from datetime import datetime
+from ..common import Utility
 
 class PaymentRoutes:
     """
@@ -40,10 +41,10 @@ class PaymentRoutes:
         Returns:
             None 
         """
-        self.bp.route('/payment', methods=["GET", "POST"])(self.payment)
-        self.bp.route('/process-payment', methods=["POST"])(self.process_payment)
-        self.bp.route('/booking/<int:booking_id>/receipt/view')(self.view_receipt)
-        self.bp.route('/booking/<int:booking_id>/receipt/download')(self.download_receipt)
+        self.bp.route('/payment', methods=["GET", "POST"])(Utility.login_required(self.payment))
+        self.bp.route('/process-payment', methods=["POST"])(Utility.login_required(self.process_payment))
+        self.bp.route('/booking/<int:booking_id>/receipt/view')(Utility.login_required(self.view_receipt))
+        self.bp.route('/booking/<int:booking_id>/receipt/download')(Utility.login_required(self.download_receipt))
 
     def payment(self):
         """
@@ -55,13 +56,7 @@ class PaymentRoutes:
         Returns:
             Template: The payment form template.
         """
-        if "user_id" not in session:
-            flash("Please log in first.", "error")
-            return redirect(url_for("userinfo.login"))
-        user = User.query.get(session["user_id"])
-        if user is None:
-            flash("User is not valid","error")
-            return redirect(url_for("userinfo.login"))
+        user = g.user
         if request.method == 'POST':
             rid, location_type, startdate, enddate, name, phone, email, guests, rooms, requests = FormController.get_summary_reservation_information(user)
             try:
@@ -101,11 +96,8 @@ class PaymentRoutes:
             Redirect: Redirect to bookings or search page based on result.
         """
         print("processing payment...")
-        if "user_id" not in session:
-            flash("Please log in first.", "error")
-            return redirect(url_for("userinfo.login"))
         
-        user = User.query.get(session["user_id"])
+        user = g.user
         
         # Extract payment information from the form
         credit_card_number, exp_date, cvv = FormController.get_payment_information()
@@ -148,7 +140,7 @@ class PaymentRoutes:
             # Card is valid, process the payment
             print("card validation passed...")
             try:
-                user_id = session.get("user_id")
+                user_id = g.user.get_id()
                 
                 if not rooms_to_book:
                     flash('Room no longer available. Please search for a new room.', 'error')
@@ -205,9 +197,6 @@ class PaymentRoutes:
         Returns:
             Template: The receipt template with booking details.
         """
-        if "user_id" not in session:
-            flash("Please log in first.", "error")
-            return redirect(url_for("userinfo.login"))
         
         booking = Booking.query.get(booking_id)
         
@@ -254,9 +243,6 @@ class PaymentRoutes:
         Returns:
             Response: The PDF receipt file download.
         """
-        if "user_id" not in session:
-            flash("Please log in first.", "error")
-            return redirect(url_for("userinfo.login"))
         
         booking = Booking.query.get(booking_id)
         

@@ -13,8 +13,6 @@ from .controllers import EmailController
 from .db import db
 
 from flask_admin import Admin
-from flask_admin.contrib.sqla import ModelView
-from .blueprints import register_blueprints
 from flask_apscheduler import APScheduler
 
 
@@ -62,6 +60,31 @@ class Factory:
         username = secret.get("username")
         pwd = secret.get("password")
         return username, pwd
+    
+    def register_blueprints(self, app, email_controller):
+        from .views import StaffRoutes, BookingRoutes, InfoRoutes, UserRoutes, DetailRoutes, PaymentRoutes
+        from .views.AIRoutes import AIRoutes
+        from .event_routes import get_events_blueprint
+        """
+        Register the blueprints so each route is accessible. 
+
+        Note:
+            Author: Avni Israni, Devansh Sharma
+            Documentation: Avni Israni
+            Created: March 2, 2025
+            Modified: April 28, 2025
+        """
+        DetailRoutes(app)
+        UserRoutes(app, email_controller)
+        InfoRoutes(app)
+        BookingRoutes(app, email_controller)
+        StaffRoutes(app)
+        PaymentRoutes(app, email_controller)
+        AIRoutes(app)
+        
+        # Register events blueprint
+        bp_events = get_events_blueprint()
+        app.register_blueprint(bp_events)
 
     def create_app(self, test_config = None):
         """
@@ -123,8 +146,7 @@ class Factory:
         db.init_app(app)
         mail.init_app(app)
         email_controller = EmailController(mail)
-        register_blueprints(app, email_controller)
-
+        self.register_blueprints(app, email_controller)
 
         admin = Admin(app, name="Admin", template_mode="bootstrap4")
         from .entities import User, Staff, Booking, Hotel, Floor, Room, Service, FAQ

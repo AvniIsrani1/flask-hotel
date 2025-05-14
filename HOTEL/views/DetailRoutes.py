@@ -1,10 +1,11 @@
-from flask import Blueprint, request, render_template, flash, redirect, session, url_for
-from ..entities import User, Hotel, Room, YesNo
+from flask import Blueprint, request, render_template, flash, redirect, session, url_for, g
+from ..entities import Hotel, Room, YesNo
 from ..controllers import FormController, SearchController
 from ..services import RoomAvailability
 from ..db import db
 from sqlalchemy import distinct, cast, String, desc
 from datetime import datetime
+from ..common import Utility
 
 class DetailRoutes:
     """
@@ -32,7 +33,7 @@ class DetailRoutes:
 
     def setup_routes(self):
         """
-        Map the detail-related HTTP routes to their respective handler functions.
+        Map the room-detail-related HTTP routes to their respective handler functions.
 
         Parameters:
             None
@@ -41,7 +42,7 @@ class DetailRoutes:
             None 
         """
         self.bp.route('/search', methods=["GET", "POST"])(self.search)
-        self.bp.route('/reserve', methods=["GET", "POST"])(self.reserve)
+        self.bp.route('/reserve', methods=["GET", "POST"])(Utility.login_required(self.reserve))
 
     def reserve(self):
         """
@@ -54,10 +55,7 @@ class DetailRoutes:
             Template: The reservation form template.
             Redirect: Redirect to search page if data is missing.
         """
-        if "user_id" not in session:
-            flash("Please log in first.", "error")
-            return redirect(url_for("userinfo.login"))
-        user = User.query.get(session["user_id"])
+        user = g.user
         if request.method=='GET' or request.method=='POST':
             rid, location_type, startdate, enddate = FormController.get_booking_reservation_information()
 

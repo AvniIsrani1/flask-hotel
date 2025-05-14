@@ -1,7 +1,9 @@
-from flask import Blueprint, request, render_template, flash, redirect, session, url_for
+from flask import Blueprint, g, request, render_template, flash, redirect, session, url_for
 from ..entities import User,  YesNo
 from ..controllers import FormController
 from ..db import db
+from ..common import Utility
+
 class UserRoutes:
     """
     Create user-information-related routes and register them to a blueprint.
@@ -22,6 +24,11 @@ class UserRoutes:
             
         Returns:
             None
+
+        Note: 
+            Author: Avni Israni
+            Created: May 3, 2025
+            Modified: May 3, 2025
         """
         self.bp = Blueprint('userinfo', __name__)
         self.email_controller = email_controller
@@ -37,11 +44,16 @@ class UserRoutes:
 
         Returns:
             None 
+
+        Note: 
+            Author: Avni Israni
+            Created: May 3, 2025
+            Modified: May 3, 2025
         """
         self.bp.route('/signup', methods=["GET", "POST"])(self.sign_up)
         self.bp.route('/login', methods=["GET", "POST"])(self.login)
         self.bp.route('/logout')(self.logout)
-        self.bp.route('/profile', methods=["GET", "POST"])(self.profile)
+        self.bp.route('/profile', methods=["GET", "POST"])(Utility.login_required(self.profile))
 
     def sign_up(self):
         """
@@ -52,6 +64,11 @@ class UserRoutes:
         
         Returns:
             Template: The sign-up form or a redirect to the login page on success.
+
+        Note: 
+            Author: Devansh Sharma
+            Created: February 18, 2025
+            Modified: February 20, 2025
         """
         if request.method == "POST":
             # Get form data
@@ -97,6 +114,11 @@ class UserRoutes:
         
         Returns:
             Template: The login form or a redirect to the home page on success.
+
+        Note: 
+            Author: Devansh Sharma
+            Created: February 18, 2025
+            Modified: February 20, 2025
         """
         if request.method == "POST":
             email, password = FormController.get_login_information()
@@ -156,15 +178,8 @@ class UserRoutes:
             Created: February 16, 2025
             Modified: April 17, 2025
         """
-        if "user_id" not in session:
-            flash("Please log in first.", "error")
-            return redirect(url_for("userinfo.login"))
         
-        user = User.get_user(session["user_id"])
-        if not user:
-            flash('Account not found','error')
-            session.clear()
-            return redirect(url_for("userinfo.login"))
+        user = g.user
         if user.first_login is YesNo.Y:
             flash("Please update your profile information!", "action")
         message = status = ''
