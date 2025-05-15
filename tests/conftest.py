@@ -1,5 +1,5 @@
 import pytest
-from HOTEL.factory import Factory
+from HOTEL.setup import Factory
 from HOTEL.db import db as _db
 from sqlalchemy.orm import scoped_session
 

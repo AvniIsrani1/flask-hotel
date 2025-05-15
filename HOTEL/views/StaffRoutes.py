@@ -4,7 +4,7 @@ from ..services import ReportGenerator
 from ..db import db
 from datetime import datetime 
 from sqlalchemy import distinct, or_
-from ..common import Utility
+from ..common import Auth
 
 class StaffRoutes:
     """
@@ -39,9 +39,9 @@ class StaffRoutes:
         Returns:
             None 
         """
-        self.bp.route('/tasks', methods=["GET", "POST"])(Utility.staff_login_required(self.tasks))
-        self.bp.route('/reports', methods=["GET", "POST"])(Utility.staff_login_required(self.reports))
-        self.bp.route('/staff-reports', methods=["GET", "POST"])(Utility.staff_login_required(self.staff_reports))
+        self.bp.route('/tasks', methods=["GET", "POST"])(Auth.staff_login_required(self.tasks))
+        self.bp.route('/reports', methods=["GET", "POST"])(Auth.staff_login_required(self.reports))
+        self.bp.route('/staff-reports', methods=["GET", "POST"])(Auth.staff_login_required(self.staff_reports))
 
     def tasks(self):
         """

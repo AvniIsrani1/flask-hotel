@@ -1,6 +1,3 @@
-"""
-Factory class for application setup. 
-"""
 from flask import Flask
 from flask_mail import Mail
 from werkzeug.security import generate_password_hash
@@ -9,8 +6,8 @@ import boto3
 from botocore.exceptions import ClientError
 import json
 
-from .controllers import EmailController
-from .db import db
+from HOTEL.controllers import EmailController
+from HOTEL.db import db
 
 from flask_admin import Admin
 from flask_apscheduler import APScheduler
@@ -62,9 +59,9 @@ class Factory:
         return username, pwd
     
     def register_blueprints(self, app, email_controller):
-        from .views import StaffRoutes, BookingRoutes, InfoRoutes, UserRoutes, DetailRoutes, PaymentRoutes
-        from .views.AIRoutes import AIRoutes
-        from .event_routes import get_events_blueprint
+        from HOTEL.views import StaffRoutes, BookingRoutes, InfoRoutes, UserRoutes, DetailRoutes, PaymentRoutes
+        from HOTEL.views.AIRoutes import AIRoutes
+        from HOTEL.event_routes import get_events_blueprint
         """
         Register the blueprints so each route is accessible. 
 
@@ -102,7 +99,7 @@ class Factory:
             Created: March 1, 2025
             Modified: May 7, 2025
         """
-        app = Flask(__name__,
+        app = Flask("HOTEL",
                     static_folder='static',
                     template_folder='templates')
         app.secret_key = 'GITGOOD_12345'
@@ -114,7 +111,7 @@ class Factory:
             scheduler.init_app(app)
             def clean_service_tasks():
                 with app.app_context():
-                    from .entities import Service
+                    from ..entities import Service
                     print("cleaning tasks...")
                     Service.clean_tasks()
                     print("done cleaning tasks...")
@@ -149,11 +146,11 @@ class Factory:
         self.register_blueprints(app, email_controller)
 
         admin = Admin(app, name="Admin", template_mode="bootstrap4")
-        from .entities import User, Staff, Booking, Hotel, Floor, Room, Service, FAQ
-        from .views import AdminRoutes
+        from HOTEL.entities import User, Staff, Booking, Hotel, Floor, Room, Service, FAQ
+        from HOTEL.views import AdminRoutes
 
         with app.app_context():
-            from .entities import FAQ
+            from ..entities import FAQ
             db.create_all()
             self.add_sample_data()
             if not FAQ.query.first():
@@ -181,8 +178,8 @@ class Factory:
             Created: March 1, 2025
             Modified: April 17, 2025
         """
-        from .entities import Hotel, Room, Staff, Locations, Position
-        from .db import db
+        from HOTEL.entities import Hotel, Room, Staff, Locations, Position
+        from HOTEL.db import db
         # Check if we have any rooms
         if not Room.query.first():
             print("Adding sample rooms")
@@ -227,7 +224,7 @@ class Factory:
             Created: March 10, 2025
             Modified: May 10, 2025
         """
-        from .entities import FAQ
+        from HOTEL.entities import FAQ
 
         with open('sample_faqs.json', 'r') as f:
             sample_faqs = json.load(f)

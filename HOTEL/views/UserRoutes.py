@@ -2,7 +2,7 @@ from flask import Blueprint, g, request, render_template, flash, redirect, sessi
 from ..entities import User,  YesNo
 from ..controllers import FormController
 from ..db import db
-from ..common import Utility
+from ..common import Auth
 
 class UserRoutes:
     """
@@ -53,7 +53,7 @@ class UserRoutes:
         self.bp.route('/signup', methods=["GET", "POST"])(self.sign_up)
         self.bp.route('/login', methods=["GET", "POST"])(self.login)
         self.bp.route('/logout')(self.logout)
-        self.bp.route('/profile', methods=["GET", "POST"])(Utility.login_required(self.profile))
+        self.bp.route('/profile', methods=["GET", "POST"])(Auth.login_required(self.profile))
 
     def sign_up(self):
         """

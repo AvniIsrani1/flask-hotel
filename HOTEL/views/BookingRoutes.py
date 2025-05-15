@@ -4,7 +4,7 @@ from ..controllers import FormController
 from ..services import RoomAvailability
 from ..db import db
 from datetime import datetime 
-from ..common.Utility import Utility
+from ..common import Auth
 
 
 class BookingRoutes:
@@ -43,10 +43,10 @@ class BookingRoutes:
         Returns:
             None 
         """
-        self.bp.route('/bookings', methods=["GET", "POST"])(Utility.login_required(self.bookings))
-        self.bp.route('/modify/<int:bid>', methods=["GET", "POST"])(Utility.login_required(self.modify))
-        self.bp.route('/save/<int:bid>', methods=["GET", "POST"])(Utility.login_required(self.save))
-        self.bp.route('/request-services/<int:bid>', methods=["GET", "POST"])(Utility.login_required(self.request_services))
+        self.bp.route('/bookings', methods=["GET", "POST"])(Auth.login_required(self.bookings))
+        self.bp.route('/modify/<int:bid>', methods=["GET", "POST"])(Auth.login_required(self.modify))
+        self.bp.route('/save/<int:bid>', methods=["GET", "POST"])(Auth.login_required(self.save))
+        self.bp.route('/request-services/<int:bid>', methods=["GET", "POST"])(Auth.login_required(self.request_services))
 
     def bookings(self):
         """

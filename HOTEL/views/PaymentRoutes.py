@@ -4,7 +4,7 @@ from ..controllers import FormController
 from ..services import ReceiptGenerator, RoomAvailability
 from ..db import db
 from datetime import datetime
-from ..common import Utility
+from ..common import Auth
 
 class PaymentRoutes:
     """
@@ -41,10 +41,10 @@ class PaymentRoutes:
         Returns:
             None 
         """
-        self.bp.route('/payment', methods=["GET", "POST"])(Utility.login_required(self.payment))
-        self.bp.route('/process-payment', methods=["POST"])(Utility.login_required(self.process_payment))
-        self.bp.route('/booking/<int:booking_id>/receipt/view')(Utility.login_required(self.view_receipt))
-        self.bp.route('/booking/<int:booking_id>/receipt/download')(Utility.login_required(self.download_receipt))
+        self.bp.route('/payment', methods=["GET", "POST"])(Auth.login_required(self.payment))
+        self.bp.route('/process-payment', methods=["POST"])(Auth.login_required(self.process_payment))
+        self.bp.route('/booking/<int:booking_id>/receipt/view')(Auth.login_required(self.view_receipt))
+        self.bp.route('/booking/<int:booking_id>/receipt/download')(Auth.login_required(self.download_receipt))
 
     def payment(self):
         """

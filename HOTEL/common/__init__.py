@@ -1,3 +1,3 @@
-from .Utility import Utility
+from .Auth import Auth
 
-__all__ = ['Utility']
+__all__ = ['Auth']

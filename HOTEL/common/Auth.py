@@ -3,7 +3,7 @@ from flask import flash, redirect, session, url_for, g
 
 from ..entities import User, Staff
 
-class Utility:
+class Auth:
     """
     Utility class for system-wide methods. 
 

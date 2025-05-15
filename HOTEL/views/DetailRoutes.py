@@ -5,7 +5,7 @@ from ..services import RoomAvailability
 from ..db import db
 from sqlalchemy import distinct, cast, String, desc
 from datetime import datetime
-from ..common import Utility
+from ..common import Auth
 
 class DetailRoutes:
     """
@@ -42,7 +42,7 @@ class DetailRoutes:
             None 
         """
         self.bp.route('/search', methods=["GET", "POST"])(self.search)
-        self.bp.route('/reserve', methods=["GET", "POST"])(Utility.login_required(self.reserve))
+        self.bp.route('/reserve', methods=["GET", "POST"])(Auth.login_required(self.reserve))
 
     def reserve(self):
         """
