@@ -16,54 +16,52 @@ Note:
 
 def setup_csv_retrieval():
     """
-    Set up the CSV-based information retrieval system using FAISS and Hugging Face embeddings.
-
-    Parameters:
-        None
-
-    Returns:
-        tuple: A tuple (db, df) where db is a FAISS vector store and df is the original CSV DataFrame.
     
-    Raises:
-        Exception: Caught internally, and returns (None, None).
+    Set up the CSV-based information retrieval system using FAISS and Hugging Face embeddings.
+    Uses cached FAISS index if available.
+
     """
-    # Path construction
     current_dir = os.path.dirname(os.path.abspath(__file__))
     csv_path = os.path.join(os.path.dirname(current_dir), 'csv_data', 'hotel_info.csv')
-    
+    index_dir = os.path.join(os.path.dirname(current_dir), 'csv_data', 'faiss_index')
+
     print(f"Looking for CSV at: {csv_path}")
-    
+
     try:
-        # Check if file exists before trying to read it
         if not os.path.exists(csv_path):
             print(f"CSV file not found at: {csv_path}")
             return None, None
-            
-        # Load hotel information from CSV
+
+        # Load CSV
         df = pd.read_csv(csv_path)
-        
+
         if df.empty:
             print("CSV file is empty")
             return None, None
-        
-        # Format separation; category, sub-category, description
+
+        # Create combined column
         df["combined"] = df.apply(
-            lambda row: f"{row['category']} - {row['sub_category']}: {row['description']}", 
+            lambda row: f"{row['category']} - {row['sub_category']}: {row['description']}",
             axis=1
         )
-        
-        texts = df['combined'].tolist()
-        
-        # Create embeddings
-        embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
-        
-        # Create vector store
-        db = FAISS.from_texts(texts, embeddings)
-        print("Successfully created FAISS index")
-        return db, df  # Return both db and df
+
+        if os.path.exists(index_dir):
+            print("Loading existing FAISS index from disk...")
+            embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
+            db = FAISS.load_local(index_dir, embeddings, allow_dangerous_deserialization=True)
+        else:
+            print("Creating new FAISS index...")
+            texts = df['combined'].tolist()
+            embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
+            db = FAISS.from_texts(texts, embeddings)
+            db.save_local(index_dir)
+            print("FAISS index created and saved")
+
+        return db, df
+
     except Exception as e:
         print(f"Error setting up CSV retrieval: {e}")
-        return None, None  # Return None for both when there's an error
+        return None, None
 
 def get_answer_from_csv(db, df, question):
     """
