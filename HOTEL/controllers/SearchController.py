@@ -14,23 +14,6 @@ class SearchController:
         Created: March 17, 2025
         Modified: April 17, 2025
     """
-    __instance = None
-
-    def __new__(cls):
-        """
-        Ensures that only a single instance of the SearchController class is created (singleton design pattern).
-        If the instance does not already exist, it creates a new instance, else it returns the existing instance.
-
-        Parameters:
-            None
-
-        Returns:
-            SearchController: The single SearchController instance. 
-        """
-        if cls.__instance is None:
-            cls.__instance = super(SearchController, cls).__new__(cls)
-        return cls.__instance
-
     def __init__(self):
         """
         Initialize a SearchController object with a base query for available rooms.

@@ -94,13 +94,14 @@ class Position(PyEnum):
 
     Defines the types of positions staff can hold and associated colors for each position. 
     """
-    MANAGER = ("Manager","blue")
-    FRONT_DESK = ("Front Desk", "green")
-    HOUSEKEEPING = ("Housekeeping", "purple")
-    MAINTENANCE = ("Maintenance", "gray")
-    CONCIERGE = ("Concierge", "brown")
-    CHEF = ("Chef", "orange")
-    SERVER = ("Server", "yellow")
+    MANAGER = ("Manager","red")
+    FRONT_DESK = ("Front Desk", "orange")
+    HOUSEKEEPING = ("Housekeeping", "yellow")
+    MAINTENANCE = ("Maintenance", "green")
+    CONCIERGE = ("Concierge", "blue")
+    CHEF = ("Chef", "purple")
+    SERVER = ("Server", "violet")
+    ADMIN = ("Admin", "gray")
 
     def __init__(self, label, color):
         self.label = label

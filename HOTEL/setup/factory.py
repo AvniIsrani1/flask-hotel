@@ -6,12 +6,10 @@ import boto3
 from botocore.exceptions import ClientError
 import json
 
-from .controllers import EmailController
-from .db import db
+from HOTEL.controllers import EmailController
+from HOTEL.db import db
 
 from flask_admin import Admin
-from flask_admin.contrib.sqla import ModelView
-from .blueprints import register_blueprints
 from flask_apscheduler import APScheduler
 
 
@@ -29,7 +27,6 @@ class Factory:
         Documentation: Devansh Sharma, Avni Israni
         Created: March 1, 2025
         Modified: May 7, 2025
-    )
     """
 
     def get_secrets(self, secret_name):
@@ -60,6 +57,31 @@ class Factory:
         username = secret.get("username")
         pwd = secret.get("password")
         return username, pwd
+    
+    def register_blueprints(self, app, email_controller):
+        from HOTEL.views import StaffRoutes, BookingRoutes, InfoRoutes, UserRoutes, DetailRoutes, PaymentRoutes
+        from HOTEL.views.AIRoutes import AIRoutes
+        from HOTEL.event_routes import get_events_blueprint
+        """
+        Register the blueprints so each route is accessible. 
+
+        Note:
+            Author: Avni Israni, Devansh Sharma
+            Documentation: Avni Israni
+            Created: March 2, 2025
+            Modified: April 28, 2025
+        """
+        DetailRoutes(app)
+        UserRoutes(app, email_controller)
+        InfoRoutes(app)
+        BookingRoutes(app, email_controller)
+        StaffRoutes(app)
+        PaymentRoutes(app, email_controller)
+        AIRoutes(app)
+        
+        # Register events blueprint
+        bp_events = get_events_blueprint()
+        app.register_blueprint(bp_events)
 
     def create_app(self, test_config = None):
         """
@@ -77,7 +99,7 @@ class Factory:
             Created: March 1, 2025
             Modified: May 7, 2025
         """
-        app = Flask(__name__,
+        app = Flask("HOTEL",
                     static_folder='static',
                     template_folder='templates')
         app.secret_key = 'GITGOOD_12345'
@@ -89,7 +111,7 @@ class Factory:
             scheduler.init_app(app)
             def clean_service_tasks():
                 with app.app_context():
-                    from .entities import Service
+                    from ..entities import Service
                     print("cleaning tasks...")
                     Service.clean_tasks()
                     print("done cleaning tasks...")
@@ -121,26 +143,26 @@ class Factory:
         db.init_app(app)
         mail.init_app(app)
         email_controller = EmailController(mail)
-        register_blueprints(app, email_controller)
-
+        self.register_blueprints(app, email_controller)
 
         admin = Admin(app, name="Admin", template_mode="bootstrap4")
-        from .entities import User, Staff, Booking, Hotel, Floor, Room, Service, FAQ
+        from HOTEL.entities import User, Staff, Booking, Hotel, Floor, Room, Service, FAQ
+        from HOTEL.views import AdminRoutes
 
         with app.app_context():
-            from .entities import FAQ
+            from ..entities import FAQ
             db.create_all()
             self.add_sample_data()
             if not FAQ.query.first():
                 self.add_sample_faq()
             admin.add_views(
-                ModelView(User, db.session),
-                ModelView(Booking, db.session),
-                ModelView(Hotel, db.session),
-                ModelView(Floor, db.session), 
-                ModelView(Room, db.session),
-                ModelView(Service, db.session),
-                ModelView(FAQ, db.session)
+                AdminRoutes(User, db.session),
+                AdminRoutes(Booking, db.session),
+                AdminRoutes(Hotel, db.session),
+                AdminRoutes(Floor, db.session), 
+                AdminRoutes(Room, db.session),
+                AdminRoutes(Service, db.session),
+                AdminRoutes(FAQ, db.session)
             )
 
         return app
@@ -156,8 +178,8 @@ class Factory:
             Created: March 1, 2025
             Modified: April 17, 2025
         """
-        from .entities import Hotel, Room, Staff, Locations, Position
-        from .db import db
+        from HOTEL.entities import Hotel, Room, Staff, Locations, Position
+        from HOTEL.db import db
         # Check if we have any rooms
         if not Room.query.first():
             print("Adding sample rooms")
@@ -184,7 +206,8 @@ class Factory:
             devansh = Staff(name="danny", email="devansh.sharma.574@my.csun.edu", password=generate_password_hash("1230"), position=Position.CONCIERGE, supervisor_id=1)
             elijah = Staff(name="elijah", email="elijah.cortez.213@my.csun.edu", password=generate_password_hash("elijah"), position=Position.MANAGER, supervisor_id=1)
             andrew = Staff(name="andrew", email="andrew.ponce.047@my.csun.edu", password=generate_password_hash("andrew"), position=Position.MAINTENANCE, supervisor_id=3)
-            users.extend([avni, devansh, elijah, andrew])
+            admin = Staff(name="admin", email="ocean.vista.hotels@gmail.com", password=generate_password_hash("admin"), position=Position.ADMIN)
+            users.extend([avni, devansh, elijah, andrew, admin])
             db.session.add_all(users)
             db.session.commit()
             print('sample users added')
@@ -201,7 +224,7 @@ class Factory:
             Created: March 10, 2025
             Modified: May 10, 2025
         """
-        from .entities import FAQ
+        from HOTEL.entities import FAQ
 
         with open('sample_faqs.json', 'r') as f:
             sample_faqs = json.load(f)

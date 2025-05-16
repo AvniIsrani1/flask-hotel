@@ -1,9 +1,10 @@
-from flask import Blueprint, request, render_template, flash, redirect, session, url_for
+from flask import Blueprint, g, request, render_template, flash, redirect, session, url_for
 from ..entities import Hotel, Staff, Service, Status, Locations, SType
 from ..services import ReportGenerator
 from ..db import db
 from datetime import datetime 
 from sqlalchemy import distinct, or_
+from ..common import Auth
 
 class StaffRoutes:
     """
@@ -38,9 +39,9 @@ class StaffRoutes:
         Returns:
             None 
         """
-        self.bp.route('/tasks', methods=["GET", "POST"])(self.tasks)
-        self.bp.route('/reports', methods=["GET", "POST"])(self.reports)
-        self.bp.route('/staff-reports', methods=["GET", "POST"])(self.staff_reports)
+        self.bp.route('/tasks', methods=["GET", "POST"])(Auth.staff_login_required(self.tasks))
+        self.bp.route('/reports', methods=["GET", "POST"])(Auth.staff_login_required(self.reports))
+        self.bp.route('/staff-reports', methods=["GET", "POST"])(Auth.staff_login_required(self.staff_reports))
 
     def tasks(self):
         """
@@ -52,13 +53,7 @@ class StaffRoutes:
         Returns:
             Template: The tasks template with all current service requests.
         """
-        if "user_id" not in session:
-            flash("Please log in first.", "error")
-            return redirect(url_for("userinfo.login"))
-        staff = Staff.get_user(session["user_id"])
-        if not staff:
-            flash("You don't have permission to view this resource.", "error")
-            return redirect(url_for("info.home"))
+        staff = g.staff
         if request.method == "POST":
             try:
                 for key in request.form.keys():
@@ -91,14 +86,7 @@ class StaffRoutes:
         Returns:
             Template: The reports template with all booking-related views.
         """
-        if "user_id" not in session:
-            flash("Please log in first.", "error")
-            return redirect(url_for("userinfo.login"))
-        staff = Staff.get_user(session["user_id"])
-        if not staff:
-            flash("You don't have permission to view this resource.", "error")
-            return redirect(url_for("info.home"))
-        
+        staff = g.staff
 
         locations = db.session.query(distinct(Hotel.location)).all()
         location  = request.args.get('location_type')
@@ -141,13 +129,7 @@ class StaffRoutes:
         Returns:
             Template: The staff-reports template with all staff-related views.
         """
-        if "user_id" not in session:
-            flash("Please log in first.", "error")
-            return redirect(url_for("userinfo.login"))
-        staff = Staff.get_user(session["user_id"])
-        if not staff:
-            flash("You don't have permission to view this resource.", "error")
-            return redirect(url_for("info.home"))
+        staff = g.staff
         assignable_staff = Staff.query.filter(or_(Staff.supervisor_id==staff.id, Staff.id==staff.id)).all()
 
         locations = db.session.query(distinct(Hotel.location)).all()
