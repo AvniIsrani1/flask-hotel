@@ -1,3 +1,12 @@
+"""
+Generate event invitations for hotel guests.
+
+Note:
+    Author: Devansh Sharma
+    Documentation: Devansh Sharma
+    Created: May 1, 2025
+    Modified: May 4, 2025
+"""
 from flask import send_file, session, jsonify, request, redirect, url_for, flash, Blueprint
 from io import BytesIO
 from datetime import datetime

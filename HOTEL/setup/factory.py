@@ -59,8 +59,6 @@ class Factory:
         return username, pwd
     
     def register_blueprints(self, app, email_controller):
-        from HOTEL.views import StaffRoutes, BookingRoutes, InfoRoutes, UserRoutes, DetailRoutes, PaymentRoutes, EventRoutes
-        from HOTEL.views.AIRoutes import AIRoutes
         """
         Register the blueprints so each route is accessible. 
 
@@ -70,6 +68,8 @@ class Factory:
             Created: March 2, 2025
             Modified: April 28, 2025
         """
+        from HOTEL.views import StaffRoutes, BookingRoutes, InfoRoutes, UserRoutes, DetailRoutes, PaymentRoutes, EventRoutes
+        from HOTEL.views.AIRoutes import AIRoutes
         DetailRoutes(app)
         UserRoutes(app, email_controller)
         InfoRoutes(app)

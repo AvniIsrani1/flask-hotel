@@ -5,7 +5,7 @@ from ..entities import User, Staff
 
 class Auth:
     """
-    Utility class for system-wide methods. 
+    Class for system-wide authentication. 
 
     Note:
         Author: Avni Israni, Devansh Sharma

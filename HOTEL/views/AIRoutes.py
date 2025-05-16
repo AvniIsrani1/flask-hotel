@@ -27,6 +27,15 @@ class AIRoutes:
         str: The formatted response to the question.
     """
     def __init__(self, app):
+        """
+        Create AI-related routes and register them to a blueprint.
+    
+        Parameters:
+            app (Flask): The Flask app instance
+        
+        Returns:
+            None
+        """
         self.ai_model = load_ai_model()
         self.ai_db, self.ai_df = setup_csv_retrieval()
         self.bp = Blueprint('chat', __name__)
@@ -34,6 +43,15 @@ class AIRoutes:
         app.register_blueprint(self.bp)
 
     def setup_routes(self):
+        """
+        Map the AI-related HTTP routes to their respective handler functions.
+
+        Parameters:
+            None
+
+        Returns:
+            None 
+        """
         self.bp.route('/chat')(self.chat)
         self.bp.route('/get_response', methods=[ "POST"])(self.get_response)
 
