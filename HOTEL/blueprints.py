@@ -1,6 +1,6 @@
 from .views.AIRoutes import AIRoutes
-from .views import StaffRoutes, BookingRoutes, InfoRoutes, UserRoutes, DetailRoutes, PaymentRoutes
-from .event_routes import get_events_blueprint
+from .views import StaffRoutes, BookingRoutes, InfoRoutes, UserRoutes, DetailRoutes, PaymentRoutes, EventRoutes
+from .views.EventRoutes import EventRoutes
 
 """
 Register the blueprints so each route is accessible. 
@@ -19,8 +19,5 @@ def register_blueprints(app, email_controller):
     StaffRoutes(app)
     PaymentRoutes(app, email_controller)
     AIRoutes(app)
-    
-    # Register events blueprint
-    bp_events = get_events_blueprint()
-    app.register_blueprint(bp_events)
+    EventRoutes(app)
 
