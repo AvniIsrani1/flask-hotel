@@ -34,6 +34,19 @@ class InfoRoutes:
         app.register_blueprint(self.bp)
 
     def setup_routes(self):
+        """
+        Map the info-related HTTP routes to their respective handler functions.
+
+        Parameters:
+            None
+
+        Returns:
+            None 
+        
+        Note:
+            Author: Avni Israni
+            Modified: May 10, 2025
+        """
         self.bp.route('/')(self.home)
         self.bp.route('/terms')(self.terms)
         self.bp.route('/events')(self.events)

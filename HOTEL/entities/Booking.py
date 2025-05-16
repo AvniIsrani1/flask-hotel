@@ -35,7 +35,7 @@ class Booking(db.Model):
 
     def update_booking(self, special_requests, name, email, phone, num_guests):
         """
-        Update booking details.
+        Update editable booking details.
 
         Parameters: 
             special_requests (str): The special requests made by the user.
@@ -70,7 +70,7 @@ class Booking(db.Model):
     
     def cancel(self):
         """
-        Cancel the booking.
+        Cancel the booking and determine refund eligibility.
 
         Parameters:
             None
@@ -85,8 +85,9 @@ class Booking(db.Model):
     @classmethod
     def add_booking(cls, uid, rid, check_in, check_out, fees, special_requests, name, email, phone, num_guests):
         """
-        Create and commit a booking
-        
+        Create a Booking instance with calculated total price.
+        Does not commit to the database.
+
         Parameters:
             uid (int): The unique ID of the user.
             rid (int): The unique ID of the room to reserve.
@@ -128,7 +129,7 @@ class Booking(db.Model):
     @classmethod
     def get_current_user_bookings(cls,uid):
         """
-        Retrieve a user's current (active) bookings.
+        Retrieve a user's current (active/ongoing) bookings.
         
         Parameters:
             uid (int): The unique ID of the user.
@@ -142,7 +143,7 @@ class Booking(db.Model):
     @classmethod
     def get_specific_current_user_bookings(cls,uid,bid):
         """
-        Retrieve a user's booking by its unique ID.
+        Get a specific active booking by booking ID for a user.
 
         Parameters:
             uid (int): The unique ID of the user.
@@ -157,7 +158,7 @@ class Booking(db.Model):
     @classmethod
     def get_future_user_bookings(cls,uid):
         """
-        Retrieve a user's future bookings. 
+        Retrieve a user's upcoming bookings.
 
         Parameters:
             uid (int): The unique ID of the user.
@@ -200,7 +201,8 @@ class Booking(db.Model):
     @classmethod
     def get_booking_stats(cls, location=None, startdate=None, enddate=None): 
         """
-        Calculate booking statistics (completed and pending bookings) with optional filters for location, start date, and end date
+        Return statistics for bookings that are either completed or pending.
+        Filters by optional location and date range.
 
         Parameters:
             location: Optional location filter.
@@ -253,6 +255,18 @@ class Booking(db.Model):
     
     @classmethod
     def get_room_popularity_stats(cls, location=None, startdate=None, enddate=None):
+        """
+        Calculate room popularity based on the number of times rooms are booked.
+        Filters by optional location and date range.
+
+        Parameters:
+            location: Optional location filter.
+            startdate: Optional start date filter.
+            enddate: Optional end date filter. 
+
+        Returns:
+            list[Row(rid: int, popularity: int)]: List containing room popularity statistics. 
+        """
         from .Room import Room
         from .Hotel import Hotel
         from .Floor import Floor

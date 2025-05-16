@@ -184,6 +184,15 @@ class Service(db.Model):
     
     @classmethod
     def get_active_tasks(cls):
+        """
+        Get all active (non-expired) service tasks for currently checked-in guests. 
+
+        Parameters:
+            None
+        
+        Returns:
+            list[Service]: List of active service records sorted in suggested order of completion (current to future). 
+        """
         from .Booking import Booking
         today = datetime.now()
         tasks = cls.query.join(Booking).filter(Booking.check_in<=today, Booking.check_out>today, Booking.cancel_date.is_(None), cls.status != Status.E)
@@ -237,6 +246,18 @@ class Service(db.Model):
     
     @classmethod
     def get_service_stats(cls, location=None, startdate=None, enddate=None):
+        """
+        Get the count of distinct service requests grouped by service type (stype). 
+        Filters by optional location and date range.
+
+        Parameters:
+            location (str, optional): The hotel's location.
+            startdate (datetime, optional): Start of the date range.
+            enddate (datetime, optional): End of the date range.
+
+        Returns:
+            list[(stype: SType, count: int)]: List containing service request frequencies. 
+        """
         # remove_cols = ["id","staff_in_charge", "modified","status"]
         # cols = [col for col in cls.__table__.columns if col.name not in remove_cols]
         # stats = cls.query.group_by(*cols) #group by to remove duplicates from recurrent wake up calls
@@ -261,6 +282,19 @@ class Service(db.Model):
     
     @classmethod
     def get_staff_insights(cls, location=None, startdate=None, enddate=None, assignable_staff=None):
+        """
+        Get the count of service requests per staff member, grouped by supervising staff member and status. 
+        Filters by optional location, date range, and list of staff to be included. 
+
+        Parameters:
+            location (str, optional): The hotel's location.
+            startdate (datetime, optional): Start of the date range.
+            enddate (datetime, optional): End of the date range.
+            assignable_staff (list[Staff], optional): List of staff to be included in the analysis.
+
+        Returns:
+            list[(staff_in_charge: Staff, status: Status, count: int)]: List containing service request status information per staff member. 
+        """
         # stats = cls.query.filter(cls.issued>=startdate, cls.modified<=enddate).group_by(cls.staff_in_charge, cls.status)
         from .Booking import Booking
         from .Room import Room

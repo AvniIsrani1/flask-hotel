@@ -18,6 +18,16 @@ class ReportGenerator():
     __instance = None
 
     def __new__(cls):
+        """
+        Ensures that only a single instance of the ReportGenerator class is created (singleton design pattern).
+        If the instance does not already exist, it creates a new instance, else it returns the existing instance.
+
+        Parameters:
+            None
+
+        Returns:
+            ReportGenerator: The single ReportGenerator instance. 
+        """
         if cls.__instance is None:
             cls.__instance = super(ReportGenerator, cls).__new__(cls)
         return cls.__instance
@@ -25,7 +35,13 @@ class ReportGenerator():
     @staticmethod
     def empty_figure(title):
         """
-        Returns a blank bar chart. 
+        Returns a blank bar graph. 
+
+        Parameters:
+            title (str): The title for the bar graph. 
+        
+        Returns:
+            str: A JSON-encoded string of the Plotly bar graph.
         """
         empty_figure = px.bar(title=title)
         empty_figure = json.dumps(empty_figure, cls=plotly.utils.PlotlyJSONEncoder)
@@ -35,6 +51,15 @@ class ReportGenerator():
     def get_service_stats(cls, location=None, startdate=None, enddate=None):
         """
         Returns a pie chart of service request frequencies. 
+        Filters by optional location and date range. 
+
+        Parameters:
+            location (str, optional): The hotel's location.
+            startdate (datetime, optional): Start of the date range.
+            enddate (datetime, optional): End of the date range.
+        
+        Returns:
+            str: A JSON-encoded string of the Plotly pie chart if service data exists, else an empty bar graph.
         """
         service_frequency = Service.get_service_stats(location, startdate, enddate)
         if service_frequency:
@@ -52,6 +77,15 @@ class ReportGenerator():
     def get_booking_stats(cls, location=None, startdate=None, enddate=None):
         """
         Returns a digit-figure of revenue (based on completed and pending bookings)
+        Filters by optional location and date range. 
+
+        Parameters:
+            location (str, optional): The hotel's location.
+            startdate (datetime, optional): Start of the date range.
+            enddate (datetime, optional): End of the date range.
+        
+        Returns:
+            tuple: Two JSON-encoded strings (one for completed bookings and the other for pending bookings) of the Plotly indicator chart if booking data exists, else an empty bar graph.
         """
         completed, pending = Booking.get_booking_stats(location, startdate, enddate)
         if completed and pending:
@@ -77,8 +111,16 @@ class ReportGenerator():
     def get_room_popularity_stats(cls, location=None, startdate=None, enddate=None):
         """
         Returns a bar graph of most popular rooms
-        """
+        Filters by optional location and date range. 
+
+        Parameters:
+            location (str, optional): The hotel's location.
+            startdate (datetime, optional): Start of the date range.
+            enddate (datetime, optional): End of the date range.
         
+        Returns:
+            str: A JSON-encoded string of the Plotly bar graph if room-booking data exists, else an empty bar graph.
+        """
         popularity = Booking.get_room_popularity_stats(location, startdate, enddate) #row objects with (rid, popularity)
         if popularity:
             popularity_list = []
@@ -112,6 +154,19 @@ class ReportGenerator():
     
     @classmethod
     def get_staff_insights(cls, location=None, startdate=None, enddate=None, assignable_staff=None):
+        """
+        Returns a bar graph of staff task-completion insights. 
+        Filters by optional location, date range, and staff members to be included in the analysis.  
+
+        Parameters:
+            location (str, optional): The hotel's location.
+            startdate (datetime, optional): Start of the date range.
+            enddate (datetime, optional): End of the date range.
+            assignable_staff (list[Staff], optional): List of staff to be included in the analysis.
+
+        Returns:
+            tuple: A JSON-encoded string of the Plotly bar graph if service-staff data exists, else an empty bar graph.
+        """
         staff_insights = Service.get_staff_insights(location, startdate, enddate, assignable_staff)
         if staff_insights:
             staff_insights_list = [{"staff":Staff.get_staff(row[0]).get_name().upper() if row[0] else 'Unknown', 'status':row[1].value,'count':row[2]} for row in staff_insights]

@@ -16,6 +16,16 @@ class EmailController:
     __instance = None
 
     def __new__(cls, mail):
+        """
+        Ensures that only a single instance of the EmailController class is created (singleton design pattern).
+        If the instance does not already exist, it creates a new instance, else it returns the existing instance.
+
+        Parameters:
+            None
+
+        Returns:
+            EmailController: The single EmailController instance. 
+        """
         if cls.__instance is None:
             cls.__instance = super(EmailController, cls).__new__(cls)
             cls.__instance.mail = mail

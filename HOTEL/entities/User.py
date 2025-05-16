@@ -38,6 +38,18 @@ class User(db.Model):
         'polymorphic_on': type
     }
     
+    def get_id(self):
+        """
+        Return a user's unique ID.
+
+        Parameters: 
+            None
+
+        Returns:
+            int: The user's ID.
+        """
+        return self.id
+    
     @classmethod
     def get_user(cls, id):
         """

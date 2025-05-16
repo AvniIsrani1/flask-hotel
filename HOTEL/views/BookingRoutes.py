@@ -1,9 +1,11 @@
-from flask import Blueprint, request, render_template, flash, redirect, session, url_for
-from ..entities import User, Booking, Service, YesNo, Assistance
+from flask import Blueprint, g, request, render_template, flash, redirect, session, url_for
+from ..entities import Booking, Service, YesNo, Assistance
 from ..controllers import FormController
 from ..services import RoomAvailability
 from ..db import db
 from datetime import datetime 
+from ..common import Auth
+
 
 class BookingRoutes:
     """
@@ -14,6 +16,7 @@ class BookingRoutes:
         Created: February 18, 2025
         Modified: April 17, 2025
     """
+
     def __init__(self, app, email_controller):
         """
         Create booking-related routes and register them to a blueprint.
@@ -31,10 +34,19 @@ class BookingRoutes:
         app.register_blueprint(self.bp)
 
     def setup_routes(self):
-        self.bp.route('/bookings', methods=["GET", "POST"])(self.bookings)
-        self.bp.route('/modify/<int:bid>', methods=["GET", "POST"])(self.modify)
-        self.bp.route('/save/<int:bid>', methods=["GET", "POST"])(self.save)
-        self.bp.route('/request-services/<int:bid>', methods=["GET", "POST"])(self.request_services)
+        """
+        Map the booking-related HTTP routes to their respective handler functions.
+
+        Parameters:
+            None
+
+        Returns:
+            None 
+        """
+        self.bp.route('/bookings', methods=["GET", "POST"])(Auth.login_required(self.bookings))
+        self.bp.route('/modify/<int:bid>', methods=["GET", "POST"])(Auth.login_required(self.modify))
+        self.bp.route('/save/<int:bid>', methods=["GET", "POST"])(Auth.login_required(self.save))
+        self.bp.route('/request-services/<int:bid>', methods=["GET", "POST"])(Auth.login_required(self.request_services))
 
     def bookings(self):
         """
@@ -44,10 +56,7 @@ class BookingRoutes:
             Template: The bookings template with all user bookings.
             Redirect: Redirect to login page if not logged in.
         """
-        if "user_id" not in session:
-            flash("Please log in first.", "error")
-            return redirect(url_for("userinfo.login"))
-        user_id = session["user_id"]
+        user_id = g.user.get_id()
 
         current = Booking.get_current_user_bookings(user_id)
         print(current)
@@ -70,11 +79,7 @@ class BookingRoutes:
             Redirect: Redirect to bookings page if booking not found.
         """
         modifying = True
-        if "user_id" not in session:
-            flash("Please log in first.", "error")
-            return redirect(url_for("userinfo.login"))
-        user_id = session["user_id"]
-        user = User.get_user(user_id)
+        user = g.user
         booking = Booking.get_booking(bid)
 
         if not booking:
@@ -108,10 +113,7 @@ class BookingRoutes:
         Returns:
             Redirect: Redirect to bookings page after processing.
         """
-        if "user_id" not in session:
-            flash("Please log in first.", "error")
-            return redirect(url_for("userinfo.login"))
-        user = User.query.get(session["user_id"])
+        user = g.user
         booking = Booking.query.get(bid)
         message = status = ''
         if booking:
@@ -149,10 +151,7 @@ class BookingRoutes:
             Template: The service request form template.
             Redirect: Redirect to bookings page after processing.
         """
-        if "user_id" not in session:
-            flash("Please log in first.", "error")
-            return redirect(url_for("userinfo.login"))
-        user = User.query.get(session["user_id"])
+        user = g.user
         if request.method == 'POST':
             #making sure user has active bid
             booking = Booking.get_specific_current_user_bookings(uid=user.id, bid=bid)
