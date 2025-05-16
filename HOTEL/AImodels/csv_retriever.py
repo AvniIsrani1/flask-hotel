@@ -16,7 +16,7 @@ Note:
 
 def setup_csv_retrieval():
     """
-    
+
     Set up the CSV-based information retrieval system using FAISS and Hugging Face embeddings.
     Uses cached FAISS index if available.
 
@@ -94,7 +94,7 @@ def get_answer_from_csv(db, df, question):
         print(f"Found document with score: {score}")
         
         # If similarity score is low do not use CSV info
-        if score > 1.2:  # Adjust this threshold based on testing
+        if score > 1.35:  # Adjust this threshold based on testing
             print(f"Score {score} exceeds threshold, not using CSV info")
             return None
         
