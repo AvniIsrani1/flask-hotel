@@ -59,9 +59,8 @@ class Factory:
         return username, pwd
     
     def register_blueprints(self, app, email_controller):
-        from HOTEL.views import StaffRoutes, BookingRoutes, InfoRoutes, UserRoutes, DetailRoutes, PaymentRoutes
+        from HOTEL.views import StaffRoutes, BookingRoutes, InfoRoutes, UserRoutes, DetailRoutes, PaymentRoutes, EventRoutes
         from HOTEL.views.AIRoutes import AIRoutes
-        from HOTEL.event_routes import get_events_blueprint
         """
         Register the blueprints so each route is accessible. 
 
@@ -78,10 +77,7 @@ class Factory:
         StaffRoutes(app)
         PaymentRoutes(app, email_controller)
         AIRoutes(app)
-        
-        # Register events blueprint
-        bp_events = get_events_blueprint()
-        app.register_blueprint(bp_events)
+        EventRoutes(app)
 
     def create_app(self, test_config = None):
         """

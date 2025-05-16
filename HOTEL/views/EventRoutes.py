@@ -1,15 +1,3 @@
-"""
-Event routes for the Ocean Vista Hotel application.
-
-Note:
-    Author: Devansh Sharma
-    Documentation: Devansh Sharma
-    Created: April 28, 2025
-    Modified: April 28, 2025
-
-This module contains routes for event registration and downloading PDF invitations.
-"""
-
 from flask import Blueprint, send_file, session, redirect, url_for, flash
 from io import BytesIO
 from datetime import datetime
@@ -24,7 +12,13 @@ from ..entities import User
 
 class EventRoutes:
     """
-    Class containing event-related routes for Ocean Vista Hotel.
+    Class containing event-related routes (event registration and event-pdf download) for Ocean Vista Hotel.
+
+    Note:
+        Author: Devansh Sharma
+        Documentation: Devansh Sharma
+        Created: April 28, 2025
+        Modified: April 28, 2025
     """
     def __init__(self, app):
         """

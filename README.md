@@ -1,11 +1,12 @@
-INITIAL SETUP
+# INITIAL SETUP
 
-CREATE VIRTUAL ENVIRONMENT
+# CREATE VIRTUAL ENVIRONMENT
     python -m venv .venv   
 
-ACTIVATE VIRTUAL ENVIRONMENT
+# ACTIVATE VIRTUAL ENVIRONMENT
     .venv\Scripts\activate
 
+# DEPENDENCIES
 pip install flask
 pip install flask-mysqldb
 pip install flask-sqlalchemy
@@ -31,49 +32,7 @@ pip install flask_apscheduler
 pip install pytest
 pip install pytest-flask
 
-TO RUN
+# TO RUN
 flask --app hotel run --debug
 
 
-FOR DOCUMENTATION
-pip install sphinx sphinx-autodoc-typehints
-
-sphinx-quickstart docs
-    y, HOTEL, Git Good, 1.0.0, en
-
-add this to conf.py:
-    extensions = [
-        'sphinx.ext.autodoc',
-        'sphinx.ext.napoleon', 
-        'sphinx.ext.viewcode',  
-    ]
-
-    import os
-    import sys
-    sys.path.insert(0, os.path.abspath('../..'))
-
-then create/edit index.rst file: docs/source/index.rst
-
-    Welcome to HOTEL's documentation!
-    =================================
-
-    .. toctree::
-    :maxdepth: 2
-    :caption: Contents:
-
-    modules
-
-    Indices and tables
-    ===================================
-
-    * :ref:`genindex`
-    * :ref:`modindex`
-    * :ref:`search`
-
-then: 
-    cd docs
-    sphinx-apidoc -o source/ ../HOTEL/
-    sphinx-build -b html source build/html
-
-then:
-    Go into index.html and run the live server
